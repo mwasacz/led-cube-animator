@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace LedCubeAnimator.Model
 {
-    class Effect : Tile
+    public abstract class Effect : Tile
     {
         public Direction Direction { get; set; }
         public int RepeatCount { get; set; }
@@ -14,6 +14,6 @@ namespace LedCubeAnimator.Model
         public bool PersistEffect { get; set; }
     }
 
-    enum Direction { Fwd, Bwd, FwdBwd, BwdFwd };
-    enum TimeInterpolation { Linear, Accelerate, Decelerate, Sine };
+    public enum Direction { Fwd, Bwd, FwdBwd, BwdFwd };
+    public enum TimeInterpolation { Linear, Accelerate, Decelerate, Sine };
 }
