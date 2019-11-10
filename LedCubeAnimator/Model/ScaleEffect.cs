@@ -17,9 +17,11 @@ namespace LedCubeAnimator.Model
 
         public override Color GetVoxel(Point3D point, int time, Func<Point3D, int, Color> getVoxel)
         {
-            var scale = From + (To - From) * ((double)time / Duration);
-            var transform = new ScaleTransform3D(scale, Center);
-            point = transform.Transform(point);
+            var scale = From + (To - From) * (time - Start) / (End - Start);
+            var matrix = Matrix3D.Identity;
+            matrix.ScaleAt(scale, Center);
+            matrix.Invert();
+            point = matrix.Transform(point);
             if (Round)
             {
                 point = new Point3D(Math.Floor(point.X + 0.5), Math.Floor(point.Y + 0.5), Math.Floor(point.Z + 0.5));

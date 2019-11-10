@@ -10,12 +10,12 @@ namespace LedCubeAnimator.Model
 {
     public class Group : Effect
     {
-        public Tile[] Children { get; set; }
+        public List<Tile> Children { get; set; } = new List<Tile>();
         public ColorBlendMode ColorBlendMode { get; set; }
 
         public override Color GetVoxel(Point3D point, int time, Func<Point3D, int, Color> getVoxel)
         {
-            var children = Children.GroupBy(c => c.Hierarchy).OrderBy(g => g.Key).ToArray();
+            var children = Children.Where(c => c.Start <= time && c.End >= time).GroupBy(c => c.Hierarchy).OrderBy(g => g.Key).ToArray();
 
             return GetVoxel(point, time, 0);
 

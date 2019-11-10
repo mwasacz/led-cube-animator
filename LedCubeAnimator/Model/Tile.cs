@@ -12,7 +12,7 @@ namespace LedCubeAnimator.Model
     {
         public string Name { get; set; }
         public int Start { get; set; }
-        public int Duration { get; set; }
+        public int End { get; set; }
         public int Hierarchy { get; set; }
 
         public abstract Color GetVoxel(Point3D point, int time, Func<Point3D, int, Color> getVoxel);

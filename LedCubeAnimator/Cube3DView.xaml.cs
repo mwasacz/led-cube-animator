@@ -192,7 +192,9 @@ namespace LedCubeAnimator
             {
                 if (!_materials.ContainsKey(voxel))
                 {
-                    _materials.Add(voxel, new DiffuseMaterial(new SolidColorBrush(voxel)));
+                    var sphereColor = voxel;
+                    sphereColor.A = (byte)(Math.Min(voxel.R + voxel.G + voxel.B, 255) * 7 / 8 + 32);
+                    _materials.Add(voxel, new DiffuseMaterial(new SolidColorBrush(sphereColor)));
                 }
             }
 

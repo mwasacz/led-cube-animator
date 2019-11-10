@@ -11,7 +11,7 @@ namespace LedCubeAnimator.Model
     public class Frame : Tile
     {
         public Point3D Offset { get; set; }
-        public Color[,,] Voxels { get; set; }
+        public Color[,,] Voxels { get; set; } = new Color[0, 0, 0];
 
         public override Color GetVoxel(Point3D point, int time, Func<Point3D, int, Color> getVoxel)
         {
