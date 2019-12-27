@@ -54,19 +54,25 @@
             <Border DockPanel.Dock="Top"
                     BorderBrush="DarkGray"
                     BorderThickness="1">
-                <ListBox ItemsSource="{Binding ColorList}">
-                    <ListBox.Resources>
-                        <ResourceDictionary>
-                            <ResourceDictionary.MergedDictionaries>
-                                <ResourceDictionary Source="pack://application:,,,/Xceed.Wpf.Toolkit;component/ColorPicker/Themes/Generic.xaml" />
-                                <ResourceDictionary Source="pack://application:,,,/Xceed.Wpf.Toolkit;component/ColorPicker/Themes/Aero2.NormalColor.xaml" />
-                            </ResourceDictionary.MergedDictionaries>
-                        </ResourceDictionary>
-                    </ListBox.Resources>
-                    <ListBox.Style>
-                        <StaticResource ResourceKey="ColorListStyle" />
-                    </ListBox.Style>
-                </ListBox>
+                <DockPanel>
+                    <ToggleButton DockPanel.Dock="Right"
+                                  Content="Pick"
+                                  IsChecked="{Binding ColorPickerTool}" />
+                    <ListBox ItemsSource="{Binding RecentColors}"
+                             SelectedItem="{Binding SelectedRecentColor}">
+                        <ListBox.Resources>
+                            <ResourceDictionary>
+                                <ResourceDictionary.MergedDictionaries>
+                                    <ResourceDictionary Source="pack://application:,,,/Xceed.Wpf.Toolkit;component/ColorPicker/Themes/Generic.xaml" />
+                                    <ResourceDictionary Source="pack://application:,,,/Xceed.Wpf.Toolkit;component/ColorPicker/Themes/Aero2.NormalColor.xaml" />
+                                </ResourceDictionary.MergedDictionaries>
+                            </ResourceDictionary>
+                        </ListBox.Resources>
+                        <ListBox.Style>
+                            <StaticResource ResourceKey="ColorListStyle" />
+                        </ListBox.Style>
+                    </ListBox>
+                </DockPanel>
             </Border>
             <xctk:PropertyGrid DockPanel.Dock="Top"
                                SelectedObject="{Binding SelectedTileOrGroup}"

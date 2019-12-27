@@ -15,6 +15,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
+using ColorItem = Xceed.Wpf.Toolkit.ColorItem;
 
 namespace LedCubeAnimator.ViewModel
 {
@@ -23,6 +24,7 @@ namespace LedCubeAnimator.ViewModel
         public MainViewModel()
         {
             CreateDefaultGroup();
+            AddColorToRecents(Colors.Black);
         }
 
         public ObservableCollection<TileViewModel> Tiles => Groups.Last().Children;
@@ -110,14 +112,42 @@ namespace LedCubeAnimator.ViewModel
             }
         }
 
-        private Color _selectedColor = Colors.Black;
+        private Color _selectedColor;
         public Color SelectedColor
         {
             get => _selectedColor;
             set
             {
                 _selectedColor = value;
+                _selectedRecentColor = RecentColors.SingleOrDefault(c => c.Color == _selectedColor);
                 RaisePropertyChanged(nameof(SelectedColor));
+                RaisePropertyChanged(nameof(SelectedRecentColor));
+            }
+        }
+
+        private ColorItem _selectedRecentColor;
+        public ColorItem SelectedRecentColor
+        {
+            get => _selectedRecentColor;
+            set
+            {
+                _selectedRecentColor = value;
+                _selectedColor = _selectedRecentColor?.Color ?? default;
+                RaisePropertyChanged(nameof(SelectedColor));
+                RaisePropertyChanged(nameof(SelectedRecentColor));
+            }
+        }
+
+        public ObservableCollection<ColorItem> RecentColors { get; } = new ObservableCollection<ColorItem>();
+
+        private bool _colorPickerTool;
+        public bool ColorPickerTool
+        {
+            get => _colorPickerTool;
+            set
+            {
+                _colorPickerTool = value;
+                RaisePropertyChanged(nameof(ColorPickerTool));
             }
         }
 
@@ -128,7 +158,7 @@ namespace LedCubeAnimator.ViewModel
         private RelayCommand _addFrameCommand;
         public ICommand AddFrameCommand => _addFrameCommand ?? (_addFrameCommand = new RelayCommand(() =>
         {
-            var frame = new FrameViewModel(new Frame { Name = "Frame" });
+            var frame = new FrameViewModel(new Frame { Name = "Frame", Voxels = new Color[4, 4, 4] });
             Tiles.Add(frame);
             SelectedTile = frame;
         }));
@@ -205,9 +235,21 @@ namespace LedCubeAnimator.ViewModel
             {
                 int y = (int)frame.To.Y - (int)frame.From.Y + 1;
                 int z = (int)frame.To.Z - (int)frame.From.Z + 1;
-                frame.Voxels[(int)p.X * y * z + (int)p.Y * z + (int)p.Z] = SelectedColor;
+                int index = (int)p.X * y * z + (int)p.Y * z + (int)p.Z;
 
-                RenderFrame();
+                if (ColorPickerTool)
+                {
+                    var color = frame.Voxels[index];
+                    color.A = 255;
+                    SelectedColor = color;
+                    ColorPickerTool = false;
+                }
+                else
+                {
+                    frame.Voxels[index] = SelectedColor;
+                    AddColorToRecents(SelectedColor);
+                    RenderFrame();
+                }
             }
         }));
 
@@ -244,6 +286,24 @@ namespace LedCubeAnimator.ViewModel
             }
 
             Frame = voxels;
+        }
+
+        private void AddColorToRecents(Color color)
+        {
+            var sameColor = RecentColors.SingleOrDefault(c => c.Color == color);
+            if (sameColor != null)
+            {
+                RecentColors.Move(RecentColors.IndexOf(sameColor), 0);
+            }
+            else
+            {
+                RecentColors.Insert(0, new ColorItem(color, color.ToString()));
+                if (RecentColors.Count > 10)
+                {
+                    RecentColors.RemoveAt(10);
+                }
+            }
+            SelectedRecentColor = RecentColors[0];
         }
 
         private void CreateDefaultGroup()
@@ -342,12 +402,5 @@ namespace LedCubeAnimator.ViewModel
                 sw.Write(JsonConvert.SerializeObject(Groups[0].Group, Formatting.Indented, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Objects }));
             }
         }
-
-        public ObservableCollection<Xceed.Wpf.Toolkit.ColorItem> ColorList { get; } = new ObservableCollection<Xceed.Wpf.Toolkit.ColorItem>()
-        {
-            new Xceed.Wpf.Toolkit.ColorItem(Colors.Red, "Red"),
-            new Xceed.Wpf.Toolkit.ColorItem(Colors.Green, "Green"),
-            new Xceed.Wpf.Toolkit.ColorItem(Colors.Blue, "Blue")
-        };
     }
 }
