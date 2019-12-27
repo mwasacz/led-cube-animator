@@ -13,7 +13,4 @@ namespace LedCubeAnimator.Model
         public TimeInterpolation TimeInterpolation { get; set; }
         public bool PersistEffect { get; set; }
     }
-
-    public enum Direction { Fwd, Bwd, FwdBwd, BwdFwd };
-    public enum TimeInterpolation { Linear, Accelerate, Decelerate, Sine };
 }

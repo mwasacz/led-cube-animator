@@ -48,6 +48,4 @@ namespace LedCubeAnimator.Model
             }
         }
     }
-
-    public enum ColorBlendMode { Add, Multiply };
 }
