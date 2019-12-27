@@ -3,10 +3,139 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:local="clr-namespace:LedCubeAnimator"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
-        
-    </Grid>
+        UseLayoutRounding="True"
+        TextOptions.TextFormattingMode="Display"
+        Title="MainWindow"
+        WindowState="Maximized"
+        Closing="MainWindow_Closing"
+        Height="450"
+        Width="800">
+    <DockPanel>
+        <Menu DockPanel.Dock="Top"
+              IsMainMenu="True">
+            <MenuItem Header="File">
+                <MenuItem Header="New"
+                          Command="{Binding NewCommand}" />
+                <MenuItem Header="Open..."
+                          Command="{Binding OpenCommand}" />
+                <MenuItem Header="Save"
+                          Command="{Binding SaveCommand}" />
+                <MenuItem Header="Save as..."
+                          Command="{Binding SaveAsCommand}" />
+                <Separator />
+                <MenuItem Header="Exit"
+                          Click="Exit_Click" />
+            </MenuItem>
+            <MenuItem Header="Tile">
+                <MenuItem Header="Frame"
+                          Command="{Binding AddFrameCommand}" />
+                <Separator />
+                <MenuItem Header="Group"
+                          Command="{Binding AddGroupCommand}" />
+                <Separator />
+                <MenuItem Header="MoveEffect"
+                          Command="{Binding AddMoveEffectCommand}" />
+                <MenuItem Header="RotateEffect"
+                          Command="{Binding AddRotateEffectCommand}" />
+                <MenuItem Header="ScaleEffect"
+                          Command="{Binding AddScaleEffectCommand}" />
+                <MenuItem Header="ShearEffect"
+                          Command="{Binding AddShearEffectCommand}" />
+            </MenuItem>
+        </Menu>
+        <DockPanel DockPanel.Dock="Right"
+                   Width="233">
+            <xctk:ColorCanvas DockPanel.Dock="Top"
+                              SelectedColor="{Binding SelectedColor}"
+                              UsingAlphaChannel="False" />
+            <Border DockPanel.Dock="Top"
+                    BorderBrush="DarkGray"
+                    BorderThickness="1">
+                <ListBox ItemsSource="{Binding ColorList}">
+                    <ListBox.Resources>
+                        <ResourceDictionary>
+                            <ResourceDictionary.MergedDictionaries>
+                                <ResourceDictionary Source="pack://application:,,,/Xceed.Wpf.Toolkit;component/ColorPicker/Themes/Generic.xaml" />
+                                <ResourceDictionary Source="pack://application:,,,/Xceed.Wpf.Toolkit;component/ColorPicker/Themes/Aero2.NormalColor.xaml" />
+                            </ResourceDictionary.MergedDictionaries>
+                        </ResourceDictionary>
+                    </ListBox.Resources>
+                    <ListBox.Style>
+                        <StaticResource ResourceKey="ColorListStyle" />
+                    </ListBox.Style>
+                </ListBox>
+            </Border>
+            <xctk:PropertyGrid DockPanel.Dock="Top"
+                               SelectedObject="{Binding SelectedTileOrGroup}"
+                               SelectedPropertyItemChanged="PropertyGrid_SelectedPropertyItemChanged"
+                               ShowSortOptions="False"
+                               ShowSearchBox="False"
+                               ShowSummary="False" />
+            <Button DockPanel.Dock="Top"
+                    Content="Delete tile"
+                    Command="{Binding RemoveTileCommand}" />
+            <xctk:IntegerUpDown DockPanel.Dock="Bottom"
+                                Width="50"
+                                VerticalAlignment="Bottom"
+                                HorizontalAlignment="Center"
+                                Value="{Binding Time}"
+                                Minimum="{Binding StartDate}"
+                                Maximum="{Binding EndDate}" />
+        </DockPanel>
+        <Border DockPanel.Dock="Bottom"
+                BorderBrush="DarkGray"
+                BorderThickness="1">
+            <Slider TickPlacement="TopLeft"
+                    Value="{Binding Time}"
+                    Minimum="{Binding StartDate, Converter={StaticResource IntToDoubleConverter}, ConverterParameter={StaticResource StartSliderCorrection}}"
+                    Maximum="{Binding EndDate, Converter={StaticResource IntToDoubleConverter}, ConverterParameter={StaticResource EndSliderCorrection}}" />
+        </Border>
+        <ListBox DockPanel.Dock="Bottom"
+                 Height="100"
+                 ItemsSource="{Binding Tiles}"
+                 DisplayMemberPath="Name"
+                 SelectedItem="{Binding SelectedTile}">
+            <ListBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <xctk:TimelinePanel  Margin="4,0,4,0"
+                                         VerticalAlignment="Top"
+                                         BeginDate="{Binding StartDate, Converter={StaticResource IntToDateTimeConverter}, ConverterParameter={StaticResource StartDateCorrection}}"
+                                         EndDate="{Binding EndDate, Converter={StaticResource IntToDateTimeConverter}, ConverterParameter={StaticResource EndDateCorrection}}"
+                                         KeepOriginalOrderForOverlap="True" />
+                </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+            <ListBox.ItemContainerStyle>
+                <Style>
+                    <Setter Property="Panel.Background"
+                            Value="LightGray" />
+                    <Setter Property="xctk:TimelinePanel.Date"
+                            Value="{Binding Start, Converter={StaticResource IntToDateTimeConverter}, ConverterParameter={StaticResource StartDateCorrection}}" />
+                    <Setter Property="xctk:TimelinePanel.DateEnd"
+                            Value="{Binding End, Converter={StaticResource IntToDateTimeConverter}, ConverterParameter={StaticResource EndDateCorrection}}" />
+                </Style>
+            </ListBox.ItemContainerStyle>
+        </ListBox>
+        <ListBox DockPanel.Dock="Bottom"
+                 ItemsSource="{Binding Groups}"
+                 DisplayMemberPath="Name"
+                 SelectedItem="{Binding SelectedGroup}">
+            <ListBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel Margin="4,0,4,0"
+                                Orientation="Horizontal" />
+                </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+            <ListBox.ItemContainerStyle>
+                <Style>
+                    <Setter Property="Panel.Background"
+                            Value="LightGray" />
+                </Style>
+            </ListBox.ItemContainerStyle>
+        </ListBox>
+        <local:Cube3DView Frame="{Binding Frame}"
+                          Command="{Binding VoxelClickCommand}" />
+    </DockPanel>
 </Window>

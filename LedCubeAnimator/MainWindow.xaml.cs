@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LedCubeAnimator.ViewModel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +24,39 @@ namespace LedCubeAnimator
         public MainWindow()
         {
             InitializeComponent();
+
+            _viewModel = new MainViewModel();
+            DataContext = _viewModel;
+        }
+
+        private MainViewModel _viewModel;
+
+        private void Exit_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
+        }
+
+        private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (_viewModel.SaveCommand.CanExecute(null))
+            {
+                switch (MessageBox.Show("Save changes?", "Unsaved changes", MessageBoxButton.YesNoCancel, MessageBoxImage.Warning))
+                {
+                    case MessageBoxResult.Yes:
+                        _viewModel.SaveCommand.Execute(null);
+                        break;
+                    case MessageBoxResult.No:
+                        break;
+                    default:
+                        e.Cancel = true;
+                        break;
+                }
+            }
+        }
+
+        private void PropertyGrid_SelectedPropertyItemChanged(object sender, RoutedPropertyChangedEventArgs<Xceed.Wpf.Toolkit.PropertyGrid.PropertyItemBase> e)
+        {
+            _viewModel.SelectedProperty = e.NewValue?.DisplayName;
         }
     }
 }
