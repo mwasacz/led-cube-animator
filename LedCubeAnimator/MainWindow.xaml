@@ -45,6 +45,10 @@
                 <MenuItem Header="ShearEffect"
                           Command="{Binding AddShearEffectCommand}" />
             </MenuItem>
+            <MenuItem Header="Options">
+                <MenuItem Header="Cube settings..."
+                          Command="{Binding CubeSettingsCommand}" />
+            </MenuItem>
         </Menu>
         <DockPanel DockPanel.Dock="Right"
                    Width="233">

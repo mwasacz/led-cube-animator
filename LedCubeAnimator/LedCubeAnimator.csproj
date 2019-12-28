@@ -91,11 +91,18 @@
     <Compile Include="Cube3DView.xaml.cs">
       <DependentUpon>Cube3DView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="CubeSettingsDialog.xaml.cs">
+      <DependentUpon>CubeSettingsDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="EnumToBoolConverter.cs" />
     <Compile Include="IntToDateTimeConverter.cs" />
     <Compile Include="IntToDoubleConverter.cs" />
+    <Compile Include="Model\Animation.cs" />
     <Compile Include="Model\Enums.cs" />
     <Compile Include="Model\ShearEffect.cs" />
     <Compile Include="Model\TransformEffect.cs" />
+    <Compile Include="ViewModel\AnimationViewModel.cs" />
+    <Compile Include="ViewModel\CubeSettingsViewModel.cs" />
     <Compile Include="ViewModel\EffectViewModel.cs" />
     <Compile Include="ViewModel\FrameViewModel.cs" />
     <Compile Include="ViewModel\GroupViewModel.cs" />
@@ -107,6 +114,10 @@
     <Compile Include="ViewModel\TileViewModel.cs" />
     <Compile Include="ViewModel\TransformEffectViewModel.cs" />
     <Page Include="Cube3DView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="CubeSettingsDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

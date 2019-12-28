@@ -9,6 +9,7 @@
              xmlns:sys="clr-namespace:System;assembly=mscorlib">
     <Application.Resources>
         <ResourceDictionary>
+            <local:EnumToBoolConverter x:Key="EnumToBoolConverter" />
             <local:IntToDateTimeConverter x:Key="IntToDateTimeConverter" />
             <local:IntToDoubleConverter x:Key="IntToDoubleConverter" />
             <sys:Int32 x:Key="StartDateCorrection">0</sys:Int32>

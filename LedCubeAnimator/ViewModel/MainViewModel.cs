@@ -23,9 +23,11 @@ namespace LedCubeAnimator.ViewModel
     {
         public MainViewModel()
         {
-            CreateDefaultGroup();
+            CreateDefaultAnimation();
             AddColorToRecents(Colors.Black);
         }
+
+        private AnimationViewModel _animation;
 
         public ObservableCollection<TileViewModel> Tiles => Groups.Last().Children;
 
@@ -217,6 +219,25 @@ namespace LedCubeAnimator.ViewModel
             }
         }));
 
+        private RelayCommand _cubeSettingsCommand;
+        public ICommand CubeSettingsCommand => _cubeSettingsCommand ?? (_cubeSettingsCommand = new RelayCommand(() =>
+        {
+            var viewModel = new CubeSettingsViewModel
+            {
+                Size = _animation.Size,
+                ColorMode = _animation.ColorMode,
+                MonoColor = _animation.MonoColor
+            };
+            var dialog = new CubeSettingsDialog(viewModel);
+
+            if (dialog.ShowDialog() == true)
+            {
+                _animation.Size = viewModel.Size;
+                _animation.ColorMode = viewModel.ColorMode;
+                _animation.MonoColor = viewModel.MonoColor;
+            }
+        }));
+
         private Color[,,] _frame;
         public Color[,,] Frame
         {
@@ -306,9 +327,11 @@ namespace LedCubeAnimator.ViewModel
             SelectedRecentColor = RecentColors[0];
         }
 
-        private void CreateDefaultGroup()
+        private void CreateDefaultAnimation()
         {
-            var group = new GroupViewModel(new Group { Name = "MainGroup" });
+            var g = new Group { Name = "MainGroup" };
+            _animation = new AnimationViewModel(new Animation { MainGroup = g, Size = 4, MonoColor = Colors.White });
+            var group = new GroupViewModel(g);
             Groups.Clear();
             Groups.Add(group);
             SelectedGroup = group;
@@ -332,7 +355,7 @@ namespace LedCubeAnimator.ViewModel
 
             _filePath = null;
 
-            CreateDefaultGroup();
+            CreateDefaultAnimation();
         }));
 
         private RelayCommand _openCommand;
@@ -345,12 +368,12 @@ namespace LedCubeAnimator.ViewModel
                 return;
             }
 
-            Group g;
+            Animation a;
             try
             {
                 using (var sr = new StreamReader(dialog.FileName))
                 {
-                    g = JsonConvert.DeserializeObject<Group>(sr.ReadToEnd(), new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Objects });
+                    a = JsonConvert.DeserializeObject<Animation>(sr.ReadToEnd(), new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Objects });
                 }
             }
             catch
@@ -361,7 +384,8 @@ namespace LedCubeAnimator.ViewModel
 
             _filePath = dialog.FileName;
 
-            var group = new GroupViewModel(g);
+            _animation = new AnimationViewModel(a);
+            var group = new GroupViewModel(_animation.MainGroup);
             Groups.Clear();
             Groups.Add(group);
             SelectedGroup = group;
@@ -399,7 +423,7 @@ namespace LedCubeAnimator.ViewModel
         {
             using (var sw = new StreamWriter(_filePath))
             {
-                sw.Write(JsonConvert.SerializeObject(Groups[0].Group, Formatting.Indented, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Objects }));
+                sw.Write(JsonConvert.SerializeObject(_animation.Animation, Formatting.Indented, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Objects }));
             }
         }
     }
