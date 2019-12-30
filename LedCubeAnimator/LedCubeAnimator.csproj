@@ -103,6 +103,7 @@
     <Compile Include="Model\Enums.cs" />
     <Compile Include="Model\Exporter.cs" />
     <Compile Include="Model\Extensions.cs" />
+    <Compile Include="Model\FileReaderWriter.cs" />
     <Compile Include="Model\Renderer.cs" />
     <Compile Include="Model\ShearEffect.cs" />
     <Compile Include="Model\TransformEffect.cs" />

@@ -414,15 +414,9 @@ namespace LedCubeAnimator.ViewModel
                 return;
             }
 
-            Animation a;
-            try
-            {
-                using (var sr = new StreamReader(dialog.FileName))
-                {
-                    a = JsonConvert.DeserializeObject<Animation>(sr.ReadToEnd(), new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Objects });
-                }
-            }
-            catch
+            var a = FileReaderWriter.Open(dialog.FileName);
+
+            if (a == null)
             {
                 MessageBox.Show("Error occured when opening file", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
@@ -448,7 +442,7 @@ namespace LedCubeAnimator.ViewModel
         {
             if (_filePath != null)
             {
-                Save();
+                FileReaderWriter.Save(_filePath, _animation.Animation);
             }
             else
             {
@@ -468,15 +462,7 @@ namespace LedCubeAnimator.ViewModel
 
             _filePath = dialog.FileName;
 
-            Save();
+            FileReaderWriter.Save(_filePath, _animation.Animation);
         }));
-
-        private void Save()
-        {
-            using (var sw = new StreamWriter(_filePath))
-            {
-                sw.Write(JsonConvert.SerializeObject(_animation.Animation, Formatting.Indented, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Objects }));
-            }
-        }
     }
 }
