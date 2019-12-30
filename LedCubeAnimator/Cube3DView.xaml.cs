@@ -183,16 +183,18 @@ namespace LedCubeAnimator
 
         private void CreateModels(Color[,,] voxels)
         {
-            var oldModels = _models.ToDictionary(m => m.Value, m => m.Key);
+            Dictionary<Point3D, GeometryModel3D> oldModels = _models.ToDictionary(m => m.Value, m => m.Key);
+
+            bool createNew = oldModels.Count != voxels.Length;
 
             _models = new Dictionary<GeometryModel3D, Point3D>();
 
             _materials = new Dictionary<Color, Material>();
-            foreach (var voxel in voxels)
+            foreach (Color voxel in voxels)
             {
                 if (!_materials.ContainsKey(voxel))
                 {
-                    var sphereColor = voxel;
+                    Color sphereColor = voxel;
                     sphereColor.A = (byte)(Math.Min(voxel.R + voxel.G + voxel.B, 255) * 7 / 8 + 32);
                     _materials.Add(voxel, new DiffuseMaterial(new SolidColorBrush(sphereColor)));
                 }
@@ -200,7 +202,8 @@ namespace LedCubeAnimator
 
             Vector3D center = new Vector3D(0.5 * (voxels.GetLength(0) - 1), 0.5 * (voxels.GetLength(1) - 1), 0.5 * (voxels.GetLength(2) - 1));
 
-            int n = 1280 / voxels.Length;
+            //int n = 1280 / voxels.Length; // ToDo: set n based on voxels.Length
+            int n = 20;
 
             for (int x = 0; x < voxels.GetLength(0); x++)
             {
@@ -210,14 +213,16 @@ namespace LedCubeAnimator
                     {
                         Point3D p = new Point3D(x, y, z);
 
-                        if (oldModels.TryGetValue(p, out GeometryModel3D model))
-                        {
-                            model.Material = _materials[voxels[x, y, z]];
-                        }
-                        else
+                        GeometryModel3D model;
+                        if (createNew)
                         {
                             MeshGeometry3D mesh = CreateSphere(0.25, p - center, n);
                             model = new GeometryModel3D(mesh, _materials[voxels[x, y, z]]);
+                        }
+                        else
+                        {
+                            model = oldModels[p];
+                            model.Material = _materials[voxels[x, y, z]];
                         }
 
                         _models.Add(model, p);

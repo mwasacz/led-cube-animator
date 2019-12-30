@@ -40,11 +40,7 @@ namespace LedCubeAnimator.Model
             }
             else
             {
-                return Color.FromArgb(
-                    (byte)(c1.A * c2.A / 255),
-                    (byte)(c1.R * c2.R / 255),
-                    (byte)(c1.G * c2.G / 255),
-                    (byte)(c1.B * c2.B / 255));
+                return c1.Multiply(c2);
             }
         }
     }

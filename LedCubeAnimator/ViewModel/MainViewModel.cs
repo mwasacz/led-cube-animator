@@ -29,6 +29,18 @@ namespace LedCubeAnimator.ViewModel
 
         private AnimationViewModel _animation;
 
+        private void Animation_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(AnimationViewModel.ColorMode))
+            {
+                RaisePropertyChanged(nameof(ColorMode));
+            }
+            else if (e.PropertyName == nameof(AnimationViewModel.MonoColor))
+            {
+                RenderFrame();
+            }
+        }
+
         public ObservableCollection<TileViewModel> Tiles => Groups.Last().Children;
 
         public ObservableCollection<GroupViewModel> Groups { get; } = new ObservableCollection<GroupViewModel>();
@@ -111,6 +123,29 @@ namespace LedCubeAnimator.ViewModel
                     Groups.Add(group);
                     SelectedGroup = group;
                 }
+            }
+        }
+
+        public ColorMode ColorMode => _animation.ColorMode;
+
+        private byte _selectedBrightness;
+        public byte SelectedBrightness
+        {
+            get => _selectedBrightness;
+            set
+            {
+                _selectedBrightness = value;
+
+                var color = _animation.MonoColor;
+                SelectedColor = new Color
+                {
+                    A = 255,
+                    R = (byte)(color.R * _selectedBrightness / 255),
+                    G = (byte)(color.G * _selectedBrightness / 255),
+                    B = (byte)(color.B * _selectedBrightness / 255)
+                };
+
+                RaisePropertyChanged(nameof(SelectedBrightness));
             }
         }
 
@@ -260,14 +295,29 @@ namespace LedCubeAnimator.ViewModel
 
                 if (ColorPickerTool)
                 {
-                    var color = frame.Voxels[index];
-                    color.A = 255;
-                    SelectedColor = color;
+                    SelectedColor = frame.Voxels[index];
                     ColorPickerTool = false;
                 }
                 else
                 {
-                    frame.Voxels[index] = SelectedColor;
+                    switch (_animation.ColorMode)
+                    {
+                        case ColorMode.Mono:
+                            frame.Voxels[index] = (Colors.White - frame.Voxels[index]).Opaque();
+                            break;
+                        case ColorMode.MonoBrightness:
+                            frame.Voxels[index] = new Color
+                            {
+                                A = 255,
+                                R = SelectedBrightness,
+                                G = SelectedBrightness,
+                                B = SelectedBrightness
+                            };
+                            break;
+                        case ColorMode.RGB:
+                            frame.Voxels[index] = SelectedColor;
+                            break;
+                    }
                     AddColorToRecents(SelectedColor);
                     RenderFrame();
                 }
@@ -294,19 +344,7 @@ namespace LedCubeAnimator.ViewModel
 
         private void RenderFrame()
         {
-            var voxels = new Color[4, 4, 4];
-            for (int x = 0; x < 4; x++)
-            {
-                for (int y = 0; y < 4; y++)
-                {
-                    for (int z = 0; z < 4; z++)
-                    {
-                        voxels[x, y, z] = Groups[0].Group.GetVoxel(new Point3D(x, y, z), _time, (p, t) => Colors.Black);
-                    }
-                }
-            }
-
-            Frame = voxels;
+            Frame = Renderer.Render(_animation.Animation, Time);
         }
 
         private void AddColorToRecents(Color color)
@@ -330,7 +368,13 @@ namespace LedCubeAnimator.ViewModel
         private void CreateDefaultAnimation()
         {
             var g = new Group { Name = "MainGroup" };
+            if (_animation != null)
+            {
+                _animation.PropertyChanged -= Animation_PropertyChanged;
+            }
             _animation = new AnimationViewModel(new Animation { MainGroup = g, Size = 4, MonoColor = Colors.White });
+            RaisePropertyChanged(nameof(ColorMode));
+            _animation.PropertyChanged += Animation_PropertyChanged;
             var group = new GroupViewModel(g);
             Groups.Clear();
             Groups.Add(group);
@@ -384,7 +428,13 @@ namespace LedCubeAnimator.ViewModel
 
             _filePath = dialog.FileName;
 
+            if (_animation != null)
+            {
+                _animation.PropertyChanged -= Animation_PropertyChanged;
+            }
             _animation = new AnimationViewModel(a);
+            _animation.PropertyChanged += Animation_PropertyChanged;
+            RaisePropertyChanged(nameof(ColorMode));
             var group = new GroupViewModel(_animation.MainGroup);
             Groups.Clear();
             Groups.Add(group);

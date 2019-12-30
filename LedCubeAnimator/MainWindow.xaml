@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:local="clr-namespace:LedCubeAnimator"
+        xmlns:model="clr-namespace:LedCubeAnimator.Model"
         mc:Ignorable="d"
         UseLayoutRounding="True"
         TextOptions.TextFormattingMode="Display"
@@ -52,12 +53,82 @@
         </Menu>
         <DockPanel DockPanel.Dock="Right"
                    Width="233">
-            <xctk:ColorCanvas DockPanel.Dock="Top"
-                              SelectedColor="{Binding SelectedColor}"
-                              UsingAlphaChannel="False" />
             <Border DockPanel.Dock="Top"
                     BorderBrush="DarkGray"
                     BorderThickness="1">
+                <Border.Visibility>
+                    <Binding Path="ColorMode"
+                             ConverterParameter="{x:Static model:ColorMode.MonoBrightness}">
+                        <Binding.Converter>
+                            <local:ValueConverterGroup>
+                                <local:EnumToBoolConverter />
+                                <BooleanToVisibilityConverter />
+                            </local:ValueConverterGroup>
+                        </Binding.Converter>
+                    </Binding>
+                </Border.Visibility>
+                <DockPanel Margin="5">
+                    <Border DockPanel.Dock="Left"
+                            VerticalAlignment="Center"
+                            Height="22"
+                            Width="22"
+                            BorderThickness="1"
+                            BorderBrush="#FFC9CACA">
+                        <Border.Resources>
+                            <ResourceDictionary>
+                                <ResourceDictionary.MergedDictionaries>
+                                    <ResourceDictionary Source="pack://application:,,,/Xceed.Wpf.Toolkit;component/ColorCanvas/Themes/Generic.xaml" />
+                                    <ResourceDictionary Source="pack://application:,,,/Xceed.Wpf.Toolkit;component/ColorCanvas/Themes/Aero2.NormalColor.xaml" />
+                                </ResourceDictionary.MergedDictionaries>
+                            </ResourceDictionary>
+                        </Border.Resources>
+                        <Rectangle Fill="{Binding SelectedColor, Converter={StaticResource ColorToSolidColorBrushConverter}}" />
+                    </Border>
+                    <xctk:ByteUpDown DockPanel.Dock="Right"
+                                     VerticalAlignment="Center"
+                                     Width="44"
+                                     Value="{Binding SelectedBrightness}">
+                    </xctk:ByteUpDown>
+                    <Slider VerticalAlignment="Center"
+                            Margin="4,6,4,6"
+                            Maximum="255"
+                            SmallChange="1"
+                            LargeChange="10"
+                            TickFrequency="1"
+                            Value="{Binding SelectedBrightness}">
+                    </Slider>
+                </DockPanel>
+            </Border>
+            <xctk:ColorCanvas DockPanel.Dock="Top"
+                              SelectedColor="{Binding SelectedColor}"
+                              UsingAlphaChannel="False">
+                <xctk:ColorCanvas.Visibility>
+                    <Binding Path="ColorMode"
+                             ConverterParameter="{x:Static model:ColorMode.RGB}">
+                        <Binding.Converter>
+                            <local:ValueConverterGroup>
+                                <local:EnumToBoolConverter />
+                                <BooleanToVisibilityConverter />
+                            </local:ValueConverterGroup>
+                        </Binding.Converter>
+                    </Binding>
+                </xctk:ColorCanvas.Visibility>
+            </xctk:ColorCanvas>
+            <Border DockPanel.Dock="Top"
+                    BorderBrush="DarkGray"
+                    BorderThickness="1">
+                <Border.Visibility>
+                    <Binding Path="ColorMode"
+                             ConverterParameter="{x:Static model:ColorMode.Mono}">
+                        <Binding.Converter>
+                            <local:ValueConverterGroup>
+                                <local:EnumToBoolConverter />
+                                <local:InverseBoolConverter />
+                                <BooleanToVisibilityConverter />
+                            </local:ValueConverterGroup>
+                        </Binding.Converter>
+                    </Binding>
+                </Border.Visibility>
                 <DockPanel>
                     <ToggleButton DockPanel.Dock="Right"
                                   Content="Pick"

@@ -97,10 +97,15 @@
     <Compile Include="EnumToBoolConverter.cs" />
     <Compile Include="IntToDateTimeConverter.cs" />
     <Compile Include="IntToDoubleConverter.cs" />
+    <Compile Include="InverseBoolConverter.cs" />
     <Compile Include="Model\Animation.cs" />
     <Compile Include="Model\Enums.cs" />
+    <Compile Include="Model\Exporter.cs" />
+    <Compile Include="Model\Extensions.cs" />
+    <Compile Include="Model\Renderer.cs" />
     <Compile Include="Model\ShearEffect.cs" />
     <Compile Include="Model\TransformEffect.cs" />
+    <Compile Include="ValueConverterGroup.cs" />
     <Compile Include="ViewModel\AnimationViewModel.cs" />
     <Compile Include="ViewModel\CubeSettingsViewModel.cs" />
     <Compile Include="ViewModel\EffectViewModel.cs" />

@@ -41,7 +41,7 @@ namespace LedCubeAnimator.Model
                 color += Color.Multiply(getVoxel(point, time), 1 - weightSum);
             }
 
-            return color;
+            return color.Opaque(); // ToDo: is Opaque necessary ?
         }
 
         private bool IsInCube(Point3D p) =>
