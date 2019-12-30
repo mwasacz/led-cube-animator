@@ -34,11 +34,8 @@ namespace LedCubeAnimator.ViewModel
                     MonoColor = Colors.White;
                 }
                 RaisePropertyChanged(nameof(ColorMode));
-                RaisePropertyChanged(nameof(ColorPickerEnabled));
             }
         }
-
-        public bool ColorPickerEnabled => ColorMode != ColorMode.RGB;
 
         private Color _monoColor = Colors.Black;
         public Color MonoColor

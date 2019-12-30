@@ -34,9 +34,16 @@ namespace LedCubeAnimator.ViewModel
             if (e.PropertyName == nameof(AnimationViewModel.ColorMode))
             {
                 RaisePropertyChanged(nameof(ColorMode));
+                if (ColorMode == ColorMode.Mono)
+                {
+                    ColorPickerTool = false;
+                }
+                UpdateDisplayRecentColors();
             }
             else if (e.PropertyName == nameof(AnimationViewModel.MonoColor))
             {
+                RaisePropertyChanged(nameof(DisplayColor));
+                UpdateDisplayRecentColors();
                 RenderFrame();
             }
         }
@@ -128,27 +135,6 @@ namespace LedCubeAnimator.ViewModel
 
         public ColorMode ColorMode => _animation.ColorMode;
 
-        private byte _selectedBrightness;
-        public byte SelectedBrightness
-        {
-            get => _selectedBrightness;
-            set
-            {
-                _selectedBrightness = value;
-
-                var color = _animation.MonoColor;
-                SelectedColor = new Color
-                {
-                    A = 255,
-                    R = (byte)(color.R * _selectedBrightness / 255),
-                    G = (byte)(color.G * _selectedBrightness / 255),
-                    B = (byte)(color.B * _selectedBrightness / 255)
-                };
-
-                RaisePropertyChanged(nameof(SelectedBrightness));
-            }
-        }
-
         private Color _selectedColor;
         public Color SelectedColor
         {
@@ -156,26 +142,35 @@ namespace LedCubeAnimator.ViewModel
             set
             {
                 _selectedColor = value;
-                _selectedRecentColor = RecentColors.SingleOrDefault(c => c.Color == _selectedColor);
+                _recentColorIndex = RecentColors.IndexOf(_selectedColor);
                 RaisePropertyChanged(nameof(SelectedColor));
-                RaisePropertyChanged(nameof(SelectedRecentColor));
+                RaisePropertyChanged(nameof(DisplayColor));
+                RaisePropertyChanged(nameof(RecentColorIndex));
             }
         }
 
-        private ColorItem _selectedRecentColor;
-        public ColorItem SelectedRecentColor
+        public Color DisplayColor => SelectedColor.Multiply(_animation.MonoColor);
+
+        private int _recentColorIndex;
+        public int RecentColorIndex
         {
-            get => _selectedRecentColor;
+            get => _recentColorIndex;
             set
             {
-                _selectedRecentColor = value;
-                _selectedColor = _selectedRecentColor?.Color ?? default;
+                _recentColorIndex = value;
+                if (_recentColorIndex >= 0)
+                {
+                    _selectedColor = RecentColors[_recentColorIndex];
+                }
                 RaisePropertyChanged(nameof(SelectedColor));
-                RaisePropertyChanged(nameof(SelectedRecentColor));
+                RaisePropertyChanged(nameof(DisplayColor));
+                RaisePropertyChanged(nameof(RecentColorIndex));
             }
         }
 
-        public ObservableCollection<ColorItem> RecentColors { get; } = new ObservableCollection<ColorItem>();
+        public List<Color> RecentColors { get; } = new List<Color>();
+
+        public ObservableCollection<ColorItem> DisplayRecentColors { get; } = new ObservableCollection<ColorItem>();
 
         private bool _colorPickerTool;
         public bool ColorPickerTool
@@ -295,30 +290,20 @@ namespace LedCubeAnimator.ViewModel
 
                 if (ColorPickerTool)
                 {
-                    SelectedColor = frame.Voxels[index];
+                    SelectedColor = frame.Voxels[index].Opaque();
                     ColorPickerTool = false;
                 }
                 else
                 {
-                    switch (_animation.ColorMode)
+                    if (_animation.ColorMode == ColorMode.Mono)
                     {
-                        case ColorMode.Mono:
-                            frame.Voxels[index] = (Colors.White - frame.Voxels[index]).Opaque();
-                            break;
-                        case ColorMode.MonoBrightness:
-                            frame.Voxels[index] = new Color
-                            {
-                                A = 255,
-                                R = SelectedBrightness,
-                                G = SelectedBrightness,
-                                B = SelectedBrightness
-                            };
-                            break;
-                        case ColorMode.RGB:
-                            frame.Voxels[index] = SelectedColor;
-                            break;
+                        frame.Voxels[index] = (Colors.White - frame.Voxels[index]).Opaque();
                     }
-                    AddColorToRecents(SelectedColor);
+                    else
+                    {
+                        frame.Voxels[index] = SelectedColor;
+                        AddColorToRecents(SelectedColor);
+                    }
                     RenderFrame();
                 }
             }
@@ -349,20 +334,37 @@ namespace LedCubeAnimator.ViewModel
 
         private void AddColorToRecents(Color color)
         {
-            var sameColor = RecentColors.SingleOrDefault(c => c.Color == color);
-            if (sameColor != null)
+            if (RecentColors.Contains(color))
             {
-                RecentColors.Move(RecentColors.IndexOf(sameColor), 0);
+                RecentColors.Remove(color);
+                RecentColors.Insert(0, color);
             }
             else
             {
-                RecentColors.Insert(0, new ColorItem(color, color.ToString()));
+                RecentColors.Insert(0, color);
                 if (RecentColors.Count > 10)
                 {
                     RecentColors.RemoveAt(10);
                 }
             }
-            SelectedRecentColor = RecentColors[0];
+            UpdateDisplayRecentColors();
+            RecentColorIndex = 0;
+        }
+
+        private void UpdateDisplayRecentColors()
+        {
+            DisplayRecentColors.Clear();
+            foreach (var color in RecentColors)
+            {
+                if (ColorMode == ColorMode.RGB)
+                {
+                    DisplayRecentColors.Add(new ColorItem(color, color.ToString()));
+                }
+                else
+                {
+                    DisplayRecentColors.Add(new ColorItem(color.Multiply(_animation.MonoColor), color.GetBrightness().ToString()));
+                }
+            }
         }
 
         private void CreateDefaultAnimation()

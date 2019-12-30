@@ -11,6 +11,7 @@
         <ResourceDictionary>
             <local:EnumToBoolConverter x:Key="EnumToBoolConverter" />
             <local:InverseBoolConverter x:Key="InverseBoolConverter" />
+            <local:ColorToValueConverter x:Key="ColorToValueConverter" />
             <local:ValueConverterGroup x:Key="ValueConverterGroup" />
             <local:IntToDateTimeConverter x:Key="IntToDateTimeConverter" />
             <local:IntToDoubleConverter x:Key="IntToDoubleConverter" />

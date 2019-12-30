@@ -30,5 +30,10 @@ namespace LedCubeAnimator.Model
                 B = color.B
             };
         }
+
+        public static byte GetBrightness(this Color color)
+        {
+            return Math.Max(Math.Max(color.R, color.G), color.B);
+        }
     }
 }

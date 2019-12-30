@@ -82,12 +82,12 @@
                                 </ResourceDictionary.MergedDictionaries>
                             </ResourceDictionary>
                         </Border.Resources>
-                        <Rectangle Fill="{Binding SelectedColor, Converter={StaticResource ColorToSolidColorBrushConverter}}" />
+                        <Rectangle Fill="{Binding DisplayColor, Converter={StaticResource ColorToSolidColorBrushConverter}}" />
                     </Border>
                     <xctk:ByteUpDown DockPanel.Dock="Right"
                                      VerticalAlignment="Center"
                                      Width="44"
-                                     Value="{Binding SelectedBrightness}">
+                                     Value="{Binding SelectedColor, Converter={StaticResource ColorToValueConverter}}">
                     </xctk:ByteUpDown>
                     <Slider VerticalAlignment="Center"
                             Margin="4,6,4,6"
@@ -95,7 +95,7 @@
                             SmallChange="1"
                             LargeChange="10"
                             TickFrequency="1"
-                            Value="{Binding SelectedBrightness}">
+                            Value="{Binding SelectedColor, Converter={StaticResource ColorToValueConverter}}">
                     </Slider>
                 </DockPanel>
             </Border>
@@ -133,8 +133,8 @@
                     <ToggleButton DockPanel.Dock="Right"
                                   Content="Pick"
                                   IsChecked="{Binding ColorPickerTool}" />
-                    <ListBox ItemsSource="{Binding RecentColors}"
-                             SelectedItem="{Binding SelectedRecentColor}">
+                    <ListBox ItemsSource="{Binding DisplayRecentColors}"
+                             SelectedIndex="{Binding RecentColorIndex}">
                         <ListBox.Resources>
                             <ResourceDictionary>
                                 <ResourceDictionary.MergedDictionaries>
