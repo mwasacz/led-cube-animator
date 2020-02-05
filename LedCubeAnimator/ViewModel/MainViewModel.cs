@@ -99,7 +99,6 @@ namespace LedCubeAnimator.ViewModel
                         Groups.RemoveAt(Groups.Count - 1);
                     }
                     RaisePropertyChanged(nameof(Tiles));
-                    RaisePropertyChanged(nameof(StartDate));
                     RaisePropertyChanged(nameof(EndDate));
                     ClampTime();
                 }
@@ -110,9 +109,11 @@ namespace LedCubeAnimator.ViewModel
 
         private void SelectedGroup_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == nameof(GroupViewModel.Start) || e.PropertyName == nameof(GroupViewModel.End))
+            if (e.PropertyName == nameof(GroupViewModel.Start)
+                || e.PropertyName == nameof(GroupViewModel.End)
+                || e.PropertyName == nameof(GroupViewModel.RepeatCount)
+                || e.PropertyName == nameof(GroupViewModel.Reverse))
             {
-                RaisePropertyChanged(nameof(StartDate));
                 RaisePropertyChanged(nameof(EndDate));
                 ClampTime();
             }
@@ -133,7 +134,7 @@ namespace LedCubeAnimator.ViewModel
             }
         }
 
-        public ColorMode ColorMode => _animation.ColorMode;
+        public ColorMode ColorMode => _animation.ColorMode; // ToDo: consider storing brightness as alpha
 
         private Color _selectedColor;
         public Color SelectedColor
@@ -183,9 +184,21 @@ namespace LedCubeAnimator.ViewModel
             }
         }
 
-        public int StartDate => Groups.Last().Start;
+        public int StartDate => 0;
 
-        public int EndDate => Groups.Last().End;
+        public int EndDate
+        {
+            get
+            {
+                var group = Groups.Last();
+                int end = (group.End - group.Start) / group.RepeatCount;
+                if (group.Reverse)
+                {
+                    end /= 2;
+                }
+                return end;
+            }
+        }
 
         private RelayCommand _addFrameCommand;
         public ICommand AddFrameCommand => _addFrameCommand ?? (_addFrameCommand = new RelayCommand(() =>

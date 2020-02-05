@@ -13,7 +13,7 @@ namespace LedCubeAnimator.Model
         public Point3D Offset { get; set; }
         public Color[,,] Voxels { get; set; } = new Color[0, 0, 0];
 
-        public override Color GetVoxel(Point3D point, int time, Func<Point3D, int, Color> getVoxel)
+        public override Color GetVoxel(Point3D point, double time, Func<Point3D, double, Color> getVoxel)
         {
             var points = new Point3D[] {
                 new Point3D(Math.Floor(point.X), Math.Floor(point.Y), Math.Floor(point.Z)),

@@ -12,9 +12,11 @@ namespace LedCubeAnimator.Model
     {
         public Plane Plane { get; set; }
         public double Center { get; set; }
-
-        protected override Matrix3D GetTransformMatrix(double value)
+        
+        public override Color GetVoxel(Point3D point, double time, Func<Point3D, double, Color> getVoxel)
         {
+            double value = Value(time);
+
             double tan = Math.Tan(value * Math.PI / 180);
 
             var matrix = new Matrix3D(
@@ -38,7 +40,7 @@ namespace LedCubeAnimator.Model
                 0,
                 1);
 
-            return matrix;
+            return getVoxel(Transform(point, matrix), time);
         }
     }
 }

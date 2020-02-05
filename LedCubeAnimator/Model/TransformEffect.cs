@@ -14,13 +14,10 @@ namespace LedCubeAnimator.Model
         public double To { get; set; }
         public bool Round { get; set; }
 
-        protected abstract Matrix3D GetTransformMatrix(double value);
+        protected double Value(double time) => From + (To - From) * Fraction(time);
 
-        public override Color GetVoxel(Point3D point, int time, Func<Point3D, int, Color> getVoxel)
+        protected Point3D Transform(Point3D point, Matrix3D matrix)
         {
-            double value = From + (To - From) * (time - Start) / (End - Start);
-
-            var matrix = GetTransformMatrix(value);
             matrix.Invert();
             point = matrix.Transform(point);
 
@@ -29,7 +26,7 @@ namespace LedCubeAnimator.Model
                 point = new Point3D(Math.Floor(point.X + 0.5), Math.Floor(point.Y + 0.5), Math.Floor(point.Z + 0.5));
             }
 
-            return getVoxel(point, time);
+            return point;
         }
     }
 }

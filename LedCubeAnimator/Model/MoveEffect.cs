@@ -12,8 +12,10 @@ namespace LedCubeAnimator.Model
     {
         public Axis Axis { get; set; }
 
-        protected override Matrix3D GetTransformMatrix(double value)
+        public override Color GetVoxel(Point3D point, double time, Func<Point3D, double, Color> getVoxel)
         {
+            double value = Value(time);
+
             var vector = new Vector3D(
                 Axis == Axis.X ? value : 0,
                 Axis == Axis.Y ? value : 0,
@@ -22,7 +24,7 @@ namespace LedCubeAnimator.Model
             var matrix = Matrix3D.Identity;
             matrix.Translate(vector);
 
-            return matrix;
+            return getVoxel(Transform(point, matrix), time);
         }
     }
 }

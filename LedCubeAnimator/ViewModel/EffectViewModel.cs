@@ -14,13 +14,13 @@ namespace LedCubeAnimator.ViewModel
 
         public Effect Effect => (Effect)Tile;
 
-        public Direction Direction
+        public bool Reverse
         {
-            get => Effect.Direction;
+            get => Effect.Reverse;
             set
             {
-                Effect.Direction = value;
-                RaisePropertyChanged(nameof(Direction));
+                Effect.Reverse = value;
+                RaisePropertyChanged(nameof(Reverse));
             }
         }
 

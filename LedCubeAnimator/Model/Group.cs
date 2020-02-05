@@ -13,13 +13,23 @@ namespace LedCubeAnimator.Model
         public List<Tile> Children { get; set; } = new List<Tile>();
         public ColorBlendMode ColorBlendMode { get; set; }
 
-        public override Color GetVoxel(Point3D point, int time, Func<Point3D, int, Color> getVoxel)
+        public override Color GetVoxel(Point3D point, double time, Func<Point3D, double, Color> getVoxel)
         {
-            var children = Children.Where(c => c.Start <= time && c.End >= time).GroupBy(c => c.Hierarchy).OrderBy(g => g.Key).ToArray();
+            time = (End - Start) / RepeatCount * Fraction(time);
+            if (Reverse)
+            {
+                time /= 2;
+            }
+
+            var children = Children
+                .Where(c => c.Start <= time + 0.5 && (c.End > time - 0.5 || IsInPersistEffectMode(c, time)))
+                .GroupBy(c => c.Hierarchy * 2 + (IsInPersistEffectMode(c, time) ? 0 : 1))
+                .OrderByDescending(g => g.Key)
+                .ToArray();
 
             return GetVoxel(point, time, 0);
 
-            Color GetVoxel(Point3D p, int t, int level)
+            Color GetVoxel(Point3D p, double t, int level)
             {
                 if (level == children.Length)
                 {
@@ -42,6 +52,15 @@ namespace LedCubeAnimator.Model
             {
                 return c1.Multiply(c2);
             }
+        }
+
+        private bool IsInPersistEffectMode(Tile tile, double time)
+        {
+            if (tile is Effect effect)
+            {
+                return effect.PersistEffect && effect.End <= time - 0.5;
+            }
+            return false;
         }
     }
 }

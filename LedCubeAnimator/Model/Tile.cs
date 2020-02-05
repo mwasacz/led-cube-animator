@@ -15,6 +15,6 @@ namespace LedCubeAnimator.Model
         public int End { get; set; }
         public int Hierarchy { get; set; }
 
-        public abstract Color GetVoxel(Point3D point, int time, Func<Point3D, int, Color> getVoxel);
+        public abstract Color GetVoxel(Point3D point, double time, Func<Point3D, double, Color> getVoxel);
     }
 }

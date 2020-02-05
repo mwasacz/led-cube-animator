@@ -10,8 +10,6 @@ namespace LedCubeAnimator.Model
 {
     public enum ColorMode { Mono, MonoBrightness, RGB }
 
-    public enum Direction { Fwd, Bwd, FwdBwd, BwdFwd }
-
     public enum TimeInterpolation { Linear, Accelerate, Decelerate, Sine }
 
     public enum ColorBlendMode { Add, Multiply }
