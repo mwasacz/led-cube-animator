@@ -10,7 +10,7 @@ namespace LedCubeAnimator.Model
 {
     public static class Renderer
     {
-        public static Color[,,] Render(Animation animation, int time)
+        public static Color[,,] Render(Animation animation, int time, bool preview)
         {
             int size = animation.Size;
             var voxels = new Color[size, size, size];
@@ -21,7 +21,7 @@ namespace LedCubeAnimator.Model
                     for (int z = 0; z < size; z++)
                     {
                         var color = animation.MainGroup.GetVoxel(new Point3D(x, y, z), time, (p, t) => Colors.Black);
-                        if (animation.ColorMode != ColorMode.RGB)
+                        if (preview && animation.ColorMode != ColorMode.RGB)
                         {
                             color = color.Multiply(animation.MonoColor);
                         }

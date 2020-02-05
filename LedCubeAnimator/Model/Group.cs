@@ -46,7 +46,7 @@ namespace LedCubeAnimator.Model
         {
             if (ColorBlendMode == ColorBlendMode.Add)
             {
-                return c1 + c2;
+                return c1.Add(c2);
             }
             else
             {

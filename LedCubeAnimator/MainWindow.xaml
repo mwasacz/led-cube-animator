@@ -27,6 +27,11 @@
                 <MenuItem Header="Save as..."
                           Command="{Binding SaveAsCommand}" />
                 <Separator />
+                <MenuItem Header="Export">
+                    <MenuItem Header="MW LED Cube 4x4x4"
+                              Command="{Binding ExportMWCommand}" />
+                </MenuItem>
+                <Separator />
                 <MenuItem Header="Exit"
                           Click="Exit_Click" />
             </MenuItem>

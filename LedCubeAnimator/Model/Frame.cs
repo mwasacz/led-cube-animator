@@ -26,19 +26,19 @@ namespace LedCubeAnimator.Model
                 new Point3D(Math.Ceiling(point.X), Math.Ceiling(point.Y), Math.Ceiling(point.Z))
             };
 
-            float weightSum = 0;
+            double weightSum = 0;
             Color color = new Color();
 
             foreach (var p in points.Distinct().Where(IsInCube))
             {
-                float weight = (float)((1 - Math.Abs(p.X - point.X)) * (1 - Math.Abs(p.Y - point.Y)) * (1 - Math.Abs(p.Z - point.Z))); // ToDo: do not multiply alpha, multiply by double
+                double weight = (1 - Math.Abs(p.X - point.X)) * (1 - Math.Abs(p.Y - point.Y)) * (1 - Math.Abs(p.Z - point.Z));
                 weightSum += weight;
-                color += Color.Multiply(GetSingleVoxel(p), weight);
+                color = color.Add(GetSingleVoxel(p).Multiply(weight));
             }
 
             if (!IsInCube(point))
             {
-                color += Color.Multiply(getVoxel(point, time), 1 - weightSum);
+                color = color.Add(getVoxel(point, time).Multiply(1 - weightSum));
             }
 
             return color.Opaque(); // ToDo: is Opaque necessary ?

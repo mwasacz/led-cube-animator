@@ -203,7 +203,8 @@ namespace LedCubeAnimator.ViewModel
         private RelayCommand _addFrameCommand;
         public ICommand AddFrameCommand => _addFrameCommand ?? (_addFrameCommand = new RelayCommand(() =>
         {
-            var frame = new FrameViewModel(new Frame { Name = "Frame", Voxels = new Color[4, 4, 4] });
+            var frame = new FrameViewModel(new Frame { Name = "Frame" });
+            frame.To = new Point3D(_animation.Size, _animation.Size, _animation.Size);
             Tiles.Add(frame);
             SelectedTile = frame;
         }));
@@ -303,14 +304,14 @@ namespace LedCubeAnimator.ViewModel
 
                 if (ColorPickerTool)
                 {
-                    SelectedColor = frame.Voxels[index].Opaque();
+                    SelectedColor = frame.Voxels[index];//.Opaque();
                     ColorPickerTool = false;
                 }
                 else
                 {
                     if (_animation.ColorMode == ColorMode.Mono)
                     {
-                        frame.Voxels[index] = (Colors.White - frame.Voxels[index]).Opaque();
+                        frame.Voxels[index] = frame.Voxels[index] == Colors.Black ? Colors.White : Colors.Black;
                     }
                     else
                     {
@@ -342,7 +343,7 @@ namespace LedCubeAnimator.ViewModel
 
         private void RenderFrame()
         {
-            Frame = Renderer.Render(_animation.Animation, Time);
+            Frame = Renderer.Render(_animation.Animation, Time, true);
         }
 
         private void AddColorToRecents(Color color)
@@ -476,6 +477,19 @@ namespace LedCubeAnimator.ViewModel
             _filePath = dialog.FileName;
 
             FileReaderWriter.Save(_filePath, _animation.Animation);
+        }));
+
+        private RelayCommand _exportMWCommand;
+        public ICommand ExportMWCommand => _exportMWCommand ?? (_exportMWCommand = new RelayCommand(() =>
+        {
+            var dialog = new SaveFileDialog();
+            dialog.Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*";
+            if (dialog.ShowDialog() != true)
+            {
+                return;
+            }
+
+            Exporter.Export(dialog.FileName, _animation.Animation);
         }));
     }
 }
