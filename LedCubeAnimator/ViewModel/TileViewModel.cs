@@ -2,12 +2,15 @@
 using LedCubeAnimator.Model;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 
 namespace LedCubeAnimator.ViewModel
 {
+    [CategoryOrder("Tile", 0)]
     public abstract class TileViewModel : ViewModelBase
     {
         public TileViewModel(Tile tile)
@@ -17,6 +20,8 @@ namespace LedCubeAnimator.ViewModel
 
         public Tile Tile { get; }
 
+        [Category("Tile")]
+        [PropertyOrder(0)]
         public string Name
         {
             get => Tile.Name;
@@ -27,6 +32,8 @@ namespace LedCubeAnimator.ViewModel
             }
         }
 
+        [Category("Tile")]
+        [PropertyOrder(1)]
         public int Start
         {
             get => Tile.Start;//new DateTime(Tile.Start + 1);
@@ -37,6 +44,8 @@ namespace LedCubeAnimator.ViewModel
             }
         }
 
+        [Category("Tile")]
+        [PropertyOrder(2)]
         public int End
         {
             get => Tile.End;//new DateTime(Tile.Start + Tile.Duration + 1);
@@ -47,6 +56,8 @@ namespace LedCubeAnimator.ViewModel
             }
         }
 
+        [Category("Tile")]
+        [PropertyOrder(3)]
         public int Hierarchy
         {
             get => Tile.Hierarchy;

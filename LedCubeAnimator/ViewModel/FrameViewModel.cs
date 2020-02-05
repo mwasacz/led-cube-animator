@@ -4,14 +4,17 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
+using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 
 namespace LedCubeAnimator.ViewModel
 {
+    [CategoryOrder("Frame", 1)]
     public class FrameViewModel : TileViewModel
     {
         public FrameViewModel(Frame frame) : base(frame)
@@ -23,6 +26,8 @@ namespace LedCubeAnimator.ViewModel
 
         public Frame Frame => (Frame)Tile;
 
+        [Category("Frame")]
+        [PropertyOrder(1)]
         public Point3D From
         {
             get => Frame.Offset;
@@ -34,6 +39,8 @@ namespace LedCubeAnimator.ViewModel
             }
         }
 
+        [Category("Frame")]
+        [PropertyOrder(2)]
         public Point3D To
         {
             get => Frame.Offset + new Vector3D(Frame.Voxels.GetLength(0) - 1, Frame.Voxels.GetLength(1) - 1, Frame.Voxels.GetLength(2) - 1);
@@ -64,6 +71,8 @@ namespace LedCubeAnimator.ViewModel
             }
         }
 
+        [Category("Frame")]
+        [PropertyOrder(0)]
         public ObservableCollection<Color> Voxels { get; } = new ObservableCollection<Color>();
 
         private void Voxels_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)

@@ -3,12 +3,15 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 
 namespace LedCubeAnimator.ViewModel
 {
+    [CategoryOrder("Group", 2)]
     public class GroupViewModel : EffectViewModel
     {
         public GroupViewModel(Group group) : base(group)
@@ -20,6 +23,8 @@ namespace LedCubeAnimator.ViewModel
 
         public Group Group => (Group)Effect;
 
+        [Category("Group")]
+        [PropertyOrder(0)]
         public ObservableCollection<TileViewModel> Children { get; }
 
         private void Children_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -49,6 +54,8 @@ namespace LedCubeAnimator.ViewModel
             }
         }
 
+        [Category("Group")]
+        [PropertyOrder(1)]
         public ColorBlendMode ColorBlendMode
         {
             get => Group.ColorBlendMode;
