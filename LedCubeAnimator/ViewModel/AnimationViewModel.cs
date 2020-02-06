@@ -14,16 +14,21 @@ namespace LedCubeAnimator.ViewModel
         public AnimationViewModel(Animation animation)
         {
             Animation = animation;
+
+            _mainGroup = new GroupViewModel(animation.MainGroup);
         }
 
         public Animation Animation { get; }
 
-        public Group MainGroup
+        private GroupViewModel _mainGroup;
+
+        public GroupViewModel MainGroup
         {
-            get => Animation.MainGroup;
+            get => _mainGroup;
             set
             {
-                Animation.MainGroup = value;
+                _mainGroup = value;
+                Animation.MainGroup = _mainGroup.Group;
                 RaisePropertyChanged(nameof(MainGroup));
             }
         }
@@ -44,7 +49,44 @@ namespace LedCubeAnimator.ViewModel
             set
             {
                 Animation.ColorMode = value;
+                if (Animation.ColorMode != ColorMode.RGB)
+                {
+                    SetGroupColorMode(MainGroup, Animation.ColorMode);
+                }
                 RaisePropertyChanged(nameof(ColorMode));
+            }
+        }
+
+        public void SetGroupColorMode(GroupViewModel group, ColorMode colorMode)
+        {
+            foreach (var t in group.Children)
+            {
+                switch (t)
+                {
+                    case FrameViewModel fr:
+                        for (int i = 0; i < fr.Voxels.Count; i++)
+                        {
+                            Color oldColor = fr.Voxels[i];
+                            Color newColor = default;
+                            switch (colorMode)
+                            {
+                                case ColorMode.Mono:
+                                    newColor = oldColor.GetBrightness() > 127 ? Colors.White : Colors.Black;
+                                    break;
+                                case ColorMode.MonoBrightness:
+                                    newColor = Colors.White.Multiply(oldColor.GetBrightness()).Opaque();
+                                    break;
+                            }
+                            if (newColor != oldColor)
+                            {
+                                fr.Voxels[i] = newColor;
+                            }
+                        }
+                        break;
+                    case GroupViewModel gr:
+                        SetGroupColorMode(gr, colorMode);
+                        break;
+                }
             }
         }
 

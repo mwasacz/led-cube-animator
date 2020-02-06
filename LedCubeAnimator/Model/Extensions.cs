@@ -42,6 +42,17 @@ namespace LedCubeAnimator.Model
             };
         }
 
+        public static Color Multiply(this Color color1, byte brightness)
+        {
+            return new Color
+            {
+                A = (byte)(color1.A * brightness / 255),
+                R = (byte)(color1.R * brightness / 255),
+                G = (byte)(color1.G * brightness / 255),
+                B = (byte)(color1.B * brightness / 255)
+            };
+        }
+
         public static Color Multiply(this Color color, double brightness)
         {
             return new Color

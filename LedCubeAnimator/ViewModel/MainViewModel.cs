@@ -204,7 +204,7 @@ namespace LedCubeAnimator.ViewModel
         public ICommand AddFrameCommand => _addFrameCommand ?? (_addFrameCommand = new RelayCommand(() =>
         {
             var frame = new FrameViewModel(new Frame { Name = "Frame" });
-            frame.To = new Point3D(_animation.Size, _animation.Size, _animation.Size);
+            frame.To = new Point3D(_animation.Size - 1, _animation.Size - 1, _animation.Size - 1);
             Tiles.Add(frame);
             SelectedTile = frame;
         }));
@@ -389,12 +389,11 @@ namespace LedCubeAnimator.ViewModel
                 _animation.PropertyChanged -= Animation_PropertyChanged;
             }
             _animation = new AnimationViewModel(new Animation { MainGroup = g, Size = 4, MonoColor = Colors.White });
-            RaisePropertyChanged(nameof(ColorMode));
             _animation.PropertyChanged += Animation_PropertyChanged;
-            var group = new GroupViewModel(g);
+            RaisePropertyChanged(nameof(ColorMode));
             Groups.Clear();
-            Groups.Add(group);
-            SelectedGroup = group;
+            Groups.Add(_animation.MainGroup);
+            SelectedGroup = _animation.MainGroup;
         }
 
         private string _filePath;
@@ -445,10 +444,9 @@ namespace LedCubeAnimator.ViewModel
             _animation = new AnimationViewModel(a);
             _animation.PropertyChanged += Animation_PropertyChanged;
             RaisePropertyChanged(nameof(ColorMode));
-            var group = new GroupViewModel(_animation.MainGroup);
             Groups.Clear();
-            Groups.Add(group);
-            SelectedGroup = group;
+            Groups.Add(_animation.MainGroup);
+            SelectedGroup = _animation.MainGroup;
         }));
 
         private RelayCommand _saveCommand;
