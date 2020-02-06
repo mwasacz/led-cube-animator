@@ -270,7 +270,8 @@ namespace LedCubeAnimator.ViewModel
             {
                 Size = _animation.Size,
                 ColorMode = _animation.ColorMode,
-                MonoColor = _animation.MonoColor
+                MonoColor = _animation.MonoColor,
+                FrameDuration = _animation.FrameDuration
             };
             var dialog = new CubeSettingsDialog(viewModel);
 
@@ -279,6 +280,7 @@ namespace LedCubeAnimator.ViewModel
                 _animation.Size = viewModel.Size;
                 _animation.ColorMode = viewModel.ColorMode;
                 _animation.MonoColor = viewModel.MonoColor;
+                _animation.FrameDuration = viewModel.FrameDuration;
             }
         }));
 
@@ -388,7 +390,7 @@ namespace LedCubeAnimator.ViewModel
             {
                 _animation.PropertyChanged -= Animation_PropertyChanged;
             }
-            _animation = new AnimationViewModel(new Animation { MainGroup = g, Size = 4, MonoColor = Colors.White });
+            _animation = new AnimationViewModel(new Animation { MainGroup = g, Size = 4, MonoColor = Colors.White, FrameDuration = 10 });
             _animation.PropertyChanged += Animation_PropertyChanged;
             RaisePropertyChanged(nameof(ColorMode));
             Groups.Clear();

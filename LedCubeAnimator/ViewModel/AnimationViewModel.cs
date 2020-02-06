@@ -99,5 +99,15 @@ namespace LedCubeAnimator.ViewModel
                 RaisePropertyChanged(nameof(MonoColor));
             }
         }
+
+        public int FrameDuration
+        {
+            get => Animation.FrameDuration;
+            set
+            {
+                Animation.FrameDuration = value;
+                RaisePropertyChanged(nameof(FrameDuration));
+            }
+        }
     }
 }

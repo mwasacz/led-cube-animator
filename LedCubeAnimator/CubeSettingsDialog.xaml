@@ -26,6 +26,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Label Grid.Column="0"
                Grid.Row="0"
@@ -80,8 +81,18 @@
                 </Binding>
             </xctk:ColorPicker.IsEnabled>
         </xctk:ColorPicker>
+        <Label Grid.Column="0"
+               Grid.Row="5"
+               Margin="10,0,50,10"
+               Content="Frame duration (in ms)" />
+        <xctk:IntegerUpDown Grid.Column="1"
+                            Grid.Row="5"
+                            Margin="0,0,10,10"
+                            Minimum="1"
+                            Maximum="1000"
+                            Value="{Binding FrameDuration}" />
         <StackPanel Grid.Column="0"
-                    Grid.Row="5"
+                    Grid.Row="6"
                     Grid.ColumnSpan="2"
                     HorizontalAlignment="Right"
                     Margin="10,0,10,10"
