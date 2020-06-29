@@ -53,7 +53,7 @@ namespace LedCubeAnimator.ViewModel
 
         private Animation _animation;
 
-        public ObservableCollection<TileViewModel> Tiles => Groups.Last().ChildrenCollection;
+        public ObservableCollection<TileViewModel> Tiles { get; } = new ObservableCollection<TileViewModel>();
 
         public ObservableCollection<GroupViewModel> Groups { get; } = new ObservableCollection<GroupViewModel>();
 
@@ -63,25 +63,22 @@ namespace LedCubeAnimator.ViewModel
             get => _selectedTile;
             set
             {
-                if (_selectedTile is GroupViewModel g)
+                if (_selectedTile != value)
                 {
-                    g.EditChildren -= Group_EditChildren;
-                }
+                    if (_selectedTile is GroupViewModel g)
+                    {
+                        g.EditChildren -= Group_EditChildren;
+                    }
 
-                _selectedTile = value;
-                if (_selectedGroup != null)
-                {
-                    _selectedGroup.PropertyChanged -= SelectedGroup_PropertyChanged;
-                }
-                _selectedGroup = null;
+                    _selectedTile = value;
+                    Set(ref _selectedGroup, null, nameof(SelectedGroup));
+                    RaisePropertyChanged(nameof(SelectedTile));
+                    RaisePropertyChanged(nameof(SelectedTileOrGroup));
 
-                RaisePropertyChanged(nameof(SelectedTile));
-                RaisePropertyChanged(nameof(SelectedGroup));
-                RaisePropertyChanged(nameof(SelectedTileOrGroup));
-
-                if (_selectedTile is GroupViewModel group)
-                {
-                    group.EditChildren += Group_EditChildren;
+                    if (_selectedTile is GroupViewModel group)
+                    {
+                        group.EditChildren += Group_EditChildren;
+                    }
                 }
             }
         }
@@ -92,56 +89,76 @@ namespace LedCubeAnimator.ViewModel
             get => _selectedGroup;
             set
             {
-                if (_selectedTile is GroupViewModel g)
+                if (_selectedGroup != value)
                 {
-                    g.EditChildren -= Group_EditChildren;
-                }
-
-                _selectedTile = null;
-                if (_selectedGroup != null)
-                {
-                    _selectedGroup.PropertyChanged -= SelectedGroup_PropertyChanged;
-                }
-                _selectedGroup = value;
-                if (_selectedGroup != null)
-                {
-                    _selectedGroup.PropertyChanged += SelectedGroup_PropertyChanged;
-                }
-
-                RaisePropertyChanged(nameof(SelectedTile));
-                RaisePropertyChanged(nameof(SelectedGroup));
-                RaisePropertyChanged(nameof(SelectedTileOrGroup));
-
-                if (_selectedGroup != null)
-                {
-                    while (_selectedGroup != Groups.Last())
+                    if (_selectedTile is GroupViewModel g)
                     {
-                        Groups.RemoveAt(Groups.Count - 1);
+                        g.EditChildren -= Group_EditChildren;
                     }
-                    RaisePropertyChanged(nameof(Tiles));
-                    RaisePropertyChanged(nameof(EndDate));
+
+                    _selectedGroup = value;
+                    Set(ref _selectedTile, null, nameof(SelectedTile));
+                    RaisePropertyChanged(nameof(SelectedGroup));
+                    RaisePropertyChanged(nameof(SelectedTileOrGroup));
+
+                    if (_selectedGroup != null)
+                    {
+                        while (_selectedGroup != Groups.Last())
+                        {
+                            Groups.RemoveAt(Groups.Count - 1);
+                        }
+
+                        UpdateTiles(_selectedGroup.Group);
+                    }
                 }
             }
         }
 
         public TileViewModel SelectedTileOrGroup => SelectedTile ?? SelectedGroup;
 
-        private void SelectedGroup_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == nameof(GroupViewModel.Start)
-                || e.PropertyName == nameof(GroupViewModel.End)
-                || e.PropertyName == nameof(GroupViewModel.RepeatCount)
-                || e.PropertyName == nameof(GroupViewModel.Reverse))
-            {
-                RaisePropertyChanged(nameof(EndDate));
-            }
-        }
-
         private void Group_EditChildren(object sender, EventArgs e)
         {
             var group = (GroupViewModel)SelectedTile;
             Groups.Add(group);
             SelectedGroup = group;
+        }
+
+        private void UpdateTiles(Group group)
+        {
+            if (!Tiles.Select(t => t.Tile).SequenceEqual(group.Children))
+            {
+                Tiles.Clear();
+                foreach (var t in group.Children)
+                {
+                    Tiles.Add(CreateViewModel(t));
+                }
+            }
+
+            Time = 0;
+            RaisePropertyChanged(nameof(EndDate)); // ToDo: raise only if changed
+        }
+
+        private TileViewModel CreateViewModel(Tile tile)
+        {
+            switch (tile)
+            {
+                case Frame frame:
+                    return new FrameViewModel(frame);
+                case Group group:
+                    return new GroupViewModel(group);
+                case MoveEffect moveEffect:
+                    return new MoveEffectViewModel(moveEffect);
+                case RotateEffect rotateEffect:
+                    return new RotateEffectViewModel(rotateEffect);
+                case ScaleEffect scaleEffect:
+                    return new ScaleEffectViewModel(scaleEffect);
+                case ShearEffect shearEffect:
+                    return new ShearEffectViewModel(shearEffect);
+                case LinearDelayEffect linearDelayEffect:
+                    return new LinearDelayEffectViewModel(linearDelayEffect);
+                default:
+                    throw new Exception(); // ToDo
+            }
         }
 
         // ToDo: consider storing brightness as alpha

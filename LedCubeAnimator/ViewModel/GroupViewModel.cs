@@ -16,12 +16,7 @@ namespace LedCubeAnimator.ViewModel
     [CategoryOrder("Group", 2)]
     public class GroupViewModel : EffectViewModel
     {
-        public GroupViewModel(Group group) : base(group)
-        {
-            ChildrenCollection = new ObservableCollection<TileViewModel>(group.Children.Select(CreateViewModel));
-
-            ChildrenCollection.CollectionChanged += ChildrenCollection_CollectionChanged;
-        }
+        public GroupViewModel(Group group) : base(group) { }
 
         public Group Group => (Group)Effect;
 
@@ -32,37 +27,6 @@ namespace LedCubeAnimator.ViewModel
         public ICommand Children => _editChildren ?? (_editChildren = new RelayCommand(() => EditChildren?.Invoke(this, EventArgs.Empty))); // ToDo
 
         public event EventHandler EditChildren;
-
-        public ObservableCollection<TileViewModel> ChildrenCollection { get; }
-
-        private void ChildrenCollection_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            Group.Children.Clear();
-            Group.Children.AddRange(ChildrenCollection.Select(c => c.Tile));
-        }
-
-        private TileViewModel CreateViewModel(Tile tile)
-        {
-            switch (tile)
-            {
-                case Frame frame:
-                    return new FrameViewModel(frame);
-                case Group group:
-                    return new GroupViewModel(group);
-                case MoveEffect moveEffect:
-                    return new MoveEffectViewModel(moveEffect);
-                case RotateEffect rotateEffect:
-                    return new RotateEffectViewModel(rotateEffect);
-                case ScaleEffect scaleEffect:
-                    return new ScaleEffectViewModel(scaleEffect);
-                case ShearEffect shearEffect:
-                    return new ShearEffectViewModel(shearEffect);
-                case LinearDelayEffect linearDelayEffect:
-                    return new LinearDelayEffectViewModel(linearDelayEffect);
-                default:
-                    throw new Exception(); // ToDo
-            }
-        }
 
         [Category("Group")]
         [PropertyOrder(1)]
