@@ -1,4 +1,5 @@
-﻿using LedCubeAnimator.Model;
+﻿using GalaSoft.MvvmLight.Command;
+using LedCubeAnimator.Model;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -7,6 +8,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 
 namespace LedCubeAnimator.ViewModel
@@ -16,21 +18,27 @@ namespace LedCubeAnimator.ViewModel
     {
         public GroupViewModel(Group group) : base(group)
         {
-            Children = new ObservableCollection<TileViewModel>(group.Children.Select(CreateViewModel));
+            ChildrenCollection = new ObservableCollection<TileViewModel>(group.Children.Select(CreateViewModel));
 
-            Children.CollectionChanged += Children_CollectionChanged;
+            ChildrenCollection.CollectionChanged += ChildrenCollection_CollectionChanged;
         }
 
         public Group Group => (Group)Effect;
 
+        private RelayCommand _editChildren;
+
         [Category("Group")]
         [PropertyOrder(0)]
-        public ObservableCollection<TileViewModel> Children { get; }
+        public ICommand Children => _editChildren ?? (_editChildren = new RelayCommand(() => EditChildren?.Invoke(this, EventArgs.Empty))); // ToDo
 
-        private void Children_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        public event EventHandler EditChildren;
+
+        public ObservableCollection<TileViewModel> ChildrenCollection { get; }
+
+        private void ChildrenCollection_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             Group.Children.Clear();
-            Group.Children.AddRange(Children.Select(c => c.Tile));
+            Group.Children.AddRange(ChildrenCollection.Select(c => c.Tile));
         }
 
         private TileViewModel CreateViewModel(Tile tile)

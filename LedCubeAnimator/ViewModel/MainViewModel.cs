@@ -53,7 +53,7 @@ namespace LedCubeAnimator.ViewModel
 
         private Animation _animation;
 
-        public ObservableCollection<TileViewModel> Tiles => Groups.Last().Children;
+        public ObservableCollection<TileViewModel> Tiles => Groups.Last().ChildrenCollection;
 
         public ObservableCollection<GroupViewModel> Groups { get; } = new ObservableCollection<GroupViewModel>();
 
@@ -63,6 +63,11 @@ namespace LedCubeAnimator.ViewModel
             get => _selectedTile;
             set
             {
+                if (_selectedTile is GroupViewModel g)
+                {
+                    g.EditChildren -= Group_EditChildren;
+                }
+
                 _selectedTile = value;
                 if (_selectedGroup != null)
                 {
@@ -73,6 +78,11 @@ namespace LedCubeAnimator.ViewModel
                 RaisePropertyChanged(nameof(SelectedTile));
                 RaisePropertyChanged(nameof(SelectedGroup));
                 RaisePropertyChanged(nameof(SelectedTileOrGroup));
+
+                if (_selectedTile is GroupViewModel group)
+                {
+                    group.EditChildren += Group_EditChildren;
+                }
             }
         }
 
@@ -82,6 +92,11 @@ namespace LedCubeAnimator.ViewModel
             get => _selectedGroup;
             set
             {
+                if (_selectedTile is GroupViewModel g)
+                {
+                    g.EditChildren -= Group_EditChildren;
+                }
+
                 _selectedTile = null;
                 if (_selectedGroup != null)
                 {
@@ -122,19 +137,11 @@ namespace LedCubeAnimator.ViewModel
             }
         }
 
-        private string _selectedProperty;
-        public string SelectedProperty
+        private void Group_EditChildren(object sender, EventArgs e)
         {
-            get => _selectedProperty;
-            set
-            {
-                _selectedProperty = value;
-                if (_selectedProperty == "Children" && SelectedTile is GroupViewModel group)
-                {
-                    Groups.Add(group);
-                    SelectedGroup = group;
-                }
-            }
+            var group = (GroupViewModel)SelectedTile;
+            Groups.Add(group);
+            SelectedGroup = group;
         }
 
         // ToDo: consider storing brightness as alpha

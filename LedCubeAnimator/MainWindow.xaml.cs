@@ -53,10 +53,5 @@ namespace LedCubeAnimator
                 }
             }
         }
-
-        private void PropertyGrid_SelectedPropertyItemChanged(object sender, RoutedPropertyChangedEventArgs<Xceed.Wpf.Toolkit.PropertyGrid.PropertyItemBase> e)
-        {
-            _viewModel.SelectedProperty = e.NewValue?.DisplayName;
-        }
     }
 }

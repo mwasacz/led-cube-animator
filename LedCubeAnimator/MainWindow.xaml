@@ -156,7 +156,6 @@
             </Border>
             <xctk:PropertyGrid DockPanel.Dock="Top"
                                SelectedObject="{Binding SelectedTileOrGroup}"
-                               SelectedPropertyItemChanged="PropertyGrid_SelectedPropertyItemChanged"
                                AutoGenerateProperties="False"
                                ShowSortOptions="False"
                                ShowSearchBox="False"
@@ -180,6 +179,16 @@
                     <xctk:PropertyDefinition TargetProperties="Plane" />
                     <xctk:PropertyDefinition TargetProperties="Center" />
                 </xctk:PropertyGrid.PropertyDefinitions>
+                <xctk:PropertyGrid.EditorDefinitions>
+                    <xctk:EditorTemplateDefinition TargetProperties="{x:Type ICommand}">
+                        <xctk:EditorTemplateDefinition.EditingTemplate>
+                            <DataTemplate>
+                                <Button Content="Edit"
+                                        Command="{Binding Value}" />
+                            </DataTemplate>
+                        </xctk:EditorTemplateDefinition.EditingTemplate>
+                    </xctk:EditorTemplateDefinition>
+                </xctk:PropertyGrid.EditorDefinitions>
             </xctk:PropertyGrid>
             <Button DockPanel.Dock="Top"
                     Content="Delete tile"
