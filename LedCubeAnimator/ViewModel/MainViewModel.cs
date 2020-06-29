@@ -224,72 +224,44 @@ namespace LedCubeAnimator.ViewModel
 
         private RelayCommand _addFrameCommand;
         public ICommand AddFrameCommand => _addFrameCommand ?? (_addFrameCommand = new RelayCommand(() =>
-        {
-            var frame = new FrameViewModel(new Frame { Name = "Frame" });
-            frame.To = new Point3D(_animation.Size - 1, _animation.Size - 1, _animation.Size - 1);
-            Tiles.Add(frame);
-            SelectedTile = frame;
-        }));
+            AddTile(new Frame { Name = "Frame", Voxels = new Color[_animation.Size, _animation.Size, _animation.Size] })));
 
         private RelayCommand _addGroupCommand;
-        public ICommand AddGroupCommand => _addGroupCommand ?? (_addGroupCommand = new RelayCommand(() =>
-        {
-            var group = new GroupViewModel(new Group { Name = "Group" });
-            Tiles.Add(group);
-            SelectedTile = group;
-        }));
+        public ICommand AddGroupCommand => _addGroupCommand ?? (_addGroupCommand = new RelayCommand(() => AddTile(new Group { Name = "Group" })));
 
         private RelayCommand _addMoveEffectCommand;
-        public ICommand AddMoveEffectCommand => _addMoveEffectCommand ?? (_addMoveEffectCommand = new RelayCommand(() =>
-        {
-            var effect = new MoveEffectViewModel(new MoveEffect { Name = "MoveEffect" });
-            Tiles.Add(effect);
-            SelectedTile = effect;
-        }));
+        public ICommand AddMoveEffectCommand => _addMoveEffectCommand ?? (_addMoveEffectCommand = new RelayCommand(() => AddTile(new MoveEffect { Name = "MoveEffect" })));
 
         private RelayCommand _addRotateEffectCommand;
-        public ICommand AddRotateEffectCommand => _addRotateEffectCommand ?? (_addRotateEffectCommand = new RelayCommand(() =>
-        {
-            var effect = new RotateEffectViewModel(new RotateEffect { Name = "RotateEffect" });
-            Tiles.Add(effect);
-            SelectedTile = effect;
-        }));
+        public ICommand AddRotateEffectCommand => _addRotateEffectCommand ?? (_addRotateEffectCommand = new RelayCommand(() => AddTile(new RotateEffect { Name = "RotateEffect" })));
 
         private RelayCommand _addScaleEffectCommand;
-        public ICommand AddScaleEffectCommand => _addScaleEffectCommand ?? (_addScaleEffectCommand = new RelayCommand(() =>
-        {
-            var effect = new ScaleEffectViewModel(new ScaleEffect { Name = "ScaleEffect" });
-            Tiles.Add(effect);
-            SelectedTile = effect;
-        }));
+        public ICommand AddScaleEffectCommand => _addScaleEffectCommand ?? (_addScaleEffectCommand = new RelayCommand(() => AddTile(new ScaleEffect { Name = "ScaleEffect" })));
 
         private RelayCommand _addShearEffectCommand;
-        public ICommand AddShearEffectCommand => _addShearEffectCommand ?? (_addShearEffectCommand = new RelayCommand(() =>
-        {
-            var effect = new ShearEffectViewModel(new ShearEffect { Name = "ShearEffect" });
-            Tiles.Add(effect);
-            SelectedTile = effect;
-        }));
+        public ICommand AddShearEffectCommand => _addShearEffectCommand ?? (_addShearEffectCommand = new RelayCommand(() => AddTile(new ShearEffect { Name = "ShearEffect" })));
 
         private RelayCommand _addLinearDelayEffectCommand;
-        public ICommand AddLinearDelayEffectCommand => _addLinearDelayEffectCommand ?? (_addLinearDelayEffectCommand = new RelayCommand(() =>
-        {
-            var effect = new LinearDelayEffectViewModel(new LinearDelayEffect { Name = "LinearDelayEffect" });
-            Tiles.Add(effect);
-            SelectedTile = effect;
-        }));
+        public ICommand AddLinearDelayEffectCommand => _addLinearDelayEffectCommand ?? (_addLinearDelayEffectCommand = new RelayCommand(() => AddTile(new LinearDelayEffect { Name = "LinearDelayEffect" })));
 
         private RelayCommand _removeTileCommand;
         public ICommand RemoveTileCommand => _removeTileCommand ?? (_removeTileCommand = new RelayCommand(() =>
         {
             if (SelectedTile != null)
             {
-                Tiles.Remove(SelectedTile);
-                SelectedGroup = Groups.Last();
+                var tile = SelectedTile;
+                var parent = Groups.Last();
+                SelectedGroup = parent;
+                parent.Group.Children.Remove(tile.Tile);
+                UpdateTiles(parent.Group);
             }
             else if (SelectedGroup != null && Groups.Count > 1)
             {
-                SelectedGroup = Groups[Groups.Count - 2];
+                var group = Groups.Last();
+                var parent = Groups[Groups.Count - 2];
+                SelectedGroup = parent;
+                parent.Group.Children.Remove(group.Group);
+                UpdateTiles(parent.Group);
             }
         }));
 
@@ -405,6 +377,13 @@ namespace LedCubeAnimator.ViewModel
                     RecentColors.RemoveAt(10);
                 }
             }
+        }
+
+        private void AddTile(Tile tile)
+        {
+            var group = Groups.Last().Group;
+            group.Children.Add(tile);
+            UpdateTiles(group);
         }
 
         private string _filePath;
