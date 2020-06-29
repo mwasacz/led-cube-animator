@@ -24,29 +24,33 @@ namespace LedCubeAnimator.ViewModel
         public MainViewModel()
         {
             CreateDefaultAnimation();
-            AddColorToRecents(Colors.Black);
         }
 
-        private AnimationViewModel _animation;
-
-        private void Animation_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void CreateDefaultAnimation()
         {
-            if (e.PropertyName == nameof(AnimationViewModel.ColorMode))
-            {
-                RaisePropertyChanged(nameof(ColorMode));
-                if (ColorMode == ColorMode.Mono)
-                {
-                    ColorPickerTool = false;
-                }
-                UpdateDisplayRecentColors();
-            }
-            else if (e.PropertyName == nameof(AnimationViewModel.MonoColor))
-            {
-                RaisePropertyChanged(nameof(DisplayColor));
-                UpdateDisplayRecentColors();
-                RenderFrame();
-            }
+            var group = new Group { Name = "MainGroup" };
+            _animation = new Animation { MainGroup = group, Size = 4, MonoColor = Colors.White };
+            CreateDefaultViewModel();
         }
+
+        private void CreateDefaultViewModel()
+        {
+            var group = new GroupViewModel(_animation.MainGroup);
+            Groups.Clear();
+            Groups.Add(group);
+            SelectedGroup = group;
+
+            RaisePropertyChanged(nameof(ColorMode)); // ToDo: raise only if changed
+
+            SelectedColor = Colors.Black;
+            RecentColors.Clear();
+            AddColorToRecents(Colors.Black);
+            ColorPickerTool = false;
+
+            RenderFrame();
+        }
+
+        private Animation _animation;
 
         public ObservableCollection<TileViewModel> Tiles => Groups.Last().Children;
 
@@ -134,7 +138,8 @@ namespace LedCubeAnimator.ViewModel
             }
         }
 
-        public ColorMode ColorMode => _animation.ColorMode; // ToDo: consider storing brightness as alpha
+        // ToDo: consider storing brightness as alpha
+        public ColorMode ColorMode => _animation.ColorMode;
 
         private Color _selectedColor;
         public Color SelectedColor
@@ -281,6 +286,15 @@ namespace LedCubeAnimator.ViewModel
                 _animation.ColorMode = viewModel.ColorMode;
                 _animation.MonoColor = viewModel.MonoColor;
                 _animation.FrameDuration = viewModel.FrameDuration;
+
+                RaisePropertyChanged(nameof(ColorMode));
+                RaisePropertyChanged(nameof(DisplayColor));
+                if (ColorMode == ColorMode.Mono)
+                {
+                    ColorPickerTool = false;
+                }
+                UpdateDisplayRecentColors();
+                RenderFrame();
             }
         }));
 
@@ -345,7 +359,7 @@ namespace LedCubeAnimator.ViewModel
 
         private void RenderFrame()
         {
-            Frame = Renderer.Render(_animation.Animation, Time, true);
+            Frame = Renderer.Render(_animation, Time, true);
         }
 
         private void AddColorToRecents(Color color)
@@ -381,21 +395,6 @@ namespace LedCubeAnimator.ViewModel
                     DisplayRecentColors.Add(new ColorItem(color.Multiply(_animation.MonoColor), color.GetBrightness().ToString()));
                 }
             }
-        }
-
-        private void CreateDefaultAnimation()
-        {
-            var g = new Group { Name = "MainGroup" };
-            if (_animation != null)
-            {
-                _animation.PropertyChanged -= Animation_PropertyChanged;
-            }
-            _animation = new AnimationViewModel(new Animation { MainGroup = g, Size = 4, MonoColor = Colors.White, FrameDuration = 10 });
-            _animation.PropertyChanged += Animation_PropertyChanged;
-            RaisePropertyChanged(nameof(ColorMode));
-            Groups.Clear();
-            Groups.Add(_animation.MainGroup);
-            SelectedGroup = _animation.MainGroup;
         }
 
         private string _filePath;
@@ -439,16 +438,8 @@ namespace LedCubeAnimator.ViewModel
 
             _filePath = dialog.FileName;
 
-            if (_animation != null)
-            {
-                _animation.PropertyChanged -= Animation_PropertyChanged;
-            }
-            _animation = new AnimationViewModel(a);
-            _animation.PropertyChanged += Animation_PropertyChanged;
-            RaisePropertyChanged(nameof(ColorMode));
-            Groups.Clear();
-            Groups.Add(_animation.MainGroup);
-            SelectedGroup = _animation.MainGroup;
+            _animation = a;
+            CreateDefaultViewModel();
         }));
 
         private RelayCommand _saveCommand;
@@ -456,7 +447,7 @@ namespace LedCubeAnimator.ViewModel
         {
             if (_filePath != null)
             {
-                FileReaderWriter.Save(_filePath, _animation.Animation);
+                FileReaderWriter.Save(_filePath, _animation);
             }
             else
             {
@@ -476,7 +467,7 @@ namespace LedCubeAnimator.ViewModel
 
             _filePath = dialog.FileName;
 
-            FileReaderWriter.Save(_filePath, _animation.Animation);
+            FileReaderWriter.Save(_filePath, _animation);
         }));
 
         private RelayCommand _exportMWCommand;
@@ -489,7 +480,7 @@ namespace LedCubeAnimator.ViewModel
                 return;
             }
 
-            Exporter.Export(dialog.FileName, _animation.Animation);
+            Exporter.Export(dialog.FileName, _animation);
         }));
     }
 }

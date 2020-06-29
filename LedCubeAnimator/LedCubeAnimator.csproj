@@ -108,7 +108,6 @@
     <Compile Include="Model\ShearEffect.cs" />
     <Compile Include="Model\TransformEffect.cs" />
     <Compile Include="ValueConverterGroup.cs" />
-    <Compile Include="ViewModel\AnimationViewModel.cs" />
     <Compile Include="ViewModel\CubeSettingsViewModel.cs" />
     <Compile Include="ViewModel\EffectViewModel.cs" />
     <Compile Include="ViewModel\FrameViewModel.cs" />
