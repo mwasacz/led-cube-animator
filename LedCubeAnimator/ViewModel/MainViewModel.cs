@@ -105,7 +105,6 @@ namespace LedCubeAnimator.ViewModel
                     }
                     RaisePropertyChanged(nameof(Tiles));
                     RaisePropertyChanged(nameof(EndDate));
-                    ClampTime();
                 }
             }
         }
@@ -120,7 +119,6 @@ namespace LedCubeAnimator.ViewModel
                 || e.PropertyName == nameof(GroupViewModel.Reverse))
             {
                 RaisePropertyChanged(nameof(EndDate));
-                ClampTime();
             }
         }
 
@@ -148,11 +146,11 @@ namespace LedCubeAnimator.ViewModel
             get => _selectedColor;
             set
             {
-                _selectedColor = value;
-                _recentColor = _recentColors.SingleOrDefault(p => p.Item2 == _selectedColor)?.Item1;
-                RaisePropertyChanged(nameof(SelectedColor));
-                RaisePropertyChanged(nameof(DisplayColor));
-                RaisePropertyChanged(nameof(RecentColor));
+                if (Set(ref _selectedColor, value))
+                {
+                    RaisePropertyChanged(nameof(DisplayColor));
+                    Set(ref _recentColor, _recentColors.SingleOrDefault(p => p.Item2 == _selectedColor)?.Item1, nameof(RecentColor));
+                }
             }
         }
 
@@ -164,14 +162,12 @@ namespace LedCubeAnimator.ViewModel
             get => _recentColor;
             set
             {
-                _recentColor = value;
-                if (_recentColor != null)
+                if (Set(ref _recentColor, value)
+                    && _recentColor != null
+                    && Set(ref _selectedColor, _recentColors.Single(p => p.Item1 == _recentColor).Item2, nameof(SelectedColor)))
                 {
-                    _selectedColor = _recentColors.Single(p => p.Item1 == _recentColor).Item2;
+                    RaisePropertyChanged(nameof(DisplayColor));
                 }
-                RaisePropertyChanged(nameof(SelectedColor));
-                RaisePropertyChanged(nameof(DisplayColor));
-                RaisePropertyChanged(nameof(RecentColor));
             }
         }
 
@@ -183,11 +179,7 @@ namespace LedCubeAnimator.ViewModel
         public bool ColorPickerTool
         {
             get => _colorPickerTool;
-            set
-            {
-                _colorPickerTool = value;
-                RaisePropertyChanged(nameof(ColorPickerTool));
-            }
+            set => Set(ref _colorPickerTool, value);
         }
 
         public int StartDate => 0;
@@ -302,11 +294,7 @@ namespace LedCubeAnimator.ViewModel
         public Color[,,] Frame
         {
             get => _frame;
-            set
-            {
-                _frame = value;
-                RaisePropertyChanged(nameof(Frame));
-            }
+            set => Set(ref _frame, value);
         }
 
         private RelayCommand<Point3D> _voxelClickCommand;
@@ -345,16 +333,11 @@ namespace LedCubeAnimator.ViewModel
             get => _time;
             set
             {
-                _time = value;
-                ClampTime();
+                if (Set(ref _time, value))
+                {
+                    RenderFrame();
+                }
             }
-        }
-
-        private void ClampTime()
-        {
-            _time = Math.Min(Math.Max(StartDate, _time), EndDate);
-            RaisePropertyChanged(nameof(Time));
-            RenderFrame();
         }
 
         private void RenderFrame()

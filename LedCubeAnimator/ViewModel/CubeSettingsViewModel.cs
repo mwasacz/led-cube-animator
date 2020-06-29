@@ -15,11 +15,7 @@ namespace LedCubeAnimator.ViewModel
         public int Size
         {
             get => _size;
-            set
-            {
-                _size = value;
-                RaisePropertyChanged(nameof(Size));
-            }
+            set => Set(ref _size, value);
         }
 
         private ColorMode _colorMode;
@@ -28,12 +24,11 @@ namespace LedCubeAnimator.ViewModel
             get => _colorMode;
             set
             {
-                _colorMode = value;
+                Set(ref _colorMode, value);
                 if (_colorMode == ColorMode.RGB)
                 {
                     MonoColor = Colors.White;
                 }
-                RaisePropertyChanged(nameof(ColorMode));
             }
         }
 
@@ -41,22 +36,14 @@ namespace LedCubeAnimator.ViewModel
         public Color MonoColor
         {
             get => _monoColor;
-            set
-            {
-                _monoColor = value;
-                RaisePropertyChanged(nameof(MonoColor));
-            }
+            set => Set(ref _monoColor, value);
         }
 
         private int _frameDuration;
         public int FrameDuration
         {
             get => _frameDuration;
-            set
-            {
-                _frameDuration = value;
-                RaisePropertyChanged(nameof(FrameDuration));
-            }
+            set => Set(ref _frameDuration);
         }
     }
 }
