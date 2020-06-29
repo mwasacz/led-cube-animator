@@ -50,6 +50,9 @@
                           Command="{Binding AddScaleEffectCommand}" />
                 <MenuItem Header="ShearEffect"
                           Command="{Binding AddShearEffectCommand}" />
+                <Separator />
+                <MenuItem Header="LinearDelayEffect"
+                          Command="{Binding AddLinearDelayEffectCommand}" />
             </MenuItem>
             <MenuItem Header="Options">
                 <MenuItem Header="Cube settings..."
@@ -178,6 +181,7 @@
                     <xctk:PropertyDefinition TargetProperties="Axis" />
                     <xctk:PropertyDefinition TargetProperties="Plane" />
                     <xctk:PropertyDefinition TargetProperties="Center" />
+                    <xctk:PropertyDefinition TargetProperties="Value" />
                 </xctk:PropertyGrid.PropertyDefinitions>
                 <xctk:PropertyGrid.EditorDefinitions>
                     <xctk:EditorTemplateDefinition TargetProperties="{x:Type ICommand}">

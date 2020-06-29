@@ -104,6 +104,7 @@
     <Compile Include="Model\Exporter.cs" />
     <Compile Include="Model\Extensions.cs" />
     <Compile Include="Model\FileReaderWriter.cs" />
+    <Compile Include="Model\LinearDelayEffect.cs" />
     <Compile Include="Model\Renderer.cs" />
     <Compile Include="Model\ShearEffect.cs" />
     <Compile Include="Model\TransformEffect.cs" />
@@ -112,6 +113,7 @@
     <Compile Include="ViewModel\EffectViewModel.cs" />
     <Compile Include="ViewModel\FrameViewModel.cs" />
     <Compile Include="ViewModel\GroupViewModel.cs" />
+    <Compile Include="ViewModel\LinearDelayEffectViewModel.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\MoveEffectViewModel.cs" />
     <Compile Include="ViewModel\RotateEffectViewModel.cs" />

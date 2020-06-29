@@ -254,6 +254,14 @@ namespace LedCubeAnimator.ViewModel
             SelectedTile = effect;
         }));
 
+        private RelayCommand _addLinearDelayEffectCommand;
+        public ICommand AddLinearDelayEffectCommand => _addLinearDelayEffectCommand ?? (_addLinearDelayEffectCommand = new RelayCommand(() =>
+        {
+            var effect = new LinearDelayEffectViewModel(new LinearDelayEffect { Name = "LinearDelayEffect" });
+            Tiles.Add(effect);
+            SelectedTile = effect;
+        }));
+
         private RelayCommand _removeTileCommand;
         public ICommand RemoveTileCommand => _removeTileCommand ?? (_removeTileCommand = new RelayCommand(() =>
         {

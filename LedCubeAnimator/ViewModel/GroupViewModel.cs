@@ -57,6 +57,8 @@ namespace LedCubeAnimator.ViewModel
                     return new ScaleEffectViewModel(scaleEffect);
                 case ShearEffect shearEffect:
                     return new ShearEffectViewModel(shearEffect);
+                case LinearDelayEffect linearDelayEffect:
+                    return new LinearDelayEffectViewModel(linearDelayEffect);
                 default:
                     throw new Exception(); // ToDo
             }
