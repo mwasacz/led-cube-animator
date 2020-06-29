@@ -121,6 +121,7 @@
     <Compile Include="Model\Undo\UndoManager.cs" />
     <Compile Include="Model\Undo\UndoManagerExtensions.cs" />
     <Compile Include="ValueConverterGroup.cs" />
+    <Compile Include="ViewModel\BaseViewModel.cs" />
     <Compile Include="ViewModel\CubeSettingsViewModel.cs" />
     <Compile Include="ViewModel\EffectViewModel.cs" />
     <Compile Include="ViewModel\FrameViewModel.cs" />

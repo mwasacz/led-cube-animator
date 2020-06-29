@@ -1,4 +1,5 @@
 ﻿using LedCubeAnimator.Model;
+using LedCubeAnimator.Model.Undo;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -12,7 +13,7 @@ namespace LedCubeAnimator.ViewModel
     [CategoryOrder("ShearEffect", 3)]
     public class ShearEffectViewModel : TransformEffectViewModel
     {
-        public ShearEffectViewModel(ShearEffect shearEffect) : base(shearEffect) { }
+        public ShearEffectViewModel(ShearEffect shearEffect, UndoManager undo) : base(shearEffect, undo) { }
 
         public ShearEffect ShearEffect => (ShearEffect)TransformEffect;
 
@@ -21,11 +22,7 @@ namespace LedCubeAnimator.ViewModel
         public Plane Plane
         {
             get => ShearEffect.Plane;
-            set
-            {
-                ShearEffect.Plane = value;
-                RaisePropertyChanged(nameof(Plane));
-            }
+            set => Set(ShearEffect, nameof(ShearEffect.Plane), value);
         }
 
         [Category("ShearEffect")]
@@ -33,10 +30,20 @@ namespace LedCubeAnimator.ViewModel
         public double Center
         {
             get => ShearEffect.Center;
-            set
+            set => Set(ShearEffect, nameof(ShearEffect.Center), value);
+        }
+
+        protected override void ModelPropertyChanged(string propertyName)
+        {
+            base.ModelPropertyChanged(propertyName);
+            switch (propertyName)
             {
-                ShearEffect.Center = value;
-                RaisePropertyChanged(nameof(Center));
+                case nameof(ShearEffect.Plane):
+                    RaisePropertyChanged(nameof(Plane));
+                    break;
+                case nameof(ShearEffect.Center):
+                    RaisePropertyChanged(nameof(Center));
+                    break;
             }
         }
     }

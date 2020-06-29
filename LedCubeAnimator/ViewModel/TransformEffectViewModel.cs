@@ -1,4 +1,5 @@
 ﻿using LedCubeAnimator.Model;
+using LedCubeAnimator.Model.Undo;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -12,7 +13,7 @@ namespace LedCubeAnimator.ViewModel
     [CategoryOrder("TransformEffect", 2)]
     public abstract class TransformEffectViewModel : EffectViewModel
     {
-        public TransformEffectViewModel(TransformEffect transformEffect) : base(transformEffect) { }
+        public TransformEffectViewModel(TransformEffect transformEffect, UndoManager undo) : base(transformEffect, undo) { }
 
         public TransformEffect TransformEffect => (TransformEffect)Effect;
 
@@ -21,11 +22,7 @@ namespace LedCubeAnimator.ViewModel
         public double From
         {
             get => TransformEffect.From;
-            set
-            {
-                TransformEffect.From = value;
-                RaisePropertyChanged(nameof(From));
-            }
+            set => Set(TransformEffect, nameof(TransformEffect.From), value);
         }
 
         [Category("TransformEffect")]
@@ -33,11 +30,7 @@ namespace LedCubeAnimator.ViewModel
         public double To
         {
             get => TransformEffect.To;
-            set
-            {
-                TransformEffect.To = value;
-                RaisePropertyChanged(nameof(To));
-            }
+            set => Set(TransformEffect, nameof(TransformEffect.To), value);
         }
 
         [Category("TransformEffect")]
@@ -45,10 +38,23 @@ namespace LedCubeAnimator.ViewModel
         public bool Round
         {
             get => TransformEffect.Round;
-            set
+            set => Set(TransformEffect, nameof(TransformEffect.Round), value);
+        }
+
+        protected override void ModelPropertyChanged(string propertyName)
+        {
+            base.ModelPropertyChanged(propertyName);
+            switch (propertyName)
             {
-                TransformEffect.Round = value;
-                RaisePropertyChanged(nameof(Round));
+                case nameof(TransformEffect.From):
+                    RaisePropertyChanged(nameof(From));
+                    break;
+                case nameof(TransformEffect.To):
+                    RaisePropertyChanged(nameof(To));
+                    break;
+                case nameof(TransformEffect.Round):
+                    RaisePropertyChanged(nameof(Round));
+                    break;
             }
         }
     }

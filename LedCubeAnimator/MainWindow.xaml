@@ -14,6 +14,14 @@
         Closing="MainWindow_Closing"
         Height="450"
         Width="800">
+    <Window.InputBindings>
+        <KeyBinding Command="{Binding UndoCommand}"
+                    Key="Z"
+                    Modifiers="Ctrl" />
+        <KeyBinding Command="{Binding RedoCommand}"
+                    Key="Y"
+                    Modifiers="Ctrl" />
+    </Window.InputBindings>
     <DockPanel>
         <Menu DockPanel.Dock="Top"
               IsMainMenu="True">
@@ -34,6 +42,12 @@
                 <Separator />
                 <MenuItem Header="Exit"
                           Click="Exit_Click" />
+            </MenuItem>
+            <MenuItem Header="Edit">
+                <MenuItem Header="Undo"
+                          Command="{Binding UndoCommand}" />
+                <MenuItem Header="Redo"
+                          Command="{Binding RedoCommand}" />
             </MenuItem>
             <MenuItem Header="Tile">
                 <MenuItem Header="Frame"

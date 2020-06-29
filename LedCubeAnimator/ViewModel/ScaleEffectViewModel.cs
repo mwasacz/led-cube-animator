@@ -1,4 +1,5 @@
 ﻿using LedCubeAnimator.Model;
+using LedCubeAnimator.Model.Undo;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -13,7 +14,7 @@ namespace LedCubeAnimator.ViewModel
     [CategoryOrder("ScaleEffect", 3)]
     public class ScaleEffectViewModel : TransformEffectViewModel
     {
-        public ScaleEffectViewModel(ScaleEffect scaleEffect) : base(scaleEffect) { }
+        public ScaleEffectViewModel(ScaleEffect scaleEffect, UndoManager undo) : base(scaleEffect, undo) { }
 
         public ScaleEffect ScaleEffect => (ScaleEffect)TransformEffect;
 
@@ -22,11 +23,7 @@ namespace LedCubeAnimator.ViewModel
         public Axis Axis
         {
             get => ScaleEffect.Axis;
-            set
-            {
-                ScaleEffect.Axis = value;
-                RaisePropertyChanged(nameof(Axis));
-            }
+            set => Set(ScaleEffect, nameof(ScaleEffect.Axis), value);
         }
 
         [Category("ScaleEffect")]
@@ -34,10 +31,20 @@ namespace LedCubeAnimator.ViewModel
         public double Center
         {
             get => ScaleEffect.Center;
-            set
+            set => Set(ScaleEffect, nameof(ScaleEffect.Center), value);
+        }
+
+        protected override void ModelPropertyChanged(string propertyName)
+        {
+            base.ModelPropertyChanged(propertyName);
+            switch (propertyName)
             {
-                ScaleEffect.Center = value;
-                RaisePropertyChanged(nameof(Center));
+                case nameof(ScaleEffect.Axis):
+                    RaisePropertyChanged(nameof(Axis));
+                    break;
+                case nameof(ScaleEffect.Center):
+                    RaisePropertyChanged(nameof(Center));
+                    break;
             }
         }
     }

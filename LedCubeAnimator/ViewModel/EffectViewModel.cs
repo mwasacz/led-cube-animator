@@ -1,5 +1,6 @@
 ﻿using GalaSoft.MvvmLight;
 using LedCubeAnimator.Model;
+using LedCubeAnimator.Model.Undo;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -13,7 +14,7 @@ namespace LedCubeAnimator.ViewModel
     [CategoryOrder("Effect", 1)]
     public abstract class EffectViewModel : TileViewModel
     {
-        public EffectViewModel(Effect effect) : base(effect) { }
+        public EffectViewModel(Effect effect, UndoManager undo) : base(effect, undo) { }
 
         public Effect Effect => (Effect)Tile;
 
@@ -22,11 +23,7 @@ namespace LedCubeAnimator.ViewModel
         public bool Reverse
         {
             get => Effect.Reverse;
-            set
-            {
-                Effect.Reverse = value;
-                RaisePropertyChanged(nameof(Reverse));
-            }
+            set => Set(Effect, nameof(Effect.Reverse), value);
         }
 
         [Category("Effect")]
@@ -34,11 +31,7 @@ namespace LedCubeAnimator.ViewModel
         public int RepeatCount
         {
             get => Effect.RepeatCount;
-            set
-            {
-                Effect.RepeatCount = value;
-                RaisePropertyChanged(nameof(RepeatCount));
-            }
+            set => Set(Effect, nameof(Effect.RepeatCount), value);
         }
 
         [Category("Effect")]
@@ -46,11 +39,7 @@ namespace LedCubeAnimator.ViewModel
         public TimeInterpolation TimeInterpolation
         {
             get => Effect.TimeInterpolation;
-            set
-            {
-                Effect.TimeInterpolation = value;
-                RaisePropertyChanged(nameof(TimeInterpolation));
-            }
+            set => Set(Effect, nameof(Effect.TimeInterpolation), value);
         }
 
         [Category("Effect")]
@@ -58,10 +47,26 @@ namespace LedCubeAnimator.ViewModel
         public bool PersistEffect
         {
             get => Effect.PersistEffect;
-            set
+            set => Set(Effect, nameof(Effect.PersistEffect), value);
+        }
+
+        protected override void ModelPropertyChanged(string propertyName)
+        {
+            base.ModelPropertyChanged(propertyName);
+            switch (propertyName)
             {
-                Effect.PersistEffect = value;
-                RaisePropertyChanged(nameof(PersistEffect));
+                case nameof(Effect.Reverse):
+                    RaisePropertyChanged(nameof(Reverse));
+                    break;
+                case nameof(Effect.RepeatCount):
+                    RaisePropertyChanged(nameof(RepeatCount));
+                    break;
+                case nameof(Effect.TimeInterpolation):
+                    RaisePropertyChanged(nameof(TimeInterpolation));
+                    break;
+                case nameof(Effect.PersistEffect):
+                    RaisePropertyChanged(nameof(PersistEffect));
+                    break;
             }
         }
     }
