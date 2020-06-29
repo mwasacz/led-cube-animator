@@ -43,6 +43,7 @@ namespace LedCubeAnimator.ViewModel
             RaisePropertyChanged(nameof(ColorMode)); // ToDo: raise only if changed
 
             SelectedColor = Colors.Black;
+            _recentColors.Clear();
             RecentColors.Clear();
             AddColorToRecents(Colors.Black);
             ColorPickerTool = false;
@@ -148,35 +149,35 @@ namespace LedCubeAnimator.ViewModel
             set
             {
                 _selectedColor = value;
-                _recentColorIndex = RecentColors.IndexOf(_selectedColor);
+                _recentColor = _recentColors.SingleOrDefault(p => p.Item2 == _selectedColor)?.Item1;
                 RaisePropertyChanged(nameof(SelectedColor));
                 RaisePropertyChanged(nameof(DisplayColor));
-                RaisePropertyChanged(nameof(RecentColorIndex));
+                RaisePropertyChanged(nameof(RecentColor));
             }
         }
 
         public Color DisplayColor => SelectedColor.Multiply(_animation.MonoColor);
 
-        private int _recentColorIndex;
-        public int RecentColorIndex
+        private ColorItem _recentColor;
+        public ColorItem RecentColor
         {
-            get => _recentColorIndex;
+            get => _recentColor;
             set
             {
-                _recentColorIndex = value;
-                if (_recentColorIndex >= 0)
+                _recentColor = value;
+                if (_recentColor != null)
                 {
-                    _selectedColor = RecentColors[_recentColorIndex];
+                    _selectedColor = _recentColors.Single(p => p.Item1 == _recentColor).Item2;
                 }
                 RaisePropertyChanged(nameof(SelectedColor));
                 RaisePropertyChanged(nameof(DisplayColor));
-                RaisePropertyChanged(nameof(RecentColorIndex));
+                RaisePropertyChanged(nameof(RecentColor));
             }
         }
 
-        public List<Color> RecentColors { get; } = new List<Color>();
-
-        public ObservableCollection<ColorItem> DisplayRecentColors { get; } = new ObservableCollection<ColorItem>();
+        // ToDo: create type containing ColorItem and Color and use converters to display RecentColor and RecentColors
+        private List<Tuple<ColorItem, Color>> _recentColors = new List<Tuple<ColorItem, Color>>();
+        public ObservableCollection<ColorItem> RecentColors { get; } = new ObservableCollection<ColorItem>();
 
         private bool _colorPickerTool;
         public bool ColorPickerTool
@@ -293,7 +294,6 @@ namespace LedCubeAnimator.ViewModel
                 {
                     ColorPickerTool = false;
                 }
-                UpdateDisplayRecentColors();
                 RenderFrame();
             }
         }));
@@ -364,35 +364,30 @@ namespace LedCubeAnimator.ViewModel
 
         private void AddColorToRecents(Color color)
         {
-            if (RecentColors.Contains(color))
+            var pair = _recentColors.SingleOrDefault(p => p.Item2 == color);
+            if (pair != null)
             {
-                RecentColors.Remove(color);
-                RecentColors.Insert(0, color);
+                int index = RecentColors.IndexOf(pair.Item1);
+                if (index != 0)
+                {
+                    RecentColors.Move(index, 0);
+                }
+                RecentColor = RecentColors[0];
             }
             else
             {
-                RecentColors.Insert(0, color);
+                var colorItem = ColorMode == ColorMode.RGB ?
+                    new ColorItem(color, color.ToString()) :
+                    new ColorItem(color.Multiply(_animation.MonoColor), color.GetBrightness().ToString());
+
+                _recentColors.Add(new Tuple<ColorItem, Color>(colorItem, color));
+                RecentColors.Insert(0, colorItem);
+                RecentColor = RecentColors[0];
+
                 if (RecentColors.Count > 10)
                 {
+                    _recentColors.RemoveAll(p => p.Item1 == RecentColors[10]);
                     RecentColors.RemoveAt(10);
-                }
-            }
-            UpdateDisplayRecentColors();
-            RecentColorIndex = 0;
-        }
-
-        private void UpdateDisplayRecentColors()
-        {
-            DisplayRecentColors.Clear();
-            foreach (var color in RecentColors)
-            {
-                if (ColorMode == ColorMode.RGB)
-                {
-                    DisplayRecentColors.Add(new ColorItem(color, color.ToString()));
-                }
-                else
-                {
-                    DisplayRecentColors.Add(new ColorItem(color.Multiply(_animation.MonoColor), color.GetBrightness().ToString()));
                 }
             }
         }

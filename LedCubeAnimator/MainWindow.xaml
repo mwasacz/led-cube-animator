@@ -138,8 +138,8 @@
                     <ToggleButton DockPanel.Dock="Right"
                                   Content="Pick"
                                   IsChecked="{Binding ColorPickerTool}" />
-                    <ListBox ItemsSource="{Binding DisplayRecentColors}"
-                             SelectedIndex="{Binding RecentColorIndex}">
+                    <ListBox ItemsSource="{Binding RecentColors}"
+                             SelectedItem="{Binding RecentColor}">
                         <ListBox.Resources>
                             <ResourceDictionary>
                                 <ResourceDictionary.MergedDictionaries>
