@@ -102,9 +102,7 @@
     <Compile Include="Model\Animation.cs" />
     <Compile Include="Model\LinearDelayEffect.cs" />
     <Compile Include="Model\Undo\ArrayChangeAction.cs" />
-    <Compile Include="Model\Undo\CollectionAddAction.cs" />
     <Compile Include="Model\Undo\CollectionChangeAction.cs" />
-    <Compile Include="Model\Undo\CollectionRemoveAction.cs" />
     <Compile Include="Model\Enums.cs" />
     <Compile Include="Model\Exporter.cs" />
     <Compile Include="Model\Extensions.cs" />
@@ -113,10 +111,8 @@
     <Compile Include="Model\ShearEffect.cs" />
     <Compile Include="Model\TransformEffect.cs" />
     <Compile Include="Model\Undo\ActionExecutedEventArgs.cs" />
-    <Compile Include="Model\Undo\BatchAction.cs" />
+    <Compile Include="Model\Undo\ActionGroup.cs" />
     <Compile Include="Model\Undo\IAction.cs" />
-    <Compile Include="Model\Undo\IActionGroup.cs" />
-    <Compile Include="Model\Undo\ObjectAction.cs" />
     <Compile Include="Model\Undo\PropertyChangeAction.cs" />
     <Compile Include="Model\Undo\UndoManager.cs" />
     <Compile Include="Model\Undo\UndoManagerExtensions.cs" />

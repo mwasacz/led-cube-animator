@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace LedCubeAnimator.Model.Undo
 {
-    public class ArrayChangeAction : ObjectAction, IActionGroup
+    public class ArrayChangeAction : IAction
     {
-        public ArrayChangeAction(object obj, Array array, object newValue, params int[] indices) : base(obj)
+        public ArrayChangeAction(Array array, object newValue, params int[] indices)
         {
             Array = array;
 
@@ -24,7 +24,7 @@ namespace LedCubeAnimator.Model.Undo
 
         public bool IsEmpty => Changes.Count == 0;
 
-        public override void Do()
+        public void Do()
         {
             foreach (var change in Changes)
             {
@@ -32,7 +32,7 @@ namespace LedCubeAnimator.Model.Undo
             }
         }
 
-        public override void Undo()
+        public void Undo()
         {
             foreach (var change in Changes)
             {
@@ -40,7 +40,7 @@ namespace LedCubeAnimator.Model.Undo
             }
         }
 
-        public bool TryAdd(IAction action)
+        public bool TryMerge(IAction action)
         {
             if (action is ArrayChangeAction next && next.Array == Array)
             {

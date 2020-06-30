@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace LedCubeAnimator.Model.Undo
 {
-    public class BatchAction : IActionGroup, IDisposable
+    public class ActionGroup : IAction
     {
-        public List<IAction> Actions { get; } = new List<IAction>();
+        public IList<IAction> Actions { get; } = new List<IAction>();
 
         public bool IsFinished { get; private set; }
 
-        public bool IsEmpty => Actions.All(a => a is IActionGroup g && g.IsEmpty);
+        public bool IsEmpty => Actions.All(a => a.IsEmpty);
 
         public void Do()
         {
@@ -24,17 +24,24 @@ namespace LedCubeAnimator.Model.Undo
 
         public void Undo()
         {
-            foreach (var a in Actions.Reverse<IAction>())
+            foreach (var a in Actions.Reverse())
             {
                 a.Undo();
             }
         }
 
-        public bool TryAdd(IAction action)
+        public bool TryMerge(IAction action)
         {
             if (!IsFinished)
             {
-                if (!(Actions.LastOrDefault() is IActionGroup group && group.TryAdd(action)))
+                if (action is ActionGroup group)
+                {
+                    foreach (var a in group.Actions)
+                    {
+                        Actions.Add(a);
+                    }
+                }
+                else
                 {
                     Actions.Add(action);
                 }
@@ -43,7 +50,7 @@ namespace LedCubeAnimator.Model.Undo
             return false;
         }
 
-        public void Dispose()
+        public void Finish()
         {
             IsFinished = true;
         }

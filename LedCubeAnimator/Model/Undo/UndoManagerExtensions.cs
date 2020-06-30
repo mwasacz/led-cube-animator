@@ -8,39 +8,31 @@ namespace LedCubeAnimator.Model.Undo
 {
     public static class UndoManagerExtensions
     {
-        public static BatchAction Batch(this UndoManager undo)
+        public static ActionGroup Group(this UndoManager undo)
         {
-            var batch = new BatchAction();
-            undo.RecordAction(batch);
-            return batch;
+            var group = new ActionGroup();
+            undo.RecordAction(group);
+            return group;
         }
 
         public static void Set(this UndoManager undo, object obj, string name, object newValue)
         {
-            var action = new PropertyChangeAction(obj, name, newValue);
-            if (!action.IsEmpty)
-            {
-                undo.RecordAction(action);
-            }
+            undo.RecordAction(new PropertyChangeAction(obj, name, newValue));
         }
 
-        public static void Add<T>(this UndoManager undo, object obj, ICollection<T> collection, T item)
+        public static void Add<T>(this UndoManager undo, ICollection<T> collection, T item)
         {
-            undo.RecordAction(new CollectionAddAction<T>(obj, collection, item));
+            undo.RecordAction(new CollectionChangeAction<T>(collection, item, true));
         }
 
-        public static void Remove<T>(this UndoManager undo, object obj, ICollection<T> collection, T item)
+        public static void Remove<T>(this UndoManager undo, ICollection<T> collection, T item)
         {
-            undo.RecordAction(new CollectionRemoveAction<T>(obj, collection, item));
+            undo.RecordAction(new CollectionChangeAction<T>(collection, item, false));
         }
 
-        public static void ChangeArray(this UndoManager undo, object obj, Array array, object newValue, params int[] indices)
+        public static void ChangeArray(this UndoManager undo, Array array, object newValue, params int[] indices)
         {
-            var action = new ArrayChangeAction(obj, array, newValue, indices);
-            if (!action.IsEmpty)
-            {
-                undo.RecordAction(action);
-            }
+            undo.RecordAction(new ArrayChangeAction(array, newValue, indices));
         }
     }
 }

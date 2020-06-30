@@ -259,14 +259,14 @@ namespace LedCubeAnimator.ViewModel
                 var tile = SelectedTile;
                 var parent = Groups.Last();
                 SelectedGroup = parent;
-                Undo.Remove(parent.Group, parent.Group.Children, tile.Tile);
+                Undo.Remove(parent.Group.Children, tile.Tile);
             }
             else if (SelectedGroup != null && Groups.Count > 1)
             {
                 var group = Groups.Last();
                 var parent = Groups[Groups.Count - 2];
                 SelectedGroup = parent;
-                Undo.Remove(parent.Group, parent.Group.Children, group.Group);
+                Undo.Remove(parent.Group.Children, group.Group);
             }
         }));
 
@@ -284,13 +284,12 @@ namespace LedCubeAnimator.ViewModel
 
             if (dialog.ShowDialog() == true)
             {
-                using (var b = Undo.Batch())
-                {
-                    Undo.Set(_animation, nameof(Animation.Size), viewModel.Size);
-                    Undo.Set(_animation, nameof(Animation.ColorMode), viewModel.ColorMode);
-                    Undo.Set(_animation, nameof(Animation.MonoColor), viewModel.MonoColor);
-                    Undo.Set(_animation, nameof(Animation.FrameDuration), viewModel.FrameDuration);
-                }
+                var group = Undo.Group();
+                Undo.Set(_animation, nameof(Animation.Size), viewModel.Size);
+                Undo.Set(_animation, nameof(Animation.ColorMode), viewModel.ColorMode);
+                Undo.Set(_animation, nameof(Animation.MonoColor), viewModel.MonoColor);
+                Undo.Set(_animation, nameof(Animation.FrameDuration), viewModel.FrameDuration);
+                group.Finish();
             }
         }));
 
@@ -321,11 +320,11 @@ namespace LedCubeAnimator.ViewModel
                     if (_animation.ColorMode == ColorMode.Mono)
                     {
                         var color = frame.Voxels[x, y, z] == Colors.Black ? Colors.White : Colors.Black;
-                        Undo.ChangeArray(frame, frame.Voxels, color, x, y, z);
+                        Undo.ChangeArray(frame.Voxels, color, x, y, z);
                     }
                     else
                     {
-                        Undo.ChangeArray(frame, frame.Voxels, SelectedColor, x, y, z);
+                        Undo.ChangeArray(frame.Voxels, SelectedColor, x, y, z);
                         AddColorToRecents(SelectedColor);
                     }
                 }
@@ -383,53 +382,70 @@ namespace LedCubeAnimator.ViewModel
         private void AddTile(Tile tile)
         {
             var group = Groups.Last().Group;
-            Undo.Add(group, group.Children, tile);
+            Undo.Add(group.Children, tile);
         }
 
         private void Undo_ActionExecuted(object sender, ActionExecutedEventArgs e)
         {
-            if (e.Action is BatchAction)
+            if (e.Action is ActionGroup batch)
             {
-                // ToDo
-            }
-            else if (e.Action is ObjectAction action && action.Object is Tile tile)
-            {
-                if (action is CollectionChangeAction<Tile> change && action is CollectionRemoveAction<Tile> == e.Undone)
+                if (batch.Actions.Any(a => a is PropertyChangeAction action && action.Object == _animation))
                 {
-                    tile = change.Item;
+                    // ToDo: check for changes and update if necessary
+                    RaisePropertyChanged(nameof(ColorMode));
+                    RenderFrame();
+                }
+            }
+            else
+            {
+                Tile tile = (e.Action as PropertyChangeAction)?.Object as Tile;
+                
+                if (e.Action is CollectionChangeAction<Tile> change)
+                {
+                    if (change.Additions.Count > 0 && !e.Undone)
+                    {
+                        tile = change.Additions.First();
+                    }
+                    else if (change.Removals.Count > 0 && e.Undone)
+                    {
+                        tile = change.Removals.First();
+                    }
                 }
 
-                var tileViewModel = Tiles.SingleOrDefault(t => t.Tile == tile); // ToDo: FirstOrDefault
-                if (tileViewModel != null)
+                if (tile != null)
                 {
-                    SelectedTile = tileViewModel;
-                }
-                else
-                {
-                    var groupViewModel = Groups.SingleOrDefault(g => g.Group == tile); // ToDo: FirstOrDefault
-                    if (groupViewModel != null)
+                    var tileViewModel = Tiles.SingleOrDefault(t => t.Tile == tile); // ToDo: FirstOrDefault
+                    if (tileViewModel != null)
                     {
-                        SelectedGroup = groupViewModel;
+                        SelectedTile = tileViewModel;
                     }
                     else
                     {
-                        NavigateToTile(tile);
+                        var groupViewModel = Groups.SingleOrDefault(g => g.Group == tile); // ToDo: FirstOrDefault
+                        if (groupViewModel != null)
+                        {
+                            SelectedGroup = groupViewModel;
+                        }
+                        else
+                        {
+                            NavigateToTile(tile);
+                        }
                     }
-                }
 
-                RenderFrame(); // ToDo: check for changes and render if necessary
+                    RenderFrame(); // ToDo: check for changes and render if necessary
 
-                /*if (tile == SelectedGroup?.Group)
-                {
-                    if (e.PropertyName == nameof(Group.Start)
-                        || e.PropertyName == nameof(Group.End)
-                        || e.PropertyName == nameof(Group.RepeatCount)
-                        || e.PropertyName == nameof(Group.Reverse))
+                    /*if (tile == SelectedGroup?.Group)
                     {
-                        RaisePropertyChanged(nameof(EndDate));
-                        Time = Math.Min(Math.Max(StartDate, Time), EndDate);
-                    }
-                }*/
+                        if (e.PropertyName == nameof(Group.Start)
+                            || e.PropertyName == nameof(Group.End)
+                            || e.PropertyName == nameof(Group.RepeatCount)
+                            || e.PropertyName == nameof(Group.Reverse))
+                        {
+                            RaisePropertyChanged(nameof(EndDate));
+                            Time = Math.Min(Math.Max(StartDate, Time), EndDate);
+                        }
+                    }*/
+                }
             }
         }
 

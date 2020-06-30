@@ -61,7 +61,7 @@ namespace LedCubeAnimator.ViewModel
 
         [Category("Frame")]
         [PropertyOrder(0)]
-        public object Voxels { get; }
+        public Color[,,] Voxels { get; }
 
         protected override void ModelPropertyChanged(string propertyName)
         {
