@@ -22,7 +22,7 @@ namespace LedCubeAnimator.ViewModel
         public Axis Axis
         {
             get => LinearDelayEffect.Axis;
-            set => Set(LinearDelayEffect, nameof(LinearDelayEffect.Axis), value);
+            set => Undo.Set(LinearDelayEffect, nameof(LinearDelayEffect.Axis), value);
         }
 
         [Category("LinearDelayEffect")]
@@ -30,7 +30,7 @@ namespace LedCubeAnimator.ViewModel
         public double Center
         {
             get => LinearDelayEffect.Center;
-            set => Set(LinearDelayEffect, nameof(LinearDelayEffect.Center), value);
+            set => Undo.Set(LinearDelayEffect, nameof(LinearDelayEffect.Center), value);
         }
 
         [Category("LinearDelayEffect")]
@@ -38,7 +38,7 @@ namespace LedCubeAnimator.ViewModel
         public double Value
         {
             get => LinearDelayEffect.Value;
-            set => Set(LinearDelayEffect, nameof(LinearDelayEffect.Value), value);
+            set => Undo.Set(LinearDelayEffect, nameof(LinearDelayEffect.Value), value);
         }
 
         protected override void ModelPropertyChanged(string propertyName)

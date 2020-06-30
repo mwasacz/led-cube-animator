@@ -27,7 +27,7 @@ namespace LedCubeAnimator.Model.Undo
         public object NewValue { get; private set; }
         public object OldValue { get; }
 
-        public bool IsEmpty => OldValue != null ? OldValue.Equals(NewValue) : NewValue == null;
+        public bool IsEmpty => OldValue == null ? NewValue == null : OldValue.Equals(NewValue);
 
         public void Do() => _propertyInfo.SetValue(Object, NewValue);
 

@@ -19,13 +19,16 @@ using ColorItem = Xceed.Wpf.Toolkit.ColorItem;
 
 namespace LedCubeAnimator.ViewModel
 {
-    public class MainViewModel : BaseViewModel
+    public class MainViewModel : ViewModelBase
     {
-        public MainViewModel() : base(new UndoManager())
+        public MainViewModel()
         {
+            Undo = new UndoManager();
             CreateDefaultAnimation();
             Undo.ActionExecuted += Undo_ActionExecuted;
         }
+
+        public UndoManager Undo { get; }
 
         private void CreateDefaultAnimation()
         {

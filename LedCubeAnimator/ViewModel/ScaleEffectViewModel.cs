@@ -23,7 +23,7 @@ namespace LedCubeAnimator.ViewModel
         public Axis Axis
         {
             get => ScaleEffect.Axis;
-            set => Set(ScaleEffect, nameof(ScaleEffect.Axis), value);
+            set => Undo.Set(ScaleEffect, nameof(ScaleEffect.Axis), value);
         }
 
         [Category("ScaleEffect")]
@@ -31,7 +31,7 @@ namespace LedCubeAnimator.ViewModel
         public double Center
         {
             get => ScaleEffect.Center;
-            set => Set(ScaleEffect, nameof(ScaleEffect.Center), value);
+            set => Undo.Set(ScaleEffect, nameof(ScaleEffect.Center), value);
         }
 
         protected override void ModelPropertyChanged(string propertyName)

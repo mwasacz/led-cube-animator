@@ -24,7 +24,7 @@ namespace LedCubeAnimator.ViewModel
         public Axis Axis
         {
             get => RotateEffect.Axis;
-            set => Set(RotateEffect, nameof(RotateEffect.Axis), value);
+            set => Undo.Set(RotateEffect, nameof(RotateEffect.Axis), value);
         }
 
         [Category("RotateEffect")]
@@ -32,7 +32,7 @@ namespace LedCubeAnimator.ViewModel
         public Point Center
         {
             get => RotateEffect.Center;
-            set => Set(RotateEffect, nameof(RotateEffect.Center), value);
+            set => Undo.Set(RotateEffect, nameof(RotateEffect.Center), value);
         }
 
         protected override void ModelPropertyChanged(string propertyName)

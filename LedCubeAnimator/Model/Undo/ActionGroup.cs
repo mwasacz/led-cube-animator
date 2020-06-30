@@ -9,7 +9,6 @@ namespace LedCubeAnimator.Model.Undo
     public class ActionGroup : IAction
     {
         public IList<IAction> Actions { get; } = new List<IAction>();
-
         public bool IsFinished { get; private set; }
 
         public bool IsEmpty => Actions.All(a => a.IsEmpty);

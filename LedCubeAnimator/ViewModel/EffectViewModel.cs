@@ -23,7 +23,7 @@ namespace LedCubeAnimator.ViewModel
         public bool Reverse
         {
             get => Effect.Reverse;
-            set => Set(Effect, nameof(Effect.Reverse), value);
+            set => Undo.Set(Effect, nameof(Effect.Reverse), value);
         }
 
         [Category("Effect")]
@@ -31,7 +31,7 @@ namespace LedCubeAnimator.ViewModel
         public int RepeatCount
         {
             get => Effect.RepeatCount;
-            set => Set(Effect, nameof(Effect.RepeatCount), value);
+            set => Undo.Set(Effect, nameof(Effect.RepeatCount), value);
         }
 
         [Category("Effect")]
@@ -39,7 +39,7 @@ namespace LedCubeAnimator.ViewModel
         public TimeInterpolation TimeInterpolation
         {
             get => Effect.TimeInterpolation;
-            set => Set(Effect, nameof(Effect.TimeInterpolation), value);
+            set => Undo.Set(Effect, nameof(Effect.TimeInterpolation), value);
         }
 
         [Category("Effect")]
@@ -47,7 +47,7 @@ namespace LedCubeAnimator.ViewModel
         public bool PersistEffect
         {
             get => Effect.PersistEffect;
-            set => Set(Effect, nameof(Effect.PersistEffect), value);
+            set => Undo.Set(Effect, nameof(Effect.PersistEffect), value);
         }
 
         protected override void ModelPropertyChanged(string propertyName)

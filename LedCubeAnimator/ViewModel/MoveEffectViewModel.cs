@@ -24,7 +24,7 @@ namespace LedCubeAnimator.ViewModel
         public Axis Axis
         {
             get => MoveEffect.Axis;
-            set => Set(MoveEffect, nameof(MoveEffect.Axis), value);
+            set => Undo.Set(MoveEffect, nameof(MoveEffect.Axis), value);
         }
 
         protected override void ModelPropertyChanged(string propertyName)

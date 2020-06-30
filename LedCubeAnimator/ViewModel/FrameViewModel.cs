@@ -27,7 +27,7 @@ namespace LedCubeAnimator.ViewModel
         public Point3D From
         {
             get => Frame.Offset;
-            set => Set(Frame, nameof(Frame.Offset), value);
+            set => Undo.Set(Frame, nameof(Frame.Offset), value);
         }
 
         [Category("Frame")]
@@ -55,7 +55,7 @@ namespace LedCubeAnimator.ViewModel
                         }
                     }
                 }
-                Set(Frame, nameof(Frame.Voxels), voxels);
+                Undo.Set(Frame, nameof(Frame.Voxels), voxels);
             }
         }
 

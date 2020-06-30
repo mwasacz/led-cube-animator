@@ -34,7 +34,7 @@ namespace LedCubeAnimator.ViewModel
         public ColorBlendMode ColorBlendMode
         {
             get => Group.ColorBlendMode;
-            set => Set(Group, nameof(Group.ColorBlendMode), value);
+            set => Undo.Set(Group, nameof(Group.ColorBlendMode), value);
         }
 
         protected override void ModelPropertyChanged(string propertyName)

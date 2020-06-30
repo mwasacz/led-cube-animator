@@ -20,7 +20,7 @@ namespace LedCubeAnimator.Model.Undo
         }
 
         public Array Array { get; }
-        public List<ArrayChange> Changes { get; } = new List<ArrayChange>();
+        public IList<ArrayChange> Changes { get; } = new List<ArrayChange>();
 
         public bool IsEmpty => Changes.Count == 0;
 

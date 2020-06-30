@@ -22,7 +22,7 @@ namespace LedCubeAnimator.ViewModel
         public Plane Plane
         {
             get => ShearEffect.Plane;
-            set => Set(ShearEffect, nameof(ShearEffect.Plane), value);
+            set => Undo.Set(ShearEffect, nameof(ShearEffect.Plane), value);
         }
 
         [Category("ShearEffect")]
@@ -30,7 +30,7 @@ namespace LedCubeAnimator.ViewModel
         public double Center
         {
             get => ShearEffect.Center;
-            set => Set(ShearEffect, nameof(ShearEffect.Center), value);
+            set => Undo.Set(ShearEffect, nameof(ShearEffect.Center), value);
         }
 
         protected override void ModelPropertyChanged(string propertyName)

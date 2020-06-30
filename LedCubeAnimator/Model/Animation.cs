@@ -46,10 +46,10 @@ namespace LedCubeAnimator.Model
                                     switch (ColorMode)
                                     {
                                         case ColorMode.Mono:
-                                            fr.Voxels[x, y, z] = oldColor.GetBrightness() > 127 ? Colors.White : Colors.Black;
+                                            fr.Voxels[x, y, z] = oldColor.GetBrightness() > 127 ? Colors.White : Colors.Black; // ToDo: undo/redo
                                             break;
                                         case ColorMode.MonoBrightness:
-                                            fr.Voxels[x, y, z] = Colors.White.Multiply(oldColor.GetBrightness()).Opaque();
+                                            fr.Voxels[x, y, z] = Colors.White.Multiply(oldColor.GetBrightness()).Opaque(); // ToDo: undo/redo
                                             break;
                                     }
                                 }

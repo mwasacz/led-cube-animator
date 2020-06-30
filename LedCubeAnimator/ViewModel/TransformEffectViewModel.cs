@@ -22,7 +22,7 @@ namespace LedCubeAnimator.ViewModel
         public double From
         {
             get => TransformEffect.From;
-            set => Set(TransformEffect, nameof(TransformEffect.From), value);
+            set => Undo.Set(TransformEffect, nameof(TransformEffect.From), value);
         }
 
         [Category("TransformEffect")]
@@ -30,7 +30,7 @@ namespace LedCubeAnimator.ViewModel
         public double To
         {
             get => TransformEffect.To;
-            set => Set(TransformEffect, nameof(TransformEffect.To), value);
+            set => Undo.Set(TransformEffect, nameof(TransformEffect.To), value);
         }
 
         [Category("TransformEffect")]
@@ -38,7 +38,7 @@ namespace LedCubeAnimator.ViewModel
         public bool Round
         {
             get => TransformEffect.Round;
-            set => Set(TransformEffect, nameof(TransformEffect.Round), value);
+            set => Undo.Set(TransformEffect, nameof(TransformEffect.Round), value);
         }
 
         protected override void ModelPropertyChanged(string propertyName)

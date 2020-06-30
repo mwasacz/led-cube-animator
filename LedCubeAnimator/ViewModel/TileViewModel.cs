@@ -12,22 +12,26 @@ using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 namespace LedCubeAnimator.ViewModel
 {
     [CategoryOrder("Tile", 0)]
-    public abstract class TileViewModel : BaseViewModel, IDisposable
+    public abstract class TileViewModel : ViewModelBase, IDisposable
     {
-        public TileViewModel(Tile tile, UndoManager undo) : base(undo)
+        public TileViewModel(Tile tile, UndoManager undo)
         {
             Tile = tile;
+            Undo = undo;
+
             Undo.ActionExecuted += Undo_ActionExecuted;
         }
 
         public Tile Tile { get; }
+
+        public UndoManager Undo { get; }
 
         [Category("Tile")]
         [PropertyOrder(0)]
         public string Name
         {
             get => Tile.Name;
-            set => Set(Tile, nameof(Tile.Name), value);
+            set => Undo.Set(Tile, nameof(Tile.Name), value);
         }
 
         [Category("Tile")]
@@ -35,7 +39,7 @@ namespace LedCubeAnimator.ViewModel
         public int Start
         {
             get => Tile.Start;
-            set => Set(Tile, nameof(Tile.Start), value);
+            set => Undo.Set(Tile, nameof(Tile.Start), value);
         }
 
         [Category("Tile")]
@@ -43,7 +47,7 @@ namespace LedCubeAnimator.ViewModel
         public int End
         {
             get => Tile.End;
-            set => Set(Tile, nameof(Tile.End), value);
+            set => Undo.Set(Tile, nameof(Tile.End), value);
         }
 
         [Category("Tile")]
@@ -51,7 +55,7 @@ namespace LedCubeAnimator.ViewModel
         public int Hierarchy
         {
             get => Tile.Hierarchy;
-            set => Set(Tile, nameof(Tile.Hierarchy), value);
+            set => Undo.Set(Tile, nameof(Tile.Hierarchy), value);
         }
 
         private void Undo_ActionExecuted(object sender, ActionExecutedEventArgs e)
