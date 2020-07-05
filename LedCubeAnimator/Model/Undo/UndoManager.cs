@@ -41,6 +41,15 @@ namespace LedCubeAnimator.Model.Undo
             ActionExecuted?.Invoke(this, new ActionExecutedEventArgs(action, false));
         }
 
+        public void FinishAction()
+        {
+            if (_currentAction != null && !_currentAction.IsEmpty)
+            {
+                _undoStack.Push(_currentAction);
+            }
+            _currentAction = null;
+        }
+
         public void Undo()
         {
             if (!CanUndo)

@@ -24,10 +24,13 @@ namespace LedCubeAnimator.ViewModel
         private RelayCommand _editChildren;
 
         [Category("Group")]
+        [DisplayName("Children")]
         [PropertyOrder(0)]
-        public ICommand Children => _editChildren ?? (_editChildren = new RelayCommand(() => EditChildren?.Invoke(this, EventArgs.Empty))); // ToDo
+        public ICommand ChildrenProperty => _editChildren ?? (_editChildren = new RelayCommand(() => EditChildren?.Invoke(this, EventArgs.Empty))); // ToDo
 
         public event EventHandler EditChildren;
+
+        public List<Tile> Children => Group.Children;
 
         [Category("Group")]
         [PropertyOrder(1)]
@@ -37,14 +40,21 @@ namespace LedCubeAnimator.ViewModel
             set => Undo.Set(Group, nameof(Group.ColorBlendMode), value);
         }
 
-        protected override void ModelPropertyChanged(string propertyName)
+        public override void ActionExecuted(IAction action)
         {
-            base.ModelPropertyChanged(propertyName);
-            switch (propertyName)
+            base.ActionExecuted(action);
+            if (action is PropertyChangeAction propertyAction && propertyAction.Object == Group)
             {
-                case nameof(Group.ColorBlendMode):
-                    RaisePropertyChanged(nameof(ColorBlendMode));
-                    break;
+                switch (propertyAction.Property)
+                {
+                    case nameof(Group.ColorBlendMode):
+                        RaisePropertyChanged(nameof(ColorBlendMode));
+                        break;
+                }
+            }
+            else if (action is CollectionChangeAction<Tile> collectionAction && collectionAction.Collection == Group.Children)
+            {
+                RaisePropertyChanged(nameof(Children));
             }
         }
     }

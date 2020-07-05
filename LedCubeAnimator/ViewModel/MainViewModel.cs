@@ -41,10 +41,8 @@ namespace LedCubeAnimator.ViewModel
         {
             Undo.Reset();
 
-            var group = new GroupViewModel(_animation.MainGroup, Undo);
-            Groups.Clear();
-            Groups.Add(group);
-            SelectedGroup = group;
+            var group = (GroupViewModel)CreateViewModel(_animation.MainGroup);
+            UpdateTilesAndGroups(new[] { group }, _animation.MainGroup.Children.Select(CreateViewModel), group);
 
             RaisePropertyChanged(nameof(ColorMode)); // ToDo: raise only if changed
 
@@ -71,20 +69,23 @@ namespace LedCubeAnimator.ViewModel
             {
                 if (_selectedTile != value)
                 {
+                    Undo.FinishAction();
+
                     if (_selectedTile is GroupViewModel g)
                     {
                         g.EditChildren -= Group_EditChildren;
                     }
 
                     _selectedTile = value;
-                    Set(ref _selectedGroup, null, nameof(SelectedGroup));
-                    RaisePropertyChanged(nameof(SelectedTile));
-                    RaisePropertyChanged(nameof(SelectedTileOrGroup));
 
                     if (_selectedTile is GroupViewModel group)
                     {
                         group.EditChildren += Group_EditChildren;
                     }
+
+                    Set(ref _selectedGroup, null, nameof(SelectedGroup));
+                    RaisePropertyChanged(nameof(SelectedTile));
+                    RaisePropertyChanged(nameof(SelectedTileOrGroup));
                 }
             }
         }
@@ -97,9 +98,11 @@ namespace LedCubeAnimator.ViewModel
             {
                 if (_selectedGroup != value)
                 {
-                    if (_selectedTile is GroupViewModel g)
+                    Undo.FinishAction();
+
+                    if (_selectedTile is GroupViewModel group)
                     {
-                        g.EditChildren -= Group_EditChildren;
+                        group.EditChildren -= Group_EditChildren;
                     }
 
                     _selectedGroup = value;
@@ -107,14 +110,10 @@ namespace LedCubeAnimator.ViewModel
                     RaisePropertyChanged(nameof(SelectedGroup));
                     RaisePropertyChanged(nameof(SelectedTileOrGroup));
 
-                    if (_selectedGroup != null)
+                    if (_selectedGroup != null && _selectedGroup != Groups.Last())
                     {
-                        while (_selectedGroup != Groups.Last())
-                        {
-                            Groups.RemoveAt(Groups.Count - 1);
-                        }
-
-                        UpdateTiles(_selectedGroup.Group);
+                        UpdateTilesAndGroups(Groups.Take(Groups.IndexOf(_selectedGroup) + 1),
+                            _selectedGroup.Children.Select(FindTileViewModel));
                     }
                 }
             }
@@ -125,50 +124,52 @@ namespace LedCubeAnimator.ViewModel
         private void Group_EditChildren(object sender, EventArgs e)
         {
             var group = (GroupViewModel)SelectedTile;
-            Groups.Add(group);
-            SelectedGroup = group;
-        }
-
-        private void UpdateTiles(Group group)
-        {
-            if (!Tiles.Select(t => t.Tile).SequenceEqual(group.Children))
-            {
-                foreach (var t in Tiles)
-                {
-                    t.Dispose();
-                }
-                Tiles.Clear();
-                foreach (var t in group.Children)
-                {
-                    Tiles.Add(CreateViewModel(t));
-                }
-            }
-
-            Time = 0;
-            RaisePropertyChanged(nameof(EndDate)); // ToDo: raise only if changed
+            UpdateTilesAndGroups(Groups.Append(group), group.Children.Select(CreateViewModel), group);
         }
 
         private TileViewModel CreateViewModel(Tile tile)
         {
+            TileViewModel viewModel;
             switch (tile)
             {
                 case Frame frame:
-                    return new FrameViewModel(frame, Undo);
+                    viewModel = new FrameViewModel(frame, Undo);
+                    break;
                 case Group group:
-                    return new GroupViewModel(group, Undo);
+                    viewModel = new GroupViewModel(group, Undo);
+                    break;
                 case MoveEffect moveEffect:
-                    return new MoveEffectViewModel(moveEffect, Undo);
+                    viewModel = new MoveEffectViewModel(moveEffect, Undo);
+                    break;
                 case RotateEffect rotateEffect:
-                    return new RotateEffectViewModel(rotateEffect, Undo);
+                    viewModel = new RotateEffectViewModel(rotateEffect, Undo);
+                    break;
                 case ScaleEffect scaleEffect:
-                    return new ScaleEffectViewModel(scaleEffect, Undo);
+                    viewModel = new ScaleEffectViewModel(scaleEffect, Undo);
+                    break;
                 case ShearEffect shearEffect:
-                    return new ShearEffectViewModel(shearEffect, Undo);
+                    viewModel = new ShearEffectViewModel(shearEffect, Undo);
+                    break;
                 case LinearDelayEffect linearDelayEffect:
-                    return new LinearDelayEffectViewModel(linearDelayEffect, Undo);
+                    viewModel = new LinearDelayEffectViewModel(linearDelayEffect, Undo);
+                    break;
                 default:
                     throw new Exception(); // ToDo
             }
+            viewModel.PropertyChanged += Tile_PropertyChanged;
+            return viewModel;
+        }
+
+        private void DeleteViewModel(TileViewModel tile)
+        {
+            tile.PropertyChanged -= Tile_PropertyChanged;
+        }
+
+        private string _selectedProperty;
+        public string SelectedProperty
+        {
+            get => _selectedProperty;
+            set => Set(ref _selectedProperty, value);
         }
 
         // ToDo: consider storing brightness as alpha
@@ -259,17 +260,11 @@ namespace LedCubeAnimator.ViewModel
         {
             if (SelectedTile != null)
             {
-                var tile = SelectedTile;
-                var parent = Groups.Last();
-                SelectedGroup = parent;
-                Undo.Remove(parent.Group.Children, tile.Tile);
+                Undo.Remove(Groups.Last().Group.Children, SelectedTile.Tile);
             }
             else if (SelectedGroup != null && Groups.Count > 1)
             {
-                var group = Groups.Last();
-                var parent = Groups[Groups.Count - 2];
-                SelectedGroup = parent;
-                Undo.Remove(parent.Group.Children, group.Group);
+                Undo.Remove(Groups[Groups.Count - 2].Group.Children, Groups.Last().Group);
             }
         }));
 
@@ -287,12 +282,12 @@ namespace LedCubeAnimator.ViewModel
 
             if (dialog.ShowDialog() == true)
             {
-                var group = Undo.Group();
+                Undo.Group();
                 Undo.Set(_animation, nameof(Animation.Size), viewModel.Size);
                 Undo.Set(_animation, nameof(Animation.ColorMode), viewModel.ColorMode);
                 Undo.Set(_animation, nameof(Animation.MonoColor), viewModel.MonoColor);
                 Undo.Set(_animation, nameof(Animation.FrameDuration), viewModel.FrameDuration);
-                group.Finish();
+                Undo.FinishAction();
             }
         }));
 
@@ -384,111 +379,180 @@ namespace LedCubeAnimator.ViewModel
 
         private void AddTile(Tile tile)
         {
-            var group = Groups.Last().Group;
-            Undo.Add(group.Children, tile);
+            Undo.Add(Groups.Last().Group.Children, tile);
         }
 
         private void Undo_ActionExecuted(object sender, ActionExecutedEventArgs e)
         {
-            if (e.Action is ActionGroup batch)
+            Tile tile = null;
+
+            switch (e.Action)
             {
-                if (batch.Actions.Any(a => a is PropertyChangeAction action && action.Object == _animation))
+                case PropertyChangeAction action:
+                    tile = action.Object as Tile;
+                    break;
+                case CollectionChangeAction<Tile> action:
+                    Predicate<Tile> matchGroup = t => t is Group g && g.Children == action.Collection;
+                    tile = matchGroup(SelectedGroup?.Group) ? SelectedGroup.Group : FindTile(_animation.MainGroup, matchGroup);
+                    break;
+                case ArrayChangeAction<Color> action:
+                    Predicate<Tile> matchFrame = t => t is Frame f && f.Voxels == action.Array;
+                    tile = matchFrame(SelectedTile?.Tile) ? SelectedTile.Tile : FindTile(_animation.MainGroup, matchFrame);
+                    break;
+            }
+
+            if (tile != null)
+            {
+                var viewModel = Tiles.Concat(Groups).SingleOrDefault(t => t.Tile == tile) ?? CreateViewModel(tile);
+                viewModel.ActionExecuted(e.Action);
+            }
+
+            _undoCommand.RaiseCanExecuteChanged(); // ToDo: use CommandWpf ???
+            _redoCommand.RaiseCanExecuteChanged();
+        }
+
+        private static Tile FindTile(Tile tile, Predicate<Tile> predicate)
+        {
+            if (predicate(tile))
+            {
+                return tile;
+            }
+            if (tile is Group g)
+            {
+                foreach (var t in g.Children)
                 {
-                    // ToDo: check for changes and update if necessary
-                    RaisePropertyChanged(nameof(ColorMode));
-                    RenderFrame();
+                    var ret = FindTile(t, predicate);
+                    if (ret != null)
+                    {
+                        return ret;
+                    }
                 }
+            }
+            return null;
+        }
+
+        private void Tile_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            var tile = (TileViewModel)sender;
+
+            if (tile is GroupViewModel group && e.PropertyName == nameof(GroupViewModel.Children))
+            {
+                NavigateToGroup(group);
+
+                SelectedProperty = nameof(GroupViewModel.ChildrenProperty);
             }
             else
             {
-                Tile tile = (e.Action as PropertyChangeAction)?.Object as Tile;
-                
-                if (e.Action is CollectionChangeAction<Tile> change)
-                {
-                    if (change.Additions.Count > 0 && !e.Undone)
-                    {
-                        tile = change.Additions.First();
-                    }
-                    else if (change.Removals.Count > 0 && e.Undone)
-                    {
-                        tile = change.Removals.First();
-                    }
-                }
+                NavigateToTile(tile);
 
-                if (tile != null)
-                {
-                    var tileViewModel = Tiles.SingleOrDefault(t => t.Tile == tile); // ToDo: FirstOrDefault
-                    if (tileViewModel != null)
-                    {
-                        SelectedTile = tileViewModel;
-                    }
-                    else
-                    {
-                        var groupViewModel = Groups.SingleOrDefault(g => g.Group == tile); // ToDo: FirstOrDefault
-                        if (groupViewModel != null)
-                        {
-                            SelectedGroup = groupViewModel;
-                        }
-                        else
-                        {
-                            NavigateToTile(tile);
-                        }
-                    }
-
-                    RenderFrame(); // ToDo: check for changes and render if necessary
-
-                    /*if (tile == SelectedGroup?.Group)
-                    {
-                        if (e.PropertyName == nameof(Group.Start)
-                            || e.PropertyName == nameof(Group.End)
-                            || e.PropertyName == nameof(Group.RepeatCount)
-                            || e.PropertyName == nameof(Group.Reverse))
-                        {
-                            RaisePropertyChanged(nameof(EndDate));
-                            Time = Math.Min(Math.Max(StartDate, Time), EndDate);
-                        }
-                    }*/
-                }
+                SelectedProperty = tile is FrameViewModel && e.PropertyName == nameof(FrameViewModel.Voxels)
+                    ? nameof(FrameViewModel.VoxelsProperty)
+                    : e.PropertyName;
             }
         }
 
-        private void NavigateToTile(Tile tile)
+        private void NavigateToTile(TileViewModel tile)
         {
-            var parents = new List<Group>();
-            FindTile(tile, parents, _animation.MainGroup);
-
-            UpdateTiles(parents[0]);
-            SelectedTile = Tiles.Single(t => t.Tile == tile); // ToDo: First
-
-            parents.Reverse();
-
-            int i = 1;
-            while (i < Groups.Count && i < parents.Count && Groups[i].Group == parents[i])
+            if (Tiles.Contains(tile))
             {
-                i++;
+                SelectedTile = tile;
             }
-            while (i < Groups.Count)
+            else if (tile is GroupViewModel group && Groups.Contains(group))
             {
-                Groups.RemoveAt(Groups.Count - 1);
+                SelectedGroup = group;
             }
-            while (i < parents.Count)
+            else
             {
-                Groups.Add(new GroupViewModel(parents[i], Undo));
-                i++;
+                var parents = new List<Group>();
+                FindTileParents(tile.Tile, parents, _animation.MainGroup);
+                parents.Reverse();
+                UpdateTilesAndGroups(parents.Select(FindGroupViewModel),
+                    parents.Last().Children.Select(t => t == tile.Tile ? tile : FindTileViewModel(t)),
+                    tile);
             }
         }
 
-        private bool FindTile(Tile tile, List<Group> parents, Group group)
+        private void NavigateToGroup(GroupViewModel group)
+        {
+            if (Groups.Last() == group)
+            {
+                SelectedGroup = group;
+                UpdateTilesAndGroups(Groups, group.Children.Select(FindTileViewModel));
+            }
+            else if (Groups.Contains(group))
+            {
+                SelectedGroup = group;
+            }
+            else
+            {
+                var parents = new List<Group>();
+                FindTileParents(group.Group, parents, _animation.MainGroup);
+                parents.Reverse();
+                UpdateTilesAndGroups(parents.Select(FindGroupViewModel).Append(group),
+                    group.Children.Select(FindTileViewModel),
+                    group);
+            }
+        }
+
+        private static bool FindTileParents(Tile tile, List<Group> parents, Group group)
         {
             foreach (var t in group.Children)
             {
-                if (t == tile || (t is Group g && FindTile(tile, parents, g)))
+                if (t == tile || (t is Group g && FindTileParents(tile, parents, g)))
                 {
                     parents.Add(group);
                     return true;
                 }
             }
             return false;
+        }
+
+        private TileViewModel FindTileViewModel(Tile tile) => Tiles.Concat(Groups).SingleOrDefault(t => t.Tile == tile) ?? CreateViewModel(tile);
+
+        private GroupViewModel FindGroupViewModel(Group group) => (GroupViewModel)FindTileViewModel(group);
+
+        private void UpdateTilesAndGroups(IEnumerable<GroupViewModel> groups, IEnumerable<TileViewModel> tiles, TileViewModel selectedTile = null)
+        {
+            var newTiles = tiles.ToArray();
+            var newGroups = groups.ToArray();
+
+            foreach (var tile in newTiles.Except(Tiles).ToArray())
+            {
+                Tiles.Add(tile);
+            }
+            foreach (var group in newGroups.Except(Groups).ToArray())
+            {
+                Groups.Add(group);
+            }
+
+            if (newTiles.Contains(selectedTile))
+            {
+                SelectedTile = selectedTile;
+            }
+            else if (newGroups.Contains(selectedTile))
+            {
+                SelectedGroup = (GroupViewModel)selectedTile;
+            }
+
+            foreach (var tile in Tiles.Except(newTiles).ToArray())
+            {
+                Tiles.Remove(tile);
+                if (!Groups.Contains(tile))
+                {
+                    DeleteViewModel(tile);
+                }
+            }
+            foreach (var group in Groups.Except(newGroups).ToArray())
+            {
+                Groups.Remove(group);
+                if (!Tiles.Contains(group))
+                {
+                    DeleteViewModel(group);
+                }
+            }
+
+            Time = 0;
+            RaisePropertyChanged(nameof(EndDate)); // ToDo: raise only if changed
         }
 
         private string _filePath;
@@ -582,7 +646,7 @@ namespace LedCubeAnimator.ViewModel
             {
                 Undo.Undo();
             }
-        }, Undo.CanUndo));
+        }, () => Undo.CanUndo));
 
         private RelayCommand _redoCommand;
         public ICommand RedoCommand => _redoCommand ?? (_redoCommand = new RelayCommand(() =>
@@ -591,6 +655,6 @@ namespace LedCubeAnimator.ViewModel
             {
                 Undo.Redo();
             }
-        }, Undo.CanRedo));
+        }, () => Undo.CanRedo));
     }
 }

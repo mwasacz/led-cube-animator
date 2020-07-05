@@ -27,14 +27,17 @@ namespace LedCubeAnimator.ViewModel
             set => Undo.Set(MoveEffect, nameof(MoveEffect.Axis), value);
         }
 
-        protected override void ModelPropertyChanged(string propertyName)
+        public override void ActionExecuted(IAction action)
         {
-            base.ModelPropertyChanged(propertyName);
-            switch (propertyName)
+            base.ActionExecuted(action);
+            if (action is PropertyChangeAction propertyAction && propertyAction.Object == MoveEffect)
             {
-                case nameof(MoveEffect.Axis):
-                    RaisePropertyChanged(nameof(Axis));
-                    break;
+                switch (propertyAction.Property)
+                {
+                    case nameof(MoveEffect.Axis):
+                        RaisePropertyChanged(nameof(Axis));
+                        break;
+                }
             }
         }
     }

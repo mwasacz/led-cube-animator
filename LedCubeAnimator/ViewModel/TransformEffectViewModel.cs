@@ -41,20 +41,23 @@ namespace LedCubeAnimator.ViewModel
             set => Undo.Set(TransformEffect, nameof(TransformEffect.Round), value);
         }
 
-        protected override void ModelPropertyChanged(string propertyName)
+        public override void ActionExecuted(IAction action)
         {
-            base.ModelPropertyChanged(propertyName);
-            switch (propertyName)
+            base.ActionExecuted(action);
+            if (action is PropertyChangeAction propertyAction && propertyAction.Object == TransformEffect)
             {
-                case nameof(TransformEffect.From):
-                    RaisePropertyChanged(nameof(From));
-                    break;
-                case nameof(TransformEffect.To):
-                    RaisePropertyChanged(nameof(To));
-                    break;
-                case nameof(TransformEffect.Round):
-                    RaisePropertyChanged(nameof(Round));
-                    break;
+                switch (propertyAction.Property)
+                {
+                    case nameof(TransformEffect.From):
+                        RaisePropertyChanged(nameof(From));
+                        break;
+                    case nameof(TransformEffect.To):
+                        RaisePropertyChanged(nameof(To));
+                        break;
+                    case nameof(TransformEffect.Round):
+                        RaisePropertyChanged(nameof(Round));
+                        break;
+                }
             }
         }
     }

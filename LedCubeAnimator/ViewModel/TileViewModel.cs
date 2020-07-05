@@ -12,14 +12,12 @@ using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 namespace LedCubeAnimator.ViewModel
 {
     [CategoryOrder("Tile", 0)]
-    public abstract class TileViewModel : ViewModelBase, IDisposable
+    public abstract class TileViewModel : ViewModelBase
     {
         public TileViewModel(Tile tile, UndoManager undo)
         {
             Tile = tile;
             Undo = undo;
-
-            Undo.ActionExecuted += Undo_ActionExecuted;
         }
 
         public Tile Tile { get; }
@@ -58,36 +56,26 @@ namespace LedCubeAnimator.ViewModel
             set => Undo.Set(Tile, nameof(Tile.Hierarchy), value);
         }
 
-        private void Undo_ActionExecuted(object sender, ActionExecutedEventArgs e)
+        public virtual void ActionExecuted(IAction action)
         {
-            if (e.Action is PropertyChangeAction action && action.Object == Tile)
+            if (action is PropertyChangeAction propertyAction && propertyAction.Object == Tile)
             {
-                ModelPropertyChanged(action.Property);
+                switch (propertyAction.Property)
+                {
+                    case nameof(Tile.Name):
+                        RaisePropertyChanged(nameof(Name));
+                        break;
+                    case nameof(Tile.Start):
+                        RaisePropertyChanged(nameof(Start));
+                        break;
+                    case nameof(Tile.End):
+                        RaisePropertyChanged(nameof(End));
+                        break;
+                    case nameof(Tile.Hierarchy):
+                        RaisePropertyChanged(nameof(Hierarchy));
+                        break;
+                }
             }
-        }
-
-        protected virtual void ModelPropertyChanged(string propertyName)
-        {
-            switch (propertyName)
-            {
-                case nameof(Tile.Name):
-                    RaisePropertyChanged(nameof(Name));
-                    break;
-                case nameof(Tile.Start):
-                    RaisePropertyChanged(nameof(Start));
-                    break;
-                case nameof(Tile.End):
-                    RaisePropertyChanged(nameof(End));
-                    break;
-                case nameof(Tile.Hierarchy):
-                    RaisePropertyChanged(nameof(Hierarchy));
-                    break;
-            }
-        }
-
-        public void Dispose()
-        {
-            Undo.ActionExecuted -= Undo_ActionExecuted;
         }
     }
 }

@@ -50,23 +50,26 @@ namespace LedCubeAnimator.ViewModel
             set => Undo.Set(Effect, nameof(Effect.PersistEffect), value);
         }
 
-        protected override void ModelPropertyChanged(string propertyName)
+        public override void ActionExecuted(IAction action)
         {
-            base.ModelPropertyChanged(propertyName);
-            switch (propertyName)
+            base.ActionExecuted(action);
+            if (action is PropertyChangeAction propertyAction && propertyAction.Object == Effect)
             {
-                case nameof(Effect.Reverse):
-                    RaisePropertyChanged(nameof(Reverse));
-                    break;
-                case nameof(Effect.RepeatCount):
-                    RaisePropertyChanged(nameof(RepeatCount));
-                    break;
-                case nameof(Effect.TimeInterpolation):
-                    RaisePropertyChanged(nameof(TimeInterpolation));
-                    break;
-                case nameof(Effect.PersistEffect):
-                    RaisePropertyChanged(nameof(PersistEffect));
-                    break;
+                switch (propertyAction.Property)
+                {
+                    case nameof(Effect.Reverse):
+                        RaisePropertyChanged(nameof(Reverse));
+                        break;
+                    case nameof(Effect.RepeatCount):
+                        RaisePropertyChanged(nameof(RepeatCount));
+                        break;
+                    case nameof(Effect.TimeInterpolation):
+                        RaisePropertyChanged(nameof(TimeInterpolation));
+                        break;
+                    case nameof(Effect.PersistEffect):
+                        RaisePropertyChanged(nameof(PersistEffect));
+                        break;
+                }
             }
         }
     }

@@ -33,17 +33,20 @@ namespace LedCubeAnimator.ViewModel
             set => Undo.Set(ShearEffect, nameof(ShearEffect.Center), value);
         }
 
-        protected override void ModelPropertyChanged(string propertyName)
+        public override void ActionExecuted(IAction action)
         {
-            base.ModelPropertyChanged(propertyName);
-            switch (propertyName)
+            base.ActionExecuted(action);
+            if (action is PropertyChangeAction propertyAction && propertyAction.Object == ShearEffect)
             {
-                case nameof(ShearEffect.Plane):
-                    RaisePropertyChanged(nameof(Plane));
-                    break;
-                case nameof(ShearEffect.Center):
-                    RaisePropertyChanged(nameof(Center));
-                    break;
+                switch (propertyAction.Property)
+                {
+                    case nameof(ShearEffect.Plane):
+                        RaisePropertyChanged(nameof(Plane));
+                        break;
+                    case nameof(ShearEffect.Center):
+                        RaisePropertyChanged(nameof(Center));
+                        break;
+                }
             }
         }
     }

@@ -8,11 +8,9 @@ namespace LedCubeAnimator.Model.Undo
 {
     public static class UndoManagerExtensions
     {
-        public static ActionGroup Group(this UndoManager undo)
+        public static void Group(this UndoManager undo)
         {
-            var group = new ActionGroup();
-            undo.RecordAction(group);
-            return group;
+            undo.RecordAction(new ActionGroup());
         }
 
         public static void Set(this UndoManager undo, object obj, string name, object newValue)
@@ -30,9 +28,9 @@ namespace LedCubeAnimator.Model.Undo
             undo.RecordAction(new CollectionChangeAction<T>(collection, item, false));
         }
 
-        public static void ChangeArray(this UndoManager undo, Array array, object newValue, params int[] indices)
+        public static void ChangeArray<T>(this UndoManager undo, Array array, T newValue, params int[] indices)
         {
-            undo.RecordAction(new ArrayChangeAction(array, newValue, indices));
+            undo.RecordAction(new ArrayChangeAction<T>(array, newValue, indices));
         }
     }
 }

@@ -35,17 +35,20 @@ namespace LedCubeAnimator.ViewModel
             set => Undo.Set(RotateEffect, nameof(RotateEffect.Center), value);
         }
 
-        protected override void ModelPropertyChanged(string propertyName)
+        public override void ActionExecuted(IAction action)
         {
-            base.ModelPropertyChanged(propertyName);
-            switch (propertyName)
+            base.ActionExecuted(action);
+            if (action is PropertyChangeAction propertyAction && propertyAction.Object == RotateEffect)
             {
-                case nameof(RotateEffect.Axis):
-                    RaisePropertyChanged(nameof(Axis));
-                    break;
-                case nameof(RotateEffect.Center):
-                    RaisePropertyChanged(nameof(Center));
-                    break;
+                switch (propertyAction.Property)
+                {
+                    case nameof(RotateEffect.Axis):
+                        RaisePropertyChanged(nameof(Axis));
+                        break;
+                    case nameof(RotateEffect.Center):
+                        RaisePropertyChanged(nameof(Center));
+                        break;
+                }
             }
         }
     }

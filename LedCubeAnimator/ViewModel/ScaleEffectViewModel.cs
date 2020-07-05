@@ -34,17 +34,20 @@ namespace LedCubeAnimator.ViewModel
             set => Undo.Set(ScaleEffect, nameof(ScaleEffect.Center), value);
         }
 
-        protected override void ModelPropertyChanged(string propertyName)
+        public override void ActionExecuted(IAction action)
         {
-            base.ModelPropertyChanged(propertyName);
-            switch (propertyName)
+            base.ActionExecuted(action);
+            if (action is PropertyChangeAction propertyAction && propertyAction.Object == ScaleEffect)
             {
-                case nameof(ScaleEffect.Axis):
-                    RaisePropertyChanged(nameof(Axis));
-                    break;
-                case nameof(ScaleEffect.Center):
-                    RaisePropertyChanged(nameof(Center));
-                    break;
+                switch (propertyAction.Property)
+                {
+                    case nameof(ScaleEffect.Axis):
+                        RaisePropertyChanged(nameof(Axis));
+                        break;
+                    case nameof(ScaleEffect.Center):
+                        RaisePropertyChanged(nameof(Center));
+                        break;
+                }
             }
         }
     }

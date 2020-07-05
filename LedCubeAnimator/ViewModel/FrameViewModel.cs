@@ -60,21 +60,32 @@ namespace LedCubeAnimator.ViewModel
         }
 
         [Category("Frame")]
+        [DisplayName("Voxels")]
         [PropertyOrder(0)]
-        public Color[,,] Voxels { get; }
+        public object VoxelsProperty { get; }
 
-        protected override void ModelPropertyChanged(string propertyName)
+        public Color[,,] Voxels => Frame.Voxels;
+
+        public override void ActionExecuted(IAction action)
         {
-            base.ModelPropertyChanged(propertyName);
-            switch (propertyName)
+            base.ActionExecuted(action);
+            if (action is PropertyChangeAction propertyAction && propertyAction.Object == Frame)
             {
-                case nameof(Frame.Offset):
-                    RaisePropertyChanged(nameof(From));
-                    RaisePropertyChanged(nameof(To));
-                    break;
-                case nameof(Frame.Voxels):
-                    RaisePropertyChanged(nameof(To));
-                    break;
+                switch (propertyAction.Property)
+                {
+                    case nameof(Frame.Offset):
+                        RaisePropertyChanged(nameof(From));
+                        RaisePropertyChanged(nameof(To));
+                        break;
+                    case nameof(Frame.Voxels):
+                        RaisePropertyChanged(nameof(To));
+                        RaisePropertyChanged(nameof(Voxels));
+                        break;
+                }
+            }
+            else if (action is ArrayChangeAction<Color> arrayAction && arrayAction.Array == Frame.Voxels)
+            {
+                RaisePropertyChanged(nameof(Voxels));
             }
         }
     }

@@ -9,7 +9,6 @@ namespace LedCubeAnimator.Model.Undo
     public class ActionGroup : IAction
     {
         public IList<IAction> Actions { get; } = new List<IAction>();
-        public bool IsFinished { get; private set; }
 
         public bool IsEmpty => Actions.All(a => a.IsEmpty);
 
@@ -31,27 +30,18 @@ namespace LedCubeAnimator.Model.Undo
 
         public bool TryMerge(IAction action)
         {
-            if (!IsFinished)
+            if (action is ActionGroup group)
             {
-                if (action is ActionGroup group)
+                foreach (var a in group.Actions)
                 {
-                    foreach (var a in group.Actions)
-                    {
-                        Actions.Add(a);
-                    }
+                    Actions.Add(a);
                 }
-                else
-                {
-                    Actions.Add(action);
-                }
-                return true;
             }
-            return false;
-        }
-
-        public void Finish()
-        {
-            IsFinished = true;
+            else
+            {
+                Actions.Add(action);
+            }
+            return true;
         }
     }
 }

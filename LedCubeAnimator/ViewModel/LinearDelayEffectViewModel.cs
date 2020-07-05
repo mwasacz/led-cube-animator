@@ -41,20 +41,23 @@ namespace LedCubeAnimator.ViewModel
             set => Undo.Set(LinearDelayEffect, nameof(LinearDelayEffect.Value), value);
         }
 
-        protected override void ModelPropertyChanged(string propertyName)
+        public override void ActionExecuted(IAction action)
         {
-            base.ModelPropertyChanged(propertyName);
-            switch (propertyName)
+            base.ActionExecuted(action);
+            if (action is PropertyChangeAction propertyAction && propertyAction.Object == LinearDelayEffect)
             {
-                case nameof(LinearDelayEffect.Axis):
-                    RaisePropertyChanged(nameof(Axis));
-                    break;
-                case nameof(LinearDelayEffect.Center):
-                    RaisePropertyChanged(nameof(Center));
-                    break;
-                case nameof(LinearDelayEffect.Value):
-                    RaisePropertyChanged(nameof(Value));
-                    break;
+                switch (propertyAction.Property)
+                {
+                    case nameof(LinearDelayEffect.Axis):
+                        RaisePropertyChanged(nameof(Axis));
+                        break;
+                    case nameof(LinearDelayEffect.Center):
+                        RaisePropertyChanged(nameof(Center));
+                        break;
+                    case nameof(LinearDelayEffect.Value):
+                        RaisePropertyChanged(nameof(Value));
+                        break;
+                }
             }
         }
     }
