@@ -72,6 +72,18 @@ namespace LedCubeAnimator.ViewModel
         }
 
         [Category("Frame")]
+        [PropertyOrder(3)]
+        public VoxelRoundMode VoxelRoundMode
+        {
+            get => Frame.VoxelRoundMode;
+            set
+            {
+                Frame.VoxelRoundMode = value;
+                RaisePropertyChanged(nameof(VoxelRoundMode));
+            }
+        }
+
+        [Category("Frame")]
         [PropertyOrder(0)]
         public ObservableCollection<Color> Voxels { get; } = new ObservableCollection<Color>();
 

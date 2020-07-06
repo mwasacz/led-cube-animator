@@ -171,13 +171,13 @@
                     <xctk:PropertyDefinition TargetProperties="Voxels" />
                     <xctk:PropertyDefinition TargetProperties="From" />
                     <xctk:PropertyDefinition TargetProperties="To" />
+                    <xctk:PropertyDefinition TargetProperties="VoxelRoundMode" />
                     <xctk:PropertyDefinition TargetProperties="TimeInterpolation" />
                     <xctk:PropertyDefinition TargetProperties="RepeatCount" />
                     <xctk:PropertyDefinition TargetProperties="Reverse" />
                     <xctk:PropertyDefinition TargetProperties="PersistEffect" />
                     <xctk:PropertyDefinition TargetProperties="Children" />
                     <xctk:PropertyDefinition TargetProperties="ColorBlendMode" />
-                    <xctk:PropertyDefinition TargetProperties="Round" />
                     <xctk:PropertyDefinition TargetProperties="Axis" />
                     <xctk:PropertyDefinition TargetProperties="Plane" />
                     <xctk:PropertyDefinition TargetProperties="Center" />

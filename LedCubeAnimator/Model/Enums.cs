@@ -14,6 +14,8 @@ namespace LedCubeAnimator.Model
 
     public enum ColorBlendMode { Add, Multiply, Min, Max, Average }
 
+    public enum VoxelRoundMode { Round, Average, Min, Max }
+
     public enum Axis { X, Y, Z }
 
     public enum Plane { XY, XZ, YX, YZ, ZX, ZY }

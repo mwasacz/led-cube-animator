@@ -39,17 +39,5 @@ namespace LedCubeAnimator.ViewModel
                 RaisePropertyChanged(nameof(To));
             }
         }
-
-        [Category("TransformEffect")]
-        [PropertyOrder(2)]
-        public bool Round
-        {
-            get => TransformEffect.Round;
-            set
-            {
-                TransformEffect.Round = value;
-                RaisePropertyChanged(nameof(Round));
-            }
-        }
     }
 }
