@@ -12,7 +12,7 @@ namespace LedCubeAnimator.Model
 
     public enum TimeInterpolation { Linear, Accelerate, Decelerate, Sine }
 
-    public enum ColorBlendMode { Add, Multiply }
+    public enum ColorBlendMode { Add, Multiply, Min, Max, Average }
 
     public enum Axis { X, Y, Z }
 

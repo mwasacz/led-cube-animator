@@ -31,6 +31,39 @@ namespace LedCubeAnimator.Model
             };
         }
 
+        public static Color Min(this Color color1, Color color2)
+        {
+            return new Color
+            {
+                A = Math.Min(color1.A, color2.A),
+                R = Math.Min(color1.R, color2.R),
+                G = Math.Min(color1.G, color2.G),
+                B = Math.Min(color1.B, color2.B)
+            };
+        }
+
+        public static Color Max(this Color color1, Color color2)
+        {
+            return new Color
+            {
+                A = Math.Max(color1.A, color2.A),
+                R = Math.Max(color1.R, color2.R),
+                G = Math.Max(color1.G, color2.G),
+                B = Math.Max(color1.B, color2.B)
+            };
+        }
+
+        public static Color Average(this Color color1, Color color2)
+        {
+            return new Color
+            {
+                A = (byte)((color1.A + color2.A) / 2),
+                R = (byte)((color1.R + color2.R) / 2),
+                G = (byte)((color1.G + color2.G) / 2),
+                B = (byte)((color1.B + color2.B) / 2)
+            };
+        }
+
         public static Color Multiply(this Color color1, Color color2)
         {
             return new Color

@@ -44,13 +44,20 @@ namespace LedCubeAnimator.Model
 
         private Color MixColors(Color c1, Color c2)
         {
-            if (ColorBlendMode == ColorBlendMode.Add)
+            switch (ColorBlendMode)
             {
-                return c1.Add(c2);
-            }
-            else
-            {
-                return c1.Multiply(c2);
+                case ColorBlendMode.Add:
+                    return c1.Add(c2);
+                case ColorBlendMode.Multiply:
+                    return c1.Multiply(c2);
+                case ColorBlendMode.Min:
+                    return c1.Min(c2);
+                case ColorBlendMode.Max:
+                    return c1.Max(c2);
+                case ColorBlendMode.Average:
+                    return c1.Average(c2);
+                default:
+                    throw new Exception(); // ToDo: NotSupportedException
             }
         }
 
