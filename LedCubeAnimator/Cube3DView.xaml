@@ -3,17 +3,29 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:helix="http://helix-toolkit.org/wpf"
              xmlns:local="clr-namespace:LedCubeAnimator"
              mc:Ignorable="d"
              d:DesignHeight="450"
              d:DesignWidth="800">
-    <Border MouseDown="Window_MouseDown"
-            MouseMove="Window_MouseMove"
-            MouseUp="Window_MouseUp"
-            MouseWheel="Window_MouseWheel"
-            Background="White"
-            BorderBrush="DarkGray"
+    <Border BorderBrush="DarkGray"
             BorderThickness="1">
-        <Viewport3D Name="MainViewport" />
+        <helix:HelixViewport3D Name="MainViewport"
+                               IsMoveEnabled="False"
+                               IsPanEnabled="False"
+                               ShowCameraTarget="False"
+                               ShowCoordinateSystem="True"
+                               ZoomExtentsWhenLoaded="True"
+                               Background="White"
+                               MouseDown="MainViewport_MouseDown">
+            <helix:DirectionalHeadLight Position="3,0,5"
+                                        Brightness="0.7" />
+            <ModelVisual3D>
+                <ModelVisual3D.Content>
+                    <AmbientLight Color="Gray" />
+                </ModelVisual3D.Content>
+            </ModelVisual3D>
+            <helix:SortingVisual3D x:Name="SortingVisual3D" />
+        </helix:HelixViewport3D>
     </Border>
 </UserControl>
