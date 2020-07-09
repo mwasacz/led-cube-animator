@@ -9,22 +9,21 @@ namespace LedCubeAnimator.Model.Undo
     public class UndoManager
     {
         private IAction _currentAction;
-        private Stack<IAction> _undoStack = new Stack<IAction>();
-        private Stack<IAction> _redoStack = new Stack<IAction>();
+        private readonly Stack<IAction> _undoStack = new Stack<IAction>();
+        private readonly Stack<IAction> _redoStack = new Stack<IAction>();
 
         public event EventHandler<ActionExecutedEventArgs> ActionExecuted;
 
-        public bool CanUndo => _undoStack.Count > 0 || (_currentAction != null && !_currentAction.IsEmpty);
+        public bool CanUndo => _undoStack.Count > 0 || _currentAction?.IsEmpty == false;
         public bool CanRedo => _redoStack.Count > 0;
 
-        public void RecordAction(IAction action, bool tryMerge = true)
+        public void RecordAction(IAction action, bool allowMerge = true)
         {
             _redoStack.Clear();
-            action.Do();
 
             if (_currentAction != null)
             {
-                if (!(tryMerge && _currentAction.TryMerge(action)))
+                if (!(allowMerge && _currentAction.TryMerge(action)))
                 {
                     if (!_currentAction.IsEmpty)
                     {
@@ -38,12 +37,13 @@ namespace LedCubeAnimator.Model.Undo
                 _currentAction = action;
             }
 
+            action.Do();
             ActionExecuted?.Invoke(this, new ActionExecutedEventArgs(action, false));
         }
 
         public void FinishAction()
         {
-            if (_currentAction != null && !_currentAction.IsEmpty)
+            if (_currentAction?.IsEmpty == false)
             {
                 _undoStack.Push(_currentAction);
             }
@@ -57,11 +57,11 @@ namespace LedCubeAnimator.Model.Undo
                 throw new InvalidOperationException("There is nothing to undo");
             }
 
-            var action = _currentAction ?? _undoStack.Pop();
+            var action = _currentAction?.IsEmpty == false ? _currentAction : _undoStack.Pop();
             _currentAction = null;
-            action.Undo();
             _redoStack.Push(action);
 
+            action.Undo();
             ActionExecuted?.Invoke(this, new ActionExecutedEventArgs(action, true));
         }
 
@@ -73,9 +73,9 @@ namespace LedCubeAnimator.Model.Undo
             }
 
             var action = _redoStack.Pop();
-            action.Do();
             _undoStack.Push(action);
 
+            action.Do();
             ActionExecuted?.Invoke(this, new ActionExecutedEventArgs(action, false));
         }
 

@@ -34,14 +34,26 @@ namespace LedCubeAnimator.Model.Undo
             {
                 foreach (var a in group.Actions)
                 {
-                    Actions.Add(a);
+                    AddAction(a);
                 }
             }
             else
             {
-                Actions.Add(action);
+                AddAction(action);
             }
             return true;
+        }
+
+        private void AddAction(IAction action)
+        {
+            foreach (var a in Actions.Reverse())
+            {
+                if (a.TryMerge(action))
+                {
+                    return;
+                }
+            }
+            Actions.Add(action);
         }
     }
 }
