@@ -27,7 +27,7 @@ namespace LedCubeAnimator.Model.Undo
         public object NewValue { get; private set; }
         public object OldValue { get; }
 
-        public bool IsEmpty => OldValue == null ? NewValue == null : OldValue.Equals(NewValue);
+        public bool IsEmpty => AreEqual(OldValue, NewValue);
 
         public void Do() => _propertyInfo.SetValue(Object, NewValue);
 
@@ -38,12 +38,14 @@ namespace LedCubeAnimator.Model.Undo
             if (action is PropertyChangeAction next
                 && next.Object == Object
                 && next.Property == Property
-                && (next.OldValue == null ? NewValue == null : next.OldValue.Equals(NewValue)))
+                && AreEqual(next.OldValue, NewValue))
             {
                 NewValue = next.NewValue;
                 return true;
             }
             return false;
         }
+
+        private bool AreEqual(object obj1, object obj2) => obj1 == null ? obj2 == null : obj1.Equals(obj2);
     }
 }

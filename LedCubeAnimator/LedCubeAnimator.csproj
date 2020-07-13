@@ -114,7 +114,7 @@
     <Compile Include="Model\ShearEffect.cs" />
     <Compile Include="Model\TransformEffect.cs" />
     <Compile Include="Model\Undo\ActionExecutedEventArgs.cs" />
-    <Compile Include="Model\Undo\ActionGroup.cs" />
+    <Compile Include="Model\Undo\GroupAction.cs" />
     <Compile Include="Model\Undo\IAction.cs" />
     <Compile Include="Model\Undo\PropertyChangeAction.cs" />
     <Compile Include="Model\Undo\UndoManager.cs" />

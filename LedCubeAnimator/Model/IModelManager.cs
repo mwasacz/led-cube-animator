@@ -20,10 +20,7 @@ namespace LedCubeAnimator.Model
         void Undo();
         void Redo();
 
-        void StartGroupChange();
-        void EndGroupChange();
-
-        void SetAnimationProperty(string name, object newValue);
+        void SetAnimationProperties(int size, ColorMode colorMode, Color monoColor, int frameDuration);
         void SetTileProperty(Tile tile, string name, object newValue);
         void AddTile(Group group, Tile newTile);
         void RemoveTile(Group group, Tile oldTile);

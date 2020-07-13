@@ -18,9 +18,6 @@ namespace LedCubeAnimator.Model
 
         private readonly UndoManager _undo = new UndoManager();
         private string _filePath;
-        private readonly Dictionary<ICollection<Tile>, Group> _groups = new Dictionary<ICollection<Tile>, Group>();
-        private readonly Dictionary<Array, Frame> _frames = new Dictionary<Array, Frame>();
-        private bool _groupChange;
 
         public Animation Animation { get; private set; }
 
@@ -29,8 +26,6 @@ namespace LedCubeAnimator.Model
             var group = new Group { Name = "MainGroup" };
             Animation = new Animation { MainGroup = group, Size = 4, MonoColor = Colors.White };
             _filePath = null;
-            _groups.Clear();
-            _frames.Clear();
             _undo.Reset();
         }
 
@@ -41,8 +36,6 @@ namespace LedCubeAnimator.Model
             {
                 Animation = animation;
                 _filePath = path;
-                _groups.Clear();
-                _frames.Clear();
                 _undo.Reset();
                 return true;
             }
@@ -77,48 +70,31 @@ namespace LedCubeAnimator.Model
         public void Undo() => _undo.Undo();
         public void Redo() => _undo.Redo();
 
-        public void StartGroupChange()
+        public void SetAnimationProperties(int size, ColorMode colorMode, Color monoColor, int frameDuration)
         {
-            if (!_groupChange)
-            {
-                _undo.Group();
-                _groupChange = true;
-            }
+            var group = _undo.Group(false);
+            _undo.Set(Animation, nameof(Animation.Size), size, true);
+            _undo.Set(Animation, nameof(Animation.ColorMode), colorMode, true);
+            _undo.Set(Animation, nameof(Animation.MonoColor), monoColor, true);
+            _undo.Set(Animation, nameof(Animation.Size), size, true);
+            group.Finish();
         }
 
-        public void EndGroupChange()
-        {
-            _undo.FinishAction();
-            _groupChange = false;
-        }
-
-        public void SetAnimationProperty(string name, object newValue) => _undo.Set(Animation, name, newValue, _groupChange);
-
-        public void SetTileProperty(Tile tile, string name, object newValue) => _undo.Set(tile, name, newValue, _groupChange);
+        public void SetTileProperty(Tile tile, string name, object newValue) => _undo.Set(tile, name, newValue, false);
 
         public void AddTile(Group group, Tile newTile)
         {
-            _groups[group.Children] = group;
-            _undo.Add(group.Children, newTile, _groupChange);
+            _undo.Add(group.Children, newTile, false);
         }
 
         public void RemoveTile(Group group, Tile oldTile)
         {
-            _groups[group.Children] = group;
-            if(oldTile is Group g)
-            {
-                _groups.Remove(g.Children);
-            }
-            else if (oldTile is Frame f)
-            {
-                _frames.Remove(f.Voxels);
-            }
-            _undo.Remove(group.Children, oldTile, _groupChange);
+            _undo.Remove(group.Children, oldTile, false);
         }
 
         public void SetVoxel(Frame frame, Color newColor, params int[] indices)
         {
-            _frames[frame.Voxels] = frame;
+            _undo.Group(true);
             _undo.ChangeArray(frame.Voxels, newColor, true, indices);
         }
 
@@ -126,7 +102,7 @@ namespace LedCubeAnimator.Model
 
         private void Undo_ActionExecuted(object sender, ActionExecutedEventArgs e)
         {
-            var actions = (e.Action as ActionGroup)?.Actions ?? new[] { e.Action };
+            var actions = (e.Action as GroupAction)?.Actions ?? new[] { e.Action };
             PropertiesChanged?.Invoke(this, new PropertiesChangedEventArgs(actions
                 .Select(a => new PropertiesChangedEventArgs.Change(GetChangedObject(a), GetChangedProperty(a)))
                 .ToArray()));
@@ -139,15 +115,15 @@ namespace LedCubeAnimator.Model
                 case PropertyChangeAction propertyChange:
                     return propertyChange.Object;
                 case CollectionChangeAction<Tile> collectionChange:
-                    return _groups[collectionChange.Collection];
+                    return FindTile(Animation.MainGroup, t => t is Group g && g.Children == collectionChange.Collection);
                 case ArrayChangeAction<Color> arrayChange:
-                    return _frames[arrayChange.Array];
+                    return FindTile(Animation.MainGroup, t => t is Frame f && f.Voxels == arrayChange.Array);
                 default:
                     throw new Exception(); // ToDo
             }
         }
 
-        private string GetChangedProperty(IAction action)
+        private static string GetChangedProperty(IAction action)
         {
             switch (action)
             {
@@ -160,6 +136,26 @@ namespace LedCubeAnimator.Model
                 default:
                     throw new Exception(); // ToDo
             }
+        }
+
+        private static Tile FindTile(Tile tile, Predicate<Tile> predicate)
+        {
+            if (predicate(tile))
+            {
+                return tile;
+            }
+            if (tile is Group g)
+            {
+                foreach (var t in g.Children)
+                {
+                    var ret = FindTile(t, predicate);
+                    if (ret != null)
+                    {
+                        return ret;
+                    }
+                }
+            }
+            return null;
         }
     }
 }

@@ -11,74 +11,42 @@ namespace LedCubeAnimator.Model.Undo
         public ArrayChangeAction(Array array, T newValue, params int[] indices)
         {
             Array = array;
+            NewValue = newValue;
+            Indices = indices;
 
-            var oldValue = (T)Array.GetValue(indices);
-            if (!AreEqual(oldValue, newValue))
-            {
-                Changes.Add(new ArrayChange<T>(oldValue, newValue, indices));
-            }
+            OldValue = (T)Array.GetValue(indices);
         }
 
         public Array Array { get; }
-        public IList<ArrayChange<T>> Changes { get; } = new List<ArrayChange<T>>();
+        public T OldValue { get; }
+        public T NewValue { get; private set; }
+        public int[] Indices { get; }
 
-        public bool IsEmpty => Changes.Count == 0;
+        public bool IsEmpty => AreEqual(OldValue, NewValue);
 
         public void Do()
         {
-            foreach (var change in Changes)
-            {
-                Array.SetValue(change.NewValue, change.Indices);
-            }
+            Array.SetValue(NewValue, Indices);
         }
 
         public void Undo()
         {
-            foreach (var change in Changes)
-            {
-                Array.SetValue(change.OldValue, change.Indices);
-            }
+            Array.SetValue(OldValue, Indices);
         }
 
         public bool TryMerge(IAction action)
         {
-            if (action is ArrayChangeAction<T> next && next.Array == Array)
+            if (action is ArrayChangeAction<T> next
+                && next.Array == Array
+                && next.Indices.SequenceEqual(Indices)
+                && AreEqual(next.OldValue, NewValue))
             {
-                foreach (var newChange in next.Changes)
-                {
-                    var oldChange = Changes.SingleOrDefault(c => c.Indices.SequenceEqual(newChange.Indices));
-                    if (oldChange != null)
-                    {
-                        Changes.Remove(oldChange);
-                        if (!AreEqual(oldChange.OldValue, newChange.NewValue))
-                        {
-                            Changes.Add(new ArrayChange<T>(oldChange.OldValue, newChange.NewValue, oldChange.Indices));
-                        }
-                    }
-                    else
-                    {
-                        Changes.Add(newChange);
-                    }
-                }
+                NewValue = next.NewValue;
                 return true;
             }
             return false;
         }
 
         private bool AreEqual(T obj1, T obj2) => obj1 == null ? obj2 == null : obj1.Equals(obj2);
-
-        public class ArrayChange<U>
-        {
-            public ArrayChange(U oldValue, U newValue, int[] indices)
-            {
-                OldValue = oldValue;
-                NewValue = newValue;
-                Indices = indices;
-            }
-
-            public U OldValue { get; }
-            public U NewValue { get; }
-            public int[] Indices { get; }
-        }
     }
 }

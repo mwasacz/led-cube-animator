@@ -268,12 +268,7 @@ namespace LedCubeAnimator.ViewModel
 
             if (dialog.ShowDialog() == true)
             {
-                Model.StartGroupChange();
-                Model.SetAnimationProperty(nameof(Animation.Size), viewModel.Size);
-                Model.SetAnimationProperty(nameof(Animation.ColorMode), viewModel.ColorMode);
-                Model.SetAnimationProperty(nameof(Animation.MonoColor), viewModel.MonoColor);
-                Model.SetAnimationProperty(nameof(Animation.FrameDuration), viewModel.FrameDuration);
-                Model.EndGroupChange();
+                Model.SetAnimationProperties(viewModel.Size, viewModel.ColorMode, viewModel.MonoColor, viewModel.FrameDuration);
             }
         }));
 
@@ -370,12 +365,18 @@ namespace LedCubeAnimator.ViewModel
 
         private void Model_PropertiesChanged(object sender, PropertiesChangedEventArgs e)
         {
-            var change = e.Changes.LastOrDefault(c => c.Object is Tile);
-
-            if (change != null)
+            if (e.Changes.Any(c => c.Object is Animation))
             {
-                var viewModel = Tiles.Concat(Groups).SingleOrDefault(t => t.Tile == change.Object) ?? CreateViewModel((Tile)change.Object);
-                viewModel.ModelPropertyChanged(change.Property);
+                RenderFrame(); // ToDo: render if necessary
+            }
+            else
+            {
+                var change = e.Changes.LastOrDefault(c => c.Object is Tile);
+                if (change != null)
+                {
+                    var viewModel = Tiles.Concat(Groups).SingleOrDefault(t => t.Tile == change.Object) ?? CreateViewModel((Tile)change.Object);
+                    viewModel.ModelPropertyChanged(change.Property);
+                }
             }
 
             _undoCommand.RaiseCanExecuteChanged(); // ToDo: use CommandWpf ???

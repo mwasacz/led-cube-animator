@@ -17,7 +17,7 @@ namespace LedCubeAnimator.Model.Undo
         public bool CanUndo => _undoStack.Count > 0 || _currentAction?.IsEmpty == false;
         public bool CanRedo => _redoStack.Count > 0;
 
-        public void RecordAction(IAction action, bool allowMerge = true)
+        public void RecordAction(IAction action, bool allowMerge)
         {
             _redoStack.Clear();
 
@@ -39,15 +39,6 @@ namespace LedCubeAnimator.Model.Undo
 
             action.Do();
             ActionExecuted?.Invoke(this, new ActionExecutedEventArgs(action, false));
-        }
-
-        public void FinishAction()
-        {
-            if (_currentAction?.IsEmpty == false)
-            {
-                _undoStack.Push(_currentAction);
-            }
-            _currentAction = null;
         }
 
         public void Undo()

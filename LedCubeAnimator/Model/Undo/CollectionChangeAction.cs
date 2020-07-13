@@ -11,63 +11,57 @@ namespace LedCubeAnimator.Model.Undo
         public CollectionChangeAction(ICollection<T> collection, T item, bool add)
         {
             Collection = collection;
-            if (add)
-            {
-                Additions.Add(item);
-            }
-            else
-            {
-                Removals.Add(item);
-            }
+            Item = item;
+            Added = add;
+            Removed = !add;
         }
 
         public ICollection<T> Collection { get; }
-        public ICollection<T> Additions { get; } = new HashSet<T>();
-        public ICollection<T> Removals { get; } = new HashSet<T>();
+        public T Item { get; }
+        public bool Added { get; private set; }
+        public bool Removed { get; private set; }
 
-        public bool IsEmpty => Additions.Count == 0 && Removals.Count == 0;
+        public bool IsEmpty => !Added && !Removed;
 
         public void Do()
         {
-            foreach (var item in Removals)
+            if (Removed)
             {
-                Collection.Remove(item);
+                Collection.Remove(Item);
             }
-            foreach (var item in Additions)
+            if (Added)
             {
-                Collection.Add(item);
+                Collection.Add(Item);
             }
         }
 
         public void Undo()
         {
-            foreach (var item in Additions)
+            if (Added)
             {
-                Collection.Remove(item);
+                Collection.Remove(Item);
             }
-            foreach (var item in Removals)
+            if (Removed)
             {
-                Collection.Add(item);
+                Collection.Add(Item);
             }
         }
 
         public bool TryMerge(IAction action)
         {
-            if (action is CollectionChangeAction<T> next && next.Collection == Collection)
+            if (action is CollectionChangeAction<T> next
+                && next.Collection == Collection
+                && AreEqual(next.Item, Item)
+                && !(next.Added && Added)
+                && !(next.Removed && Removed))
             {
-                foreach (var item in next.Removals)
-                {
-                    Additions.Remove(item);
-                    Removals.Add(item);
-                }
-                foreach (var item in next.Additions)
-                {
-                    Removals.Remove(item);
-                    Additions.Add(item);
-                }
+                Added = false;
+                Removed = false;
                 return true;
             }
             return false;
         }
+
+        private bool AreEqual(T obj1, T obj2) => obj1 == null ? obj2 == null : obj1.Equals(obj2);
     }
 }
