@@ -14,7 +14,7 @@ namespace LedCubeAnimator.ViewModel
     [CategoryOrder("ScaleEffect", 3)]
     public class ScaleEffectViewModel : TransformEffectViewModel
     {
-        public ScaleEffectViewModel(ScaleEffect scaleEffect, UndoManager undo) : base(scaleEffect, undo) { }
+        public ScaleEffectViewModel(ScaleEffect scaleEffect, IModelManager model) : base(scaleEffect, model) { }
 
         public ScaleEffect ScaleEffect => (ScaleEffect)TransformEffect;
 
@@ -23,7 +23,7 @@ namespace LedCubeAnimator.ViewModel
         public Axis Axis
         {
             get => ScaleEffect.Axis;
-            set => Undo.Set(ScaleEffect, nameof(ScaleEffect.Axis), value);
+            set => Model.SetTileProperty(ScaleEffect, nameof(ScaleEffect.Axis), value);
         }
 
         [Category("ScaleEffect")]
@@ -31,23 +31,20 @@ namespace LedCubeAnimator.ViewModel
         public double Center
         {
             get => ScaleEffect.Center;
-            set => Undo.Set(ScaleEffect, nameof(ScaleEffect.Center), value);
+            set => Model.SetTileProperty(ScaleEffect, nameof(ScaleEffect.Center), value);
         }
 
-        public override void ActionExecuted(IAction action)
+        public override void ModelPropertyChanged(string propertyName)
         {
-            base.ActionExecuted(action);
-            if (action is PropertyChangeAction propertyAction && propertyAction.Object == ScaleEffect)
+            base.ModelPropertyChanged(propertyName);
+            switch (propertyName)
             {
-                switch (propertyAction.Property)
-                {
-                    case nameof(ScaleEffect.Axis):
-                        RaisePropertyChanged(nameof(Axis));
-                        break;
-                    case nameof(ScaleEffect.Center):
-                        RaisePropertyChanged(nameof(Center));
-                        break;
-                }
+                case nameof(ScaleEffect.Axis):
+                    RaisePropertyChanged(nameof(Axis));
+                    break;
+                case nameof(ScaleEffect.Center):
+                    RaisePropertyChanged(nameof(Center));
+                    break;
             }
         }
     }

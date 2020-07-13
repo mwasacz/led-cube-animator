@@ -14,22 +14,22 @@ namespace LedCubeAnimator.ViewModel
     [CategoryOrder("Tile", 0)]
     public abstract class TileViewModel : ViewModelBase
     {
-        public TileViewModel(Tile tile, UndoManager undo)
+        public TileViewModel(Tile tile, IModelManager model)
         {
             Tile = tile;
-            Undo = undo;
+            Model = model;
         }
 
         public Tile Tile { get; }
 
-        public UndoManager Undo { get; }
+        public IModelManager Model { get; }
 
         [Category("Tile")]
         [PropertyOrder(0)]
         public string Name
         {
             get => Tile.Name;
-            set => Undo.Set(Tile, nameof(Tile.Name), value);
+            set => Model.SetTileProperty(Tile, nameof(Tile.Name), value);
         }
 
         [Category("Tile")]
@@ -37,7 +37,7 @@ namespace LedCubeAnimator.ViewModel
         public int Start
         {
             get => Tile.Start;
-            set => Undo.Set(Tile, nameof(Tile.Start), value);
+            set => Model.SetTileProperty(Tile, nameof(Tile.Start), value);
         }
 
         [Category("Tile")]
@@ -45,7 +45,7 @@ namespace LedCubeAnimator.ViewModel
         public int End
         {
             get => Tile.End;
-            set => Undo.Set(Tile, nameof(Tile.End), value);
+            set => Model.SetTileProperty(Tile, nameof(Tile.End), value);
         }
 
         [Category("Tile")]
@@ -53,28 +53,25 @@ namespace LedCubeAnimator.ViewModel
         public int Hierarchy
         {
             get => Tile.Hierarchy;
-            set => Undo.Set(Tile, nameof(Tile.Hierarchy), value);
+            set => Model.SetTileProperty(Tile, nameof(Tile.Hierarchy), value);
         }
 
-        public virtual void ActionExecuted(IAction action)
+        public virtual void ModelPropertyChanged(string propertyName)
         {
-            if (action is PropertyChangeAction propertyAction && propertyAction.Object == Tile)
+            switch (propertyName)
             {
-                switch (propertyAction.Property)
-                {
-                    case nameof(Tile.Name):
-                        RaisePropertyChanged(nameof(Name));
-                        break;
-                    case nameof(Tile.Start):
-                        RaisePropertyChanged(nameof(Start));
-                        break;
-                    case nameof(Tile.End):
-                        RaisePropertyChanged(nameof(End));
-                        break;
-                    case nameof(Tile.Hierarchy):
-                        RaisePropertyChanged(nameof(Hierarchy));
-                        break;
-                }
+                case nameof(Tile.Name):
+                    RaisePropertyChanged(nameof(Name));
+                    break;
+                case nameof(Tile.Start):
+                    RaisePropertyChanged(nameof(Start));
+                    break;
+                case nameof(Tile.End):
+                    RaisePropertyChanged(nameof(End));
+                    break;
+                case nameof(Tile.Hierarchy):
+                    RaisePropertyChanged(nameof(Hierarchy));
+                    break;
             }
         }
     }

@@ -15,7 +15,7 @@ namespace LedCubeAnimator.ViewModel
     [CategoryOrder("RotateEffect", 3)]
     public class RotateEffectViewModel : TransformEffectViewModel
     {
-        public RotateEffectViewModel(RotateEffect rotateEffect, UndoManager undo) : base(rotateEffect, undo) { }
+        public RotateEffectViewModel(RotateEffect rotateEffect, IModelManager model) : base(rotateEffect, model) { }
 
         public RotateEffect RotateEffect => (RotateEffect)TransformEffect;
 
@@ -24,7 +24,7 @@ namespace LedCubeAnimator.ViewModel
         public Axis Axis
         {
             get => RotateEffect.Axis;
-            set => Undo.Set(RotateEffect, nameof(RotateEffect.Axis), value);
+            set => Model.SetTileProperty(RotateEffect, nameof(RotateEffect.Axis), value);
         }
 
         [Category("RotateEffect")]
@@ -32,23 +32,20 @@ namespace LedCubeAnimator.ViewModel
         public Point Center
         {
             get => RotateEffect.Center;
-            set => Undo.Set(RotateEffect, nameof(RotateEffect.Center), value);
+            set => Model.SetTileProperty(RotateEffect, nameof(RotateEffect.Center), value);
         }
 
-        public override void ActionExecuted(IAction action)
+        public override void ModelPropertyChanged(string propertyName)
         {
-            base.ActionExecuted(action);
-            if (action is PropertyChangeAction propertyAction && propertyAction.Object == RotateEffect)
+            base.ModelPropertyChanged(propertyName);
+            switch (propertyName)
             {
-                switch (propertyAction.Property)
-                {
-                    case nameof(RotateEffect.Axis):
-                        RaisePropertyChanged(nameof(Axis));
-                        break;
-                    case nameof(RotateEffect.Center):
-                        RaisePropertyChanged(nameof(Center));
-                        break;
-                }
+                case nameof(RotateEffect.Axis):
+                    RaisePropertyChanged(nameof(Axis));
+                    break;
+                case nameof(RotateEffect.Center):
+                    RaisePropertyChanged(nameof(Center));
+                    break;
             }
         }
     }

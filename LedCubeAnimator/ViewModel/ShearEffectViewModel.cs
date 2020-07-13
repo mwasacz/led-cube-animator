@@ -13,7 +13,7 @@ namespace LedCubeAnimator.ViewModel
     [CategoryOrder("ShearEffect", 3)]
     public class ShearEffectViewModel : TransformEffectViewModel
     {
-        public ShearEffectViewModel(ShearEffect shearEffect, UndoManager undo) : base(shearEffect, undo) { }
+        public ShearEffectViewModel(ShearEffect shearEffect, IModelManager model) : base(shearEffect, model) { }
 
         public ShearEffect ShearEffect => (ShearEffect)TransformEffect;
 
@@ -22,7 +22,7 @@ namespace LedCubeAnimator.ViewModel
         public Plane Plane
         {
             get => ShearEffect.Plane;
-            set => Undo.Set(ShearEffect, nameof(ShearEffect.Plane), value);
+            set => Model.SetTileProperty(ShearEffect, nameof(ShearEffect.Plane), value);
         }
 
         [Category("ShearEffect")]
@@ -30,23 +30,20 @@ namespace LedCubeAnimator.ViewModel
         public double Center
         {
             get => ShearEffect.Center;
-            set => Undo.Set(ShearEffect, nameof(ShearEffect.Center), value);
+            set => Model.SetTileProperty(ShearEffect, nameof(ShearEffect.Center), value);
         }
 
-        public override void ActionExecuted(IAction action)
+        public override void ModelPropertyChanged(string propertyName)
         {
-            base.ActionExecuted(action);
-            if (action is PropertyChangeAction propertyAction && propertyAction.Object == ShearEffect)
+            base.ModelPropertyChanged(propertyName);
+            switch (propertyName)
             {
-                switch (propertyAction.Property)
-                {
-                    case nameof(ShearEffect.Plane):
-                        RaisePropertyChanged(nameof(Plane));
-                        break;
-                    case nameof(ShearEffect.Center):
-                        RaisePropertyChanged(nameof(Center));
-                        break;
-                }
+                case nameof(ShearEffect.Plane):
+                    RaisePropertyChanged(nameof(Plane));
+                    break;
+                case nameof(ShearEffect.Center):
+                    RaisePropertyChanged(nameof(Center));
+                    break;
             }
         }
     }

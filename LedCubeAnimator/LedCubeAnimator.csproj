@@ -100,7 +100,10 @@
     <Compile Include="IntToDoubleConverter.cs" />
     <Compile Include="InverseBoolConverter.cs" />
     <Compile Include="Model\Animation.cs" />
+    <Compile Include="Model\IModelManager.cs" />
     <Compile Include="Model\LinearDelayEffect.cs" />
+    <Compile Include="Model\ModelManager.cs" />
+    <Compile Include="Model\PropertiesChangedEventArgs.cs" />
     <Compile Include="Model\Undo\ArrayChangeAction.cs" />
     <Compile Include="Model\Undo\CollectionChangeAction.cs" />
     <Compile Include="Model\Enums.cs" />

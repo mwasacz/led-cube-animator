@@ -15,7 +15,7 @@ namespace LedCubeAnimator.ViewModel
     [CategoryOrder("MoveEffect", 3)]
     public class MoveEffectViewModel : TransformEffectViewModel
     {
-        public MoveEffectViewModel(MoveEffect moveEffect, UndoManager undo) : base(moveEffect, undo) { }
+        public MoveEffectViewModel(MoveEffect moveEffect, IModelManager model) : base(moveEffect, model) { }
 
         public MoveEffect MoveEffect => (MoveEffect)TransformEffect;
 
@@ -24,20 +24,17 @@ namespace LedCubeAnimator.ViewModel
         public Axis Axis
         {
             get => MoveEffect.Axis;
-            set => Undo.Set(MoveEffect, nameof(MoveEffect.Axis), value);
+            set => Model.SetTileProperty(MoveEffect, nameof(MoveEffect.Axis), value);
         }
 
-        public override void ActionExecuted(IAction action)
+        public override void ModelPropertyChanged(string propertyName)
         {
-            base.ActionExecuted(action);
-            if (action is PropertyChangeAction propertyAction && propertyAction.Object == MoveEffect)
+            base.ModelPropertyChanged(propertyName);
+            switch (propertyName)
             {
-                switch (propertyAction.Property)
-                {
-                    case nameof(MoveEffect.Axis):
-                        RaisePropertyChanged(nameof(Axis));
-                        break;
-                }
+                case nameof(MoveEffect.Axis):
+                    RaisePropertyChanged(nameof(Axis));
+                    break;
             }
         }
     }

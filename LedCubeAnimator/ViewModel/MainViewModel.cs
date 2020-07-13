@@ -1,7 +1,6 @@
 ﻿using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using LedCubeAnimator.Model;
-using LedCubeAnimator.Model.Undo;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
@@ -23,26 +22,19 @@ namespace LedCubeAnimator.ViewModel
     {
         public MainViewModel()
         {
-            Undo = new UndoManager();
-            CreateDefaultAnimation();
-            Undo.ActionExecuted += Undo_ActionExecuted;
-        }
-
-        public UndoManager Undo { get; }
-
-        private void CreateDefaultAnimation()
-        {
-            var group = new Group { Name = "MainGroup" };
-            _animation = new Animation { MainGroup = group, Size = 4, MonoColor = Colors.White };
+            Model = new ModelManager();
             CreateDefaultViewModel();
+            Model.PropertiesChanged += Model_PropertiesChanged;
         }
+
+        public IModelManager Model { get; }
+
+        public Animation Animation => Model.Animation;
 
         private void CreateDefaultViewModel()
         {
-            Undo.Reset();
-
-            var group = (GroupViewModel)CreateViewModel(_animation.MainGroup);
-            UpdateTilesAndGroups(new[] { group }, _animation.MainGroup.Children.Select(CreateViewModel), group);
+            var group = (GroupViewModel)CreateViewModel(Animation.MainGroup);
+            UpdateTilesAndGroups(new[] { group }, Animation.MainGroup.Children.Select(CreateViewModel), group);
 
             RaisePropertyChanged(nameof(ColorMode)); // ToDo: raise only if changed
 
@@ -54,8 +46,6 @@ namespace LedCubeAnimator.ViewModel
 
             RenderFrame();
         }
-
-        private Animation _animation;
 
         public ObservableCollection<TileViewModel> Tiles { get; } = new ObservableCollection<TileViewModel>();
 
@@ -69,8 +59,6 @@ namespace LedCubeAnimator.ViewModel
             {
                 if (_selectedTile != value)
                 {
-                    Undo.FinishAction();
-
                     if (_selectedTile is GroupViewModel g)
                     {
                         g.EditChildren -= Group_EditChildren;
@@ -98,8 +86,6 @@ namespace LedCubeAnimator.ViewModel
             {
                 if (_selectedGroup != value)
                 {
-                    Undo.FinishAction();
-
                     if (_selectedTile is GroupViewModel group)
                     {
                         group.EditChildren -= Group_EditChildren;
@@ -133,25 +119,25 @@ namespace LedCubeAnimator.ViewModel
             switch (tile)
             {
                 case Frame frame:
-                    viewModel = new FrameViewModel(frame, Undo);
+                    viewModel = new FrameViewModel(frame, Model);
                     break;
                 case Group group:
-                    viewModel = new GroupViewModel(group, Undo);
+                    viewModel = new GroupViewModel(group, Model);
                     break;
                 case MoveEffect moveEffect:
-                    viewModel = new MoveEffectViewModel(moveEffect, Undo);
+                    viewModel = new MoveEffectViewModel(moveEffect, Model);
                     break;
                 case RotateEffect rotateEffect:
-                    viewModel = new RotateEffectViewModel(rotateEffect, Undo);
+                    viewModel = new RotateEffectViewModel(rotateEffect, Model);
                     break;
                 case ScaleEffect scaleEffect:
-                    viewModel = new ScaleEffectViewModel(scaleEffect, Undo);
+                    viewModel = new ScaleEffectViewModel(scaleEffect, Model);
                     break;
                 case ShearEffect shearEffect:
-                    viewModel = new ShearEffectViewModel(shearEffect, Undo);
+                    viewModel = new ShearEffectViewModel(shearEffect, Model);
                     break;
                 case LinearDelayEffect linearDelayEffect:
-                    viewModel = new LinearDelayEffectViewModel(linearDelayEffect, Undo);
+                    viewModel = new LinearDelayEffectViewModel(linearDelayEffect, Model);
                     break;
                 default:
                     throw new Exception(); // ToDo
@@ -173,7 +159,7 @@ namespace LedCubeAnimator.ViewModel
         }
 
         // ToDo: consider storing brightness as alpha
-        public ColorMode ColorMode => _animation.ColorMode;
+        public ColorMode ColorMode => Animation.ColorMode;
 
         private Color _selectedColor;
         public Color SelectedColor
@@ -189,7 +175,7 @@ namespace LedCubeAnimator.ViewModel
             }
         }
 
-        public Color DisplayColor => SelectedColor.Multiply(_animation.MonoColor);
+        public Color DisplayColor => SelectedColor.Multiply(Animation.MonoColor);
 
         private ColorItem _recentColor;
         public ColorItem RecentColor
@@ -235,7 +221,7 @@ namespace LedCubeAnimator.ViewModel
 
         private RelayCommand _addFrameCommand;
         public ICommand AddFrameCommand => _addFrameCommand ?? (_addFrameCommand = new RelayCommand(() =>
-            AddTile(new Frame { Name = "Frame", Voxels = new Color[_animation.Size, _animation.Size, _animation.Size] })));
+            AddTile(new Frame { Name = "Frame", Voxels = new Color[Animation.Size, Animation.Size, Animation.Size] })));
 
         private RelayCommand _addGroupCommand;
         public ICommand AddGroupCommand => _addGroupCommand ?? (_addGroupCommand = new RelayCommand(() => AddTile(new Group { Name = "Group" })));
@@ -260,11 +246,11 @@ namespace LedCubeAnimator.ViewModel
         {
             if (SelectedTile != null)
             {
-                Undo.Remove(Groups.Last().Group.Children, SelectedTile.Tile);
+                Model.RemoveTile(Groups.Last().Group, SelectedTile.Tile);
             }
             else if (SelectedGroup != null && Groups.Count > 1)
             {
-                Undo.Remove(Groups[Groups.Count - 2].Group.Children, Groups.Last().Group);
+                Model.RemoveTile(Groups[Groups.Count - 2].Group, Groups.Last().Group);
             }
         }));
 
@@ -273,21 +259,21 @@ namespace LedCubeAnimator.ViewModel
         {
             var viewModel = new CubeSettingsViewModel
             {
-                Size = _animation.Size,
-                ColorMode = _animation.ColorMode,
-                MonoColor = _animation.MonoColor,
-                FrameDuration = _animation.FrameDuration
+                Size = Animation.Size,
+                ColorMode = Animation.ColorMode,
+                MonoColor = Animation.MonoColor,
+                FrameDuration = Animation.FrameDuration
             };
             var dialog = new CubeSettingsDialog(viewModel);
 
             if (dialog.ShowDialog() == true)
             {
-                Undo.Group();
-                Undo.Set(_animation, nameof(Animation.Size), viewModel.Size);
-                Undo.Set(_animation, nameof(Animation.ColorMode), viewModel.ColorMode);
-                Undo.Set(_animation, nameof(Animation.MonoColor), viewModel.MonoColor);
-                Undo.Set(_animation, nameof(Animation.FrameDuration), viewModel.FrameDuration);
-                Undo.FinishAction();
+                Model.StartGroupChange();
+                Model.SetAnimationProperty(nameof(Animation.Size), viewModel.Size);
+                Model.SetAnimationProperty(nameof(Animation.ColorMode), viewModel.ColorMode);
+                Model.SetAnimationProperty(nameof(Animation.MonoColor), viewModel.MonoColor);
+                Model.SetAnimationProperty(nameof(Animation.FrameDuration), viewModel.FrameDuration);
+                Model.EndGroupChange();
             }
         }));
 
@@ -315,14 +301,14 @@ namespace LedCubeAnimator.ViewModel
                 }
                 else
                 {
-                    if (_animation.ColorMode == ColorMode.Mono)
+                    if (Animation.ColorMode == ColorMode.Mono)
                     {
                         var color = frame.Voxels[x, y, z] == Colors.Black ? Colors.White : Colors.Black;
-                        Undo.ChangeArray(frame.Voxels, color, x, y, z);
+                        Model.SetVoxel(frame, color, x, y, z);
                     }
                     else
                     {
-                        Undo.ChangeArray(frame.Voxels, SelectedColor, x, y, z);
+                        Model.SetVoxel(frame, SelectedColor, x, y, z);
                         AddColorToRecents(SelectedColor);
                     }
                 }
@@ -344,7 +330,7 @@ namespace LedCubeAnimator.ViewModel
 
         private void RenderFrame()
         {
-            Frame = Renderer.Render(_animation, Time, true);
+            Frame = Renderer.Render(Animation, Time, true);
         }
 
         private void AddColorToRecents(Color color)
@@ -363,7 +349,7 @@ namespace LedCubeAnimator.ViewModel
             {
                 var colorItem = ColorMode == ColorMode.RGB ?
                     new ColorItem(color, color.ToString()) :
-                    new ColorItem(color.Multiply(_animation.MonoColor), color.GetBrightness().ToString());
+                    new ColorItem(color.Multiply(Animation.MonoColor), color.GetBrightness().ToString());
 
                 _recentColors.Add(new Tuple<ColorItem, Color>(colorItem, color));
                 RecentColors.Insert(0, colorItem);
@@ -379,56 +365,21 @@ namespace LedCubeAnimator.ViewModel
 
         private void AddTile(Tile tile)
         {
-            Undo.Add(Groups.Last().Group.Children, tile);
+            Model.AddTile(Groups.Last().Group, tile);
         }
 
-        private void Undo_ActionExecuted(object sender, ActionExecutedEventArgs e)
+        private void Model_PropertiesChanged(object sender, PropertiesChangedEventArgs e)
         {
-            Tile tile = null;
+            var change = e.Changes.LastOrDefault(c => c.Object is Tile);
 
-            switch (e.Action)
+            if (change != null)
             {
-                case PropertyChangeAction action:
-                    tile = action.Object as Tile;
-                    break;
-                case CollectionChangeAction<Tile> action:
-                    Predicate<Tile> matchGroup = t => t is Group g && g.Children == action.Collection;
-                    tile = matchGroup(SelectedGroup?.Group) ? SelectedGroup.Group : FindTile(_animation.MainGroup, matchGroup);
-                    break;
-                case ArrayChangeAction<Color> action:
-                    Predicate<Tile> matchFrame = t => t is Frame f && f.Voxels == action.Array;
-                    tile = matchFrame(SelectedTile?.Tile) ? SelectedTile.Tile : FindTile(_animation.MainGroup, matchFrame);
-                    break;
-            }
-
-            if (tile != null)
-            {
-                var viewModel = Tiles.Concat(Groups).SingleOrDefault(t => t.Tile == tile) ?? CreateViewModel(tile);
-                viewModel.ActionExecuted(e.Action);
+                var viewModel = Tiles.Concat(Groups).SingleOrDefault(t => t.Tile == change.Object) ?? CreateViewModel((Tile)change.Object);
+                viewModel.ModelPropertyChanged(change.Property);
             }
 
             _undoCommand.RaiseCanExecuteChanged(); // ToDo: use CommandWpf ???
             _redoCommand.RaiseCanExecuteChanged();
-        }
-
-        private static Tile FindTile(Tile tile, Predicate<Tile> predicate)
-        {
-            if (predicate(tile))
-            {
-                return tile;
-            }
-            if (tile is Group g)
-            {
-                foreach (var t in g.Children)
-                {
-                    var ret = FindTile(t, predicate);
-                    if (ret != null)
-                    {
-                        return ret;
-                    }
-                }
-            }
-            return null;
         }
 
         private void Tile_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -449,6 +400,8 @@ namespace LedCubeAnimator.ViewModel
                     ? nameof(FrameViewModel.VoxelsProperty)
                     : e.PropertyName;
             }
+
+            RenderFrame(); // ToDo: render if necessary
         }
 
         private void NavigateToTile(TileViewModel tile)
@@ -464,7 +417,7 @@ namespace LedCubeAnimator.ViewModel
             else
             {
                 var parents = new List<Group>();
-                FindTileParents(tile.Tile, parents, _animation.MainGroup);
+                FindTileParents(tile.Tile, parents, Animation.MainGroup);
                 parents.Reverse();
                 UpdateTilesAndGroups(parents.Select(FindGroupViewModel),
                     parents.Last().Children.Select(t => t == tile.Tile ? tile : FindTileViewModel(t)),
@@ -486,7 +439,7 @@ namespace LedCubeAnimator.ViewModel
             else
             {
                 var parents = new List<Group>();
-                FindTileParents(group.Group, parents, _animation.MainGroup);
+                FindTileParents(group.Group, parents, Animation.MainGroup);
                 parents.Reverse();
                 UpdateTilesAndGroups(parents.Select(FindGroupViewModel).Append(group),
                     group.Children.Select(FindTileViewModel),
@@ -555,8 +508,6 @@ namespace LedCubeAnimator.ViewModel
             RaisePropertyChanged(nameof(EndDate)); // ToDo: raise only if changed
         }
 
-        private string _filePath;
-
         private RelayCommand _newCommand;
         public ICommand NewCommand => _newCommand ?? (_newCommand = new RelayCommand(() =>
         {
@@ -571,8 +522,8 @@ namespace LedCubeAnimator.ViewModel
                     return;
             }
 
-            _filePath = null;
-            CreateDefaultAnimation();
+            Model.New();
+            CreateDefaultViewModel();
         }));
 
         private RelayCommand _openCommand;
@@ -585,27 +536,19 @@ namespace LedCubeAnimator.ViewModel
                 return;
             }
 
-            var a = FileReaderWriter.Open(dialog.FileName);
-
-            if (a == null)
+            if (!Model.Open(dialog.FileName))
             {
                 MessageBox.Show("Error occured when opening file", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
-            _filePath = dialog.FileName;
-            _animation = a;
             CreateDefaultViewModel();
         }));
 
         private RelayCommand _saveCommand;
         public ICommand SaveCommand => _saveCommand ?? (_saveCommand = new RelayCommand(() =>
         {
-            if (_filePath != null)
-            {
-                FileReaderWriter.Save(_filePath, _animation);
-            }
-            else
+            if (!Model.Save())
             {
                 SaveAsCommand.Execute(null);
             }
@@ -621,9 +564,7 @@ namespace LedCubeAnimator.ViewModel
                 return;
             }
 
-            _filePath = dialog.FileName;
-
-            FileReaderWriter.Save(_filePath, _animation);
+            Model.SaveAs(dialog.FileName);
         }));
 
         private RelayCommand _exportMWCommand;
@@ -636,25 +577,25 @@ namespace LedCubeAnimator.ViewModel
                 return;
             }
 
-            Exporter.Export(dialog.FileName, _animation);
+            Model.Export(dialog.FileName);
         }));
 
         private RelayCommand _undoCommand;
         public ICommand UndoCommand => _undoCommand ?? (_undoCommand = new RelayCommand(() =>
         {
-            if (Undo.CanUndo)
+            if (Model.CanUndo)
             {
-                Undo.Undo();
+                Model.Undo();
             }
-        }, () => Undo.CanUndo));
+        }, () => Model.CanUndo));
 
         private RelayCommand _redoCommand;
         public ICommand RedoCommand => _redoCommand ?? (_redoCommand = new RelayCommand(() =>
         {
-            if (Undo.CanRedo)
+            if (Model.CanRedo)
             {
-                Undo.Redo();
+                Model.Redo();
             }
-        }, () => Undo.CanRedo));
+        }, () => Model.CanRedo));
     }
 }

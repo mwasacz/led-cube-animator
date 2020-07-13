@@ -17,8 +17,8 @@ namespace LedCubeAnimator.ViewModel
     [CategoryOrder("Group", 2)]
     public class GroupViewModel : EffectViewModel
     {
-        public GroupViewModel(Group group, UndoManager undo) : base(group, undo) { }
-        
+        public GroupViewModel(Group group, IModelManager model) : base(group, model) { }
+
         public Group Group => (Group)Effect;
 
         private RelayCommand _editChildren;
@@ -37,24 +37,20 @@ namespace LedCubeAnimator.ViewModel
         public ColorBlendMode ColorBlendMode
         {
             get => Group.ColorBlendMode;
-            set => Undo.Set(Group, nameof(Group.ColorBlendMode), value);
+            set => Model.SetTileProperty(Group, nameof(Group.ColorBlendMode), value);
         }
 
-        public override void ActionExecuted(IAction action)
+        public override void ModelPropertyChanged(string propertyName)
         {
-            base.ActionExecuted(action);
-            if (action is PropertyChangeAction propertyAction && propertyAction.Object == Group)
+            base.ModelPropertyChanged(propertyName);
+            switch (propertyName)
             {
-                switch (propertyAction.Property)
-                {
-                    case nameof(Group.ColorBlendMode):
-                        RaisePropertyChanged(nameof(ColorBlendMode));
-                        break;
-                }
-            }
-            else if (action is CollectionChangeAction<Tile> collectionAction && collectionAction.Collection == Group.Children)
-            {
-                RaisePropertyChanged(nameof(Children));
+                case nameof(Group.Children):
+                    RaisePropertyChanged(nameof(Children));
+                    break;
+                case nameof(Group.ColorBlendMode):
+                    RaisePropertyChanged(nameof(ColorBlendMode));
+                    break;
             }
         }
     }

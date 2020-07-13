@@ -13,7 +13,7 @@ namespace LedCubeAnimator.ViewModel
     [CategoryOrder("LinearDelayEffect", 2)]
     public class LinearDelayEffectViewModel : EffectViewModel
     {
-        public LinearDelayEffectViewModel(LinearDelayEffect linearDelayEffect, UndoManager undo) : base(linearDelayEffect, undo) { }
+        public LinearDelayEffectViewModel(LinearDelayEffect linearDelayEffect, IModelManager model) : base(linearDelayEffect, model) { }
 
         public LinearDelayEffect LinearDelayEffect => (LinearDelayEffect)Effect;
 
@@ -22,7 +22,7 @@ namespace LedCubeAnimator.ViewModel
         public Axis Axis
         {
             get => LinearDelayEffect.Axis;
-            set => Undo.Set(LinearDelayEffect, nameof(LinearDelayEffect.Axis), value);
+            set => Model.SetTileProperty(LinearDelayEffect, nameof(LinearDelayEffect.Axis), value);
         }
 
         [Category("LinearDelayEffect")]
@@ -30,7 +30,7 @@ namespace LedCubeAnimator.ViewModel
         public double Center
         {
             get => LinearDelayEffect.Center;
-            set => Undo.Set(LinearDelayEffect, nameof(LinearDelayEffect.Center), value);
+            set => Model.SetTileProperty(LinearDelayEffect, nameof(LinearDelayEffect.Center), value);
         }
 
         [Category("LinearDelayEffect")]
@@ -38,26 +38,23 @@ namespace LedCubeAnimator.ViewModel
         public double Value
         {
             get => LinearDelayEffect.Value;
-            set => Undo.Set(LinearDelayEffect, nameof(LinearDelayEffect.Value), value);
+            set => Model.SetTileProperty(LinearDelayEffect, nameof(LinearDelayEffect.Value), value);
         }
 
-        public override void ActionExecuted(IAction action)
+        public override void ModelPropertyChanged(string propertyName)
         {
-            base.ActionExecuted(action);
-            if (action is PropertyChangeAction propertyAction && propertyAction.Object == LinearDelayEffect)
+            base.ModelPropertyChanged(propertyName);
+            switch (propertyName)
             {
-                switch (propertyAction.Property)
-                {
-                    case nameof(LinearDelayEffect.Axis):
-                        RaisePropertyChanged(nameof(Axis));
-                        break;
-                    case nameof(LinearDelayEffect.Center):
-                        RaisePropertyChanged(nameof(Center));
-                        break;
-                    case nameof(LinearDelayEffect.Value):
-                        RaisePropertyChanged(nameof(Value));
-                        break;
-                }
+                case nameof(LinearDelayEffect.Axis):
+                    RaisePropertyChanged(nameof(Axis));
+                    break;
+                case nameof(LinearDelayEffect.Center):
+                    RaisePropertyChanged(nameof(Center));
+                    break;
+                case nameof(LinearDelayEffect.Value):
+                    RaisePropertyChanged(nameof(Value));
+                    break;
             }
         }
     }

@@ -18,7 +18,7 @@ namespace LedCubeAnimator.ViewModel
     [CategoryOrder("Frame", 1)]
     public class FrameViewModel : TileViewModel
     {
-        public FrameViewModel(Frame frame, UndoManager undo) : base(frame, undo) { }
+        public FrameViewModel(Frame frame, IModelManager model) : base(frame, model) { }
 
         public Frame Frame => (Frame)Tile;
 
@@ -27,7 +27,7 @@ namespace LedCubeAnimator.ViewModel
         public Point3D From
         {
             get => Frame.Offset;
-            set => Undo.Set(Frame, nameof(Frame.Offset), value);
+            set => Model.SetTileProperty(Frame, nameof(Frame.Offset), value);
         }
 
         [Category("Frame")]
@@ -55,7 +55,7 @@ namespace LedCubeAnimator.ViewModel
                         }
                     }
                 }
-                Undo.Set(Frame, nameof(Frame.Voxels), voxels);
+                Model.SetTileProperty(Frame, nameof(Frame.Voxels), voxels);
             }
         }
 
@@ -66,26 +66,19 @@ namespace LedCubeAnimator.ViewModel
 
         public Color[,,] Voxels => Frame.Voxels;
 
-        public override void ActionExecuted(IAction action)
+        public override void ModelPropertyChanged(string propertyName)
         {
-            base.ActionExecuted(action);
-            if (action is PropertyChangeAction propertyAction && propertyAction.Object == Frame)
+            base.ModelPropertyChanged(propertyName);
+            switch (propertyName)
             {
-                switch (propertyAction.Property)
-                {
-                    case nameof(Frame.Offset):
-                        RaisePropertyChanged(nameof(From));
-                        RaisePropertyChanged(nameof(To));
-                        break;
-                    case nameof(Frame.Voxels):
-                        RaisePropertyChanged(nameof(To));
-                        RaisePropertyChanged(nameof(Voxels));
-                        break;
-                }
-            }
-            else if (action is ArrayChangeAction<Color> arrayAction && arrayAction.Array == Frame.Voxels)
-            {
-                RaisePropertyChanged(nameof(Voxels));
+                case nameof(Frame.Offset):
+                    RaisePropertyChanged(nameof(From));
+                    RaisePropertyChanged(nameof(To));
+                    break;
+                case nameof(Frame.Voxels):
+                    RaisePropertyChanged(nameof(To));
+                    RaisePropertyChanged(nameof(Voxels));
+                    break;
             }
         }
     }
