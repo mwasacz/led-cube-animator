@@ -38,11 +38,7 @@ namespace LedCubeAnimator.ViewModel
 
             RaisePropertyChanged(nameof(ColorMode)); // ToDo: raise only if changed
 
-            SelectedColor = Colors.Black;
-            _recentColors.Clear();
-            RecentColors.Clear();
-            AddColorToRecents(Colors.Black);
-            ColorPickerTool = false;
+            ResetColors();
 
             RenderFrame();
         }
@@ -298,7 +294,7 @@ namespace LedCubeAnimator.ViewModel
                 {
                     if (Animation.ColorMode == ColorMode.Mono)
                     {
-                        var color = frame.Voxels[x, y, z] == Colors.Black ? Colors.White : Colors.Black;
+                        var color = frame.Voxels[x, y, z].GetBrightness() > 127 ? Colors.Black : Colors.White;
                         Model.SetVoxel(frame, color, x, y, z);
                     }
                     else
@@ -326,6 +322,15 @@ namespace LedCubeAnimator.ViewModel
         private void RenderFrame()
         {
             Frame = Renderer.Render(Animation, Time, true);
+        }
+
+        private void ResetColors()
+        {
+            SelectedColor = Colors.Black;
+            _recentColors.Clear();
+            RecentColors.Clear();
+            AddColorToRecents(Colors.Black);
+            ColorPickerTool = false;
         }
 
         private void AddColorToRecents(Color color)
@@ -365,18 +370,28 @@ namespace LedCubeAnimator.ViewModel
 
         private void Model_PropertiesChanged(object sender, PropertiesChangedEventArgs e)
         {
-            if (e.Changes.Any(c => c.Object is Animation))
+            var animationChanges = e.Changes.Where(c => c.Key is Animation).ToArray();
+
+            if (animationChanges.Length > 0)
             {
-                RenderFrame(); // ToDo: render if necessary
+                if (animationChanges.Any(c => c.Value == nameof(Animation.ColorMode)))
+                {
+                    RaisePropertyChanged(nameof(ColorMode));
+                }
+                if (animationChanges.Any(c => c.Value == nameof(Animation.ColorMode) || c.Value == nameof(Animation.MonoColor)))
+                {
+                    ResetColors();
+                }
+                if (animationChanges.Any(c => c.Value == nameof(Animation.Size) || c.Value == nameof(Animation.ColorMode) || c.Value == nameof(Animation.MonoColor)))
+                {
+                    RenderFrame();
+                }
             }
             else
             {
-                var change = e.Changes.LastOrDefault(c => c.Object is Tile);
-                if (change != null)
-                {
-                    var viewModel = Tiles.Concat(Groups).SingleOrDefault(t => t.Tile == change.Object) ?? CreateViewModel((Tile)change.Object);
-                    viewModel.ModelPropertyChanged(change.Property);
-                }
+                var change = e.Changes.Last(c => c.Key is Tile);
+                var viewModel = Tiles.Concat(Groups).SingleOrDefault(t => t.Tile == change.Key) ?? CreateViewModel((Tile)change.Key);
+                viewModel.ModelPropertyChanged(change.Value);
             }
 
             _undoCommand.RaiseCanExecuteChanged(); // ToDo: use CommandWpf ???
@@ -505,7 +520,7 @@ namespace LedCubeAnimator.ViewModel
                 }
             }
 
-            Time = 0;
+            Time = 0; // ToDo: clamp time instead
             RaisePropertyChanged(nameof(EndDate)); // ToDo: raise only if changed
         }
 

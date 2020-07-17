@@ -14,42 +14,82 @@ namespace LedCubeAnimator.Model.Undo
 
         public event EventHandler<ActionExecutedEventArgs> ActionExecuted;
 
-        public bool CanUndo => _undoStack.Count > 0 || _currentAction?.IsEmpty == false;
+        public bool CanUndo => _undoStack.Count > 0;
         public bool CanRedo => _redoStack.Count > 0;
 
-        public void RecordAction(IAction action, bool allowMerge)
+        public void RecordAction(IAction action)
         {
-            _redoStack.Clear();
-
-            if (_currentAction != null)
-            {
-                if (!(allowMerge && _currentAction.TryMerge(action)))
-                {
-                    if (!_currentAction.IsEmpty)
-                    {
-                        _undoStack.Push(_currentAction);
-                    }
-                    _currentAction = action;
-                }
-            }
-            else
+            if (_currentAction == null)
             {
                 _currentAction = action;
             }
+            else if (!_currentAction.TryMerge(action))
+            {
+                throw new InvalidOperationException("Cannot merge with previous unfinished action");
+            }
 
-            action.Do();
-            ActionExecuted?.Invoke(this, new ActionExecutedEventArgs(action, false));
+            _redoStack.Clear();
+        }
+
+        public void RecordAndFinishAction(IAction action, bool allowMerge = false)
+        {
+            RecordAction(action);
+            FinishAction(allowMerge);
+        }
+
+        public void FinishAction(bool allowMerge = false)
+        {
+            if (_currentAction == null)
+            {
+                throw new InvalidOperationException("There is no action to finish");
+            }
+
+            var action = _currentAction;
+
+            if (action.IsEmpty)
+            {
+                _currentAction = null;
+            }
+            else
+            {
+                if (!(allowMerge && CanUndo && _undoStack.Peek().TryMerge(action)))
+                {
+                    _undoStack.Push(action);
+                }
+                else if (_undoStack.Peek().IsEmpty)
+                {
+                    _undoStack.Pop();
+                }
+
+                _currentAction = null;
+
+                action.Do();
+                ActionExecuted?.Invoke(this, new ActionExecutedEventArgs(action, false));
+            }
+        }
+
+        public void CancelAction()
+        {
+            if (_currentAction == null)
+            {
+                throw new InvalidOperationException("There is no action to cancel");
+            }
+
+            _currentAction = null;
         }
 
         public void Undo()
         {
+            if (_currentAction != null)
+            {
+                throw new InvalidOperationException("The previous action has not been finished");
+            }
             if (!CanUndo)
             {
                 throw new InvalidOperationException("There is nothing to undo");
             }
 
-            var action = _currentAction?.IsEmpty == false ? _currentAction : _undoStack.Pop();
-            _currentAction = null;
+            var action = _undoStack.Pop();
             _redoStack.Push(action);
 
             action.Undo();

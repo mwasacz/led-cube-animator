@@ -55,7 +55,7 @@ namespace LedCubeAnimator.ViewModel
                         }
                     }
                 }
-                Model.SetTileProperty(Frame, nameof(Frame.Voxels), voxels);
+                Model.SetTileProperty(Frame, nameof(Frame.Voxels), voxels); // ToDo: move to ModelManager
             }
         }
 

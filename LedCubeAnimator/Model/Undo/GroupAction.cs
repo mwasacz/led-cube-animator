@@ -10,12 +10,11 @@ namespace LedCubeAnimator.Model.Undo
     {
         public IList<IAction> Actions { get; } = new List<IAction>();
 
-        public bool IsFinished { get; private set; }
-
         public bool IsEmpty => Actions.All(a => a.IsEmpty);
 
         public void Do()
         {
+            RemoveEmptyActions();
             foreach (var a in Actions)
             {
                 a.Do();
@@ -24,6 +23,7 @@ namespace LedCubeAnimator.Model.Undo
 
         public void Undo()
         {
+            RemoveEmptyActions();
             foreach (var a in Actions.Reverse())
             {
                 a.Undo();
@@ -32,27 +32,29 @@ namespace LedCubeAnimator.Model.Undo
 
         public bool TryMerge(IAction action)
         {
-            if (!IsFinished)
+            if (action is GroupAction group)
             {
-                if (action is GroupAction group)
+                foreach (var a in group.Actions)
                 {
-                    foreach (var a in group.Actions)
-                    {
-                        AddAction(a);
-                    }
+                    AddAction(a);
                 }
-                else
-                {
-                    AddAction(action);
-                }
-                return true;
             }
-            return false;
+            else
+            {
+                AddAction(action);
+            }
+            return true;
         }
 
-        public void Finish()
+        private void RemoveEmptyActions()
         {
-            IsFinished = true;
+            for (int i = Actions.Count - 1; i >= 0; i--)
+            {
+                if (Actions[i].IsEmpty)
+                {
+                    Actions.RemoveAt(i);
+                }
+            }
         }
 
         private void AddAction(IAction action)
