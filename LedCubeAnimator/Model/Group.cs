@@ -22,8 +22,8 @@ namespace LedCubeAnimator.Model
             }
 
             var children = Children
-                .Where(c => c.Start <= time + 0.5 && (c.End > time - 0.5 || IsInPersistEffectMode(c, time)))
-                .GroupBy(c => c.Hierarchy * 2 + (IsInPersistEffectMode(c, time) ? 0 : 1))
+                .Where(c => c.Start <= time + 0.5 && c.End > time - 0.5)
+                .GroupBy(c => c.Hierarchy)
                 .OrderByDescending(g => g.Key)
                 .ToArray();
 
@@ -59,15 +59,6 @@ namespace LedCubeAnimator.Model
                 default:
                     throw new Exception(); // ToDo: NotSupportedException
             }
-        }
-
-        private bool IsInPersistEffectMode(Tile tile, double time)
-        {
-            if (tile is Effect effect)
-            {
-                return effect.PersistEffect && effect.End <= time - 0.5;
-            }
-            return false;
         }
     }
 }

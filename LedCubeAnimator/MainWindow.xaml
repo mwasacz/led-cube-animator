@@ -191,7 +191,6 @@
                     <xctk:PropertyDefinition TargetProperties="TimeInterpolation" />
                     <xctk:PropertyDefinition TargetProperties="RepeatCount" />
                     <xctk:PropertyDefinition TargetProperties="Reverse" />
-                    <xctk:PropertyDefinition TargetProperties="PersistEffect" />
                     <xctk:PropertyDefinition TargetProperties="ChildrenProperty" />
                     <xctk:PropertyDefinition TargetProperties="ColorBlendMode" />
                     <xctk:PropertyDefinition TargetProperties="Round" />

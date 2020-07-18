@@ -11,11 +11,9 @@ namespace LedCubeAnimator.Model
         public bool Reverse { get; set; }
         public int RepeatCount { get; set; } = 1;
         public TimeInterpolation TimeInterpolation { get; set; }
-        public bool PersistEffect { get; set; }
 
         protected double Fraction(double time)
         {
-            time = Math.Min(Math.Max(Start, time), End);
             if (time == End)
             {
                 return Reverse ? 0 : 1;

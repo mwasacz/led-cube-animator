@@ -42,14 +42,6 @@ namespace LedCubeAnimator.ViewModel
             set => Model.SetTileProperty(Effect, nameof(Effect.TimeInterpolation), value);
         }
 
-        [Category("Effect")]
-        [PropertyOrder(3)]
-        public bool PersistEffect
-        {
-            get => Effect.PersistEffect;
-            set => Model.SetTileProperty(Effect, nameof(Effect.PersistEffect), value);
-        }
-
         public override void ModelPropertyChanged(string propertyName)
         {
             base.ModelPropertyChanged(propertyName);
@@ -63,9 +55,6 @@ namespace LedCubeAnimator.ViewModel
                     break;
                 case nameof(Effect.TimeInterpolation):
                     RaisePropertyChanged(nameof(TimeInterpolation));
-                    break;
-                case nameof(Effect.PersistEffect):
-                    RaisePropertyChanged(nameof(PersistEffect));
                     break;
             }
         }
