@@ -43,7 +43,7 @@ namespace LedCubeAnimator.ViewModel
         public int FrameDuration
         {
             get => _frameDuration;
-            set => Set(ref _frameDuration);
+            set => Set(ref _frameDuration, value);
         }
     }
 }

@@ -14,6 +14,14 @@
         Closing="MainWindow_Closing"
         Height="450"
         Width="800">
+    <Window.InputBindings>
+        <KeyBinding Command="{Binding UndoCommand}"
+                    Key="Z"
+                    Modifiers="Ctrl" />
+        <KeyBinding Command="{Binding RedoCommand}"
+                    Key="Y"
+                    Modifiers="Ctrl" />
+    </Window.InputBindings>
     <DockPanel>
         <Menu DockPanel.Dock="Top"
               IsMainMenu="True">
@@ -34,6 +42,12 @@
                 <Separator />
                 <MenuItem Header="Exit"
                           Click="Exit_Click" />
+            </MenuItem>
+            <MenuItem Header="Edit">
+                <MenuItem Header="Undo"
+                          Command="{Binding UndoCommand}" />
+                <MenuItem Header="Redo"
+                          Command="{Binding RedoCommand}" />
             </MenuItem>
             <MenuItem Header="Tile">
                 <MenuItem Header="Frame"
@@ -159,6 +173,7 @@
             </Border>
             <xctk:PropertyGrid DockPanel.Dock="Top"
                                SelectedObject="{Binding SelectedTileOrGroup}"
+                               SelectedProperty="{Binding SelectedProperty, Mode=TwoWay}"
                                AutoGenerateProperties="False"
                                ShowSortOptions="False"
                                ShowSearchBox="False"
@@ -168,14 +183,14 @@
                     <xctk:PropertyDefinition TargetProperties="Start" />
                     <xctk:PropertyDefinition TargetProperties="End" />
                     <xctk:PropertyDefinition TargetProperties="Hierarchy" />
-                    <xctk:PropertyDefinition TargetProperties="Voxels" />
+                    <xctk:PropertyDefinition TargetProperties="VoxelsProperty" />
                     <xctk:PropertyDefinition TargetProperties="From" />
                     <xctk:PropertyDefinition TargetProperties="To" />
                     <xctk:PropertyDefinition TargetProperties="TimeInterpolation" />
                     <xctk:PropertyDefinition TargetProperties="RepeatCount" />
                     <xctk:PropertyDefinition TargetProperties="Reverse" />
                     <xctk:PropertyDefinition TargetProperties="PersistEffect" />
-                    <xctk:PropertyDefinition TargetProperties="Children" />
+                    <xctk:PropertyDefinition TargetProperties="ChildrenProperty" />
                     <xctk:PropertyDefinition TargetProperties="ColorBlendMode" />
                     <xctk:PropertyDefinition TargetProperties="Round" />
                     <xctk:PropertyDefinition TargetProperties="Axis" />

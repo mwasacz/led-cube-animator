@@ -1,5 +1,6 @@
 ﻿using GalaSoft.MvvmLight;
 using LedCubeAnimator.Model;
+using LedCubeAnimator.Model.Undo;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -13,47 +14,38 @@ namespace LedCubeAnimator.ViewModel
     [CategoryOrder("Tile", 0)]
     public abstract class TileViewModel : ViewModelBase
     {
-        public TileViewModel(Tile tile)
+        public TileViewModel(Tile tile, IModelManager model)
         {
             Tile = tile;
+            Model = model;
         }
 
         public Tile Tile { get; }
+
+        public IModelManager Model { get; }
 
         [Category("Tile")]
         [PropertyOrder(0)]
         public string Name
         {
             get => Tile.Name;
-            set
-            {
-                Tile.Name = value;
-                RaisePropertyChanged(nameof(Name));
-            }
+            set => Model.SetTileProperty(Tile, nameof(Tile.Name), value);
         }
 
         [Category("Tile")]
         [PropertyOrder(1)]
         public int Start
         {
-            get => Tile.Start;//new DateTime(Tile.Start + 1);
-            set
-            {
-                Tile.Start = value;//(int)value.Ticks - 1;
-                RaisePropertyChanged(nameof(Start));
-            }
+            get => Tile.Start;
+            set => Model.SetTileProperty(Tile, nameof(Tile.Start), value);
         }
 
         [Category("Tile")]
         [PropertyOrder(2)]
         public int End
         {
-            get => Tile.End;//new DateTime(Tile.Start + Tile.Duration + 1);
-            set
-            {
-                Tile.End = value;//(int)value.Ticks - Tile.Start - 1;
-                RaisePropertyChanged(nameof(End));
-            }
+            get => Tile.End;
+            set => Model.SetTileProperty(Tile, nameof(Tile.End), value);
         }
 
         [Category("Tile")]
@@ -61,10 +53,25 @@ namespace LedCubeAnimator.ViewModel
         public int Hierarchy
         {
             get => Tile.Hierarchy;
-            set
+            set => Model.SetTileProperty(Tile, nameof(Tile.Hierarchy), value);
+        }
+
+        public virtual void ModelPropertyChanged(string propertyName)
+        {
+            switch (propertyName)
             {
-                Tile.Hierarchy = value;
-                RaisePropertyChanged(nameof(Hierarchy));
+                case nameof(Tile.Name):
+                    RaisePropertyChanged(nameof(Name));
+                    break;
+                case nameof(Tile.Start):
+                    RaisePropertyChanged(nameof(Start));
+                    break;
+                case nameof(Tile.End):
+                    RaisePropertyChanged(nameof(End));
+                    break;
+                case nameof(Tile.Hierarchy):
+                    RaisePropertyChanged(nameof(Hierarchy));
+                    break;
             }
         }
     }

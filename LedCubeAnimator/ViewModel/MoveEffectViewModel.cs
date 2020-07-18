@@ -1,5 +1,6 @@
 ﻿using GalaSoft.MvvmLight;
 using LedCubeAnimator.Model;
+using LedCubeAnimator.Model.Undo;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -14,7 +15,7 @@ namespace LedCubeAnimator.ViewModel
     [CategoryOrder("MoveEffect", 3)]
     public class MoveEffectViewModel : TransformEffectViewModel
     {
-        public MoveEffectViewModel(MoveEffect moveEffect) : base(moveEffect) { }
+        public MoveEffectViewModel(MoveEffect moveEffect, IModelManager model) : base(moveEffect, model) { }
 
         public MoveEffect MoveEffect => (MoveEffect)TransformEffect;
 
@@ -23,10 +24,17 @@ namespace LedCubeAnimator.ViewModel
         public Axis Axis
         {
             get => MoveEffect.Axis;
-            set
+            set => Model.SetTileProperty(MoveEffect, nameof(MoveEffect.Axis), value);
+        }
+
+        public override void ModelPropertyChanged(string propertyName)
+        {
+            base.ModelPropertyChanged(propertyName);
+            switch (propertyName)
             {
-                MoveEffect.Axis = value;
-                RaisePropertyChanged(nameof(Axis));
+                case nameof(MoveEffect.Axis):
+                    RaisePropertyChanged(nameof(Axis));
+                    break;
             }
         }
     }

@@ -2,7 +2,6 @@
 using GalaSoft.MvvmLight.Command;
 using LedCubeAnimator.Model;
 using Microsoft.Win32;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -23,35 +22,28 @@ namespace LedCubeAnimator.ViewModel
     {
         public MainViewModel()
         {
-            CreateDefaultAnimation();
+            Model = new ModelManager();
+            CreateDefaultViewModel();
+            Model.PropertiesChanged += Model_PropertiesChanged;
         }
 
-        private void CreateDefaultAnimation()
-        {
-            var group = new Group { Name = "MainGroup" };
-            _animation = new Animation { MainGroup = group, Size = 4, MonoColor = Colors.White };
-            CreateDefaultViewModel();
-        }
+        public IModelManager Model { get; }
+
+        public Animation Animation => Model.Animation;
 
         private void CreateDefaultViewModel()
         {
-            var group = new GroupViewModel(_animation.MainGroup);
-            Groups.Clear();
-            Groups.Add(group);
-            SelectedGroup = group;
+            SelectedGroup = (GroupViewModel)CreateViewModel(Animation.MainGroup);
 
             RaisePropertyChanged(nameof(ColorMode)); // ToDo: raise only if changed
 
-            SelectedColor = Colors.Black;
-            _recentColors.Clear();
-            RecentColors.Clear();
-            AddColorToRecents(Colors.Black);
-            ColorPickerTool = false;
+            ResetColors();
 
-            RenderFrame();
+            Time = 0;
+
+            _undoCommand?.RaiseCanExecuteChanged();
+            _redoCommand?.RaiseCanExecuteChanged();
         }
-
-        private Animation _animation;
 
         public ObservableCollection<TileViewModel> Tiles { get; } = new ObservableCollection<TileViewModel>();
 
@@ -65,19 +57,37 @@ namespace LedCubeAnimator.ViewModel
             {
                 if (_selectedTile != value)
                 {
+                    IList<Group> parents = null;
+                    if (value != null && !Tiles.Contains(value))
+                    {
+                        parents = FindTileParents(value.Tile);
+                        AddNewTilesAndGroups(parents, value);
+                    }
+
                     if (_selectedTile is GroupViewModel g)
                     {
                         g.EditChildren -= Group_EditChildren;
                     }
 
+                    var oldTileOrGroup = _selectedTile ?? _selectedGroup;
                     _selectedTile = value;
-                    Set(ref _selectedGroup, null, nameof(SelectedGroup));
-                    RaisePropertyChanged(nameof(SelectedTile));
-                    RaisePropertyChanged(nameof(SelectedTileOrGroup));
 
                     if (_selectedTile is GroupViewModel group)
                     {
                         group.EditChildren += Group_EditChildren;
+                    }
+
+                    Set(ref _selectedGroup, null, nameof(SelectedGroup));
+                    RaisePropertyChanged(nameof(SelectedTile));
+                    if (oldTileOrGroup != _selectedTile)
+                    {
+                        RaisePropertyChanged(nameof(SelectedTileOrGroup));
+                    }
+
+                    if (parents != null)
+                    {
+                        RemoveOldTilesAndGroups(parents);
+                        ClampTime();
                     }
                 }
             }
@@ -91,24 +101,34 @@ namespace LedCubeAnimator.ViewModel
             {
                 if (_selectedGroup != value)
                 {
-                    if (_selectedTile is GroupViewModel g)
+                    IList<Group> parents = null;
+                    if (value != null)
                     {
-                        g.EditChildren -= Group_EditChildren;
+                        parents = Groups.Contains(value)
+                            ? Groups.TakeWhile(g => g != value).Append(value).Select(g => g.Group).ToArray()
+                            : FindTileParents(value.Group).Append(value.Group).ToArray();
+                        AddNewTilesAndGroups(parents, value);
                     }
 
+                    if (_selectedTile is GroupViewModel group)
+                    {
+                        group.EditChildren -= Group_EditChildren;
+                    }
+
+                    var oldTileOrGroup = _selectedTile ?? _selectedGroup;
                     _selectedGroup = value;
+
                     Set(ref _selectedTile, null, nameof(SelectedTile));
                     RaisePropertyChanged(nameof(SelectedGroup));
-                    RaisePropertyChanged(nameof(SelectedTileOrGroup));
-
-                    if (_selectedGroup != null)
+                    if (oldTileOrGroup != _selectedGroup)
                     {
-                        while (_selectedGroup != Groups.Last())
-                        {
-                            Groups.RemoveAt(Groups.Count - 1);
-                        }
+                        RaisePropertyChanged(nameof(SelectedTileOrGroup));
+                    }
 
-                        UpdateTiles(_selectedGroup.Group);
+                    if (parents != null)
+                    {
+                        RemoveOldTilesAndGroups(parents);
+                        ClampTime();
                     }
                 }
             }
@@ -118,51 +138,56 @@ namespace LedCubeAnimator.ViewModel
 
         private void Group_EditChildren(object sender, EventArgs e)
         {
-            var group = (GroupViewModel)SelectedTile;
-            Groups.Add(group);
-            SelectedGroup = group;
-        }
-
-        private void UpdateTiles(Group group)
-        {
-            if (!Tiles.Select(t => t.Tile).SequenceEqual(group.Children))
-            {
-                Tiles.Clear();
-                foreach (var t in group.Children)
-                {
-                    Tiles.Add(CreateViewModel(t));
-                }
-            }
-
-            Time = 0;
-            RaisePropertyChanged(nameof(EndDate)); // ToDo: raise only if changed
+            SelectedGroup = (GroupViewModel)SelectedTile;
         }
 
         private TileViewModel CreateViewModel(Tile tile)
         {
+            TileViewModel viewModel;
             switch (tile)
             {
                 case Frame frame:
-                    return new FrameViewModel(frame);
+                    viewModel = new FrameViewModel(frame, Model);
+                    break;
                 case Group group:
-                    return new GroupViewModel(group);
+                    viewModel = new GroupViewModel(group, Model);
+                    break;
                 case MoveEffect moveEffect:
-                    return new MoveEffectViewModel(moveEffect);
+                    viewModel = new MoveEffectViewModel(moveEffect, Model);
+                    break;
                 case RotateEffect rotateEffect:
-                    return new RotateEffectViewModel(rotateEffect);
+                    viewModel = new RotateEffectViewModel(rotateEffect, Model);
+                    break;
                 case ScaleEffect scaleEffect:
-                    return new ScaleEffectViewModel(scaleEffect);
+                    viewModel = new ScaleEffectViewModel(scaleEffect, Model);
+                    break;
                 case ShearEffect shearEffect:
-                    return new ShearEffectViewModel(shearEffect);
+                    viewModel = new ShearEffectViewModel(shearEffect, Model);
+                    break;
                 case LinearDelayEffect linearDelayEffect:
-                    return new LinearDelayEffectViewModel(linearDelayEffect);
+                    viewModel = new LinearDelayEffectViewModel(linearDelayEffect, Model);
+                    break;
                 default:
                     throw new Exception(); // ToDo
             }
+            viewModel.PropertyChanged += Tile_PropertyChanged;
+            return viewModel;
+        }
+
+        private void DeleteViewModel(TileViewModel tile)
+        {
+            tile.PropertyChanged -= Tile_PropertyChanged;
+        }
+
+        private string _selectedProperty;
+        public string SelectedProperty
+        {
+            get => _selectedProperty;
+            set => Set(ref _selectedProperty, value);
         }
 
         // ToDo: consider storing brightness as alpha
-        public ColorMode ColorMode => _animation.ColorMode;
+        public ColorMode ColorMode => Animation.ColorMode;
 
         private Color _selectedColor;
         public Color SelectedColor
@@ -178,7 +203,7 @@ namespace LedCubeAnimator.ViewModel
             }
         }
 
-        public Color DisplayColor => SelectedColor.Multiply(_animation.MonoColor);
+        public Color DisplayColor => SelectedColor.Multiply(Animation.MonoColor);
 
         private ColorItem _recentColor;
         public ColorItem RecentColor
@@ -224,7 +249,7 @@ namespace LedCubeAnimator.ViewModel
 
         private RelayCommand _addFrameCommand;
         public ICommand AddFrameCommand => _addFrameCommand ?? (_addFrameCommand = new RelayCommand(() =>
-            AddTile(new Frame { Name = "Frame", Voxels = new Color[_animation.Size, _animation.Size, _animation.Size] })));
+            AddTile(new Frame { Name = "Frame", Voxels = new Color[Animation.Size, Animation.Size, Animation.Size] })));
 
         private RelayCommand _addGroupCommand;
         public ICommand AddGroupCommand => _addGroupCommand ?? (_addGroupCommand = new RelayCommand(() => AddTile(new Group { Name = "Group" })));
@@ -249,19 +274,11 @@ namespace LedCubeAnimator.ViewModel
         {
             if (SelectedTile != null)
             {
-                var tile = SelectedTile;
-                var parent = Groups.Last();
-                SelectedGroup = parent;
-                parent.Group.Children.Remove(tile.Tile);
-                UpdateTiles(parent.Group);
+                Model.RemoveTile(Groups.Last().Group, SelectedTile.Tile);
             }
             else if (SelectedGroup != null && Groups.Count > 1)
             {
-                var group = Groups.Last();
-                var parent = Groups[Groups.Count - 2];
-                SelectedGroup = parent;
-                parent.Group.Children.Remove(group.Group);
-                UpdateTiles(parent.Group);
+                Model.RemoveTile(Groups[Groups.Count - 2].Group, Groups.Last().Group);
             }
         }));
 
@@ -270,27 +287,16 @@ namespace LedCubeAnimator.ViewModel
         {
             var viewModel = new CubeSettingsViewModel
             {
-                Size = _animation.Size,
-                ColorMode = _animation.ColorMode,
-                MonoColor = _animation.MonoColor,
-                FrameDuration = _animation.FrameDuration
+                Size = Animation.Size,
+                ColorMode = Animation.ColorMode,
+                MonoColor = Animation.MonoColor,
+                FrameDuration = Animation.FrameDuration
             };
             var dialog = new CubeSettingsDialog(viewModel);
 
             if (dialog.ShowDialog() == true)
             {
-                _animation.Size = viewModel.Size;
-                _animation.ColorMode = viewModel.ColorMode;
-                _animation.MonoColor = viewModel.MonoColor;
-                _animation.FrameDuration = viewModel.FrameDuration;
-
-                RaisePropertyChanged(nameof(ColorMode));
-                RaisePropertyChanged(nameof(DisplayColor));
-                if (ColorMode == ColorMode.Mono)
-                {
-                    ColorPickerTool = false;
-                }
-                RenderFrame();
+                Model.SetAnimationProperties(viewModel.Size, viewModel.ColorMode, viewModel.MonoColor, viewModel.FrameDuration);
             }
         }));
 
@@ -304,29 +310,30 @@ namespace LedCubeAnimator.ViewModel
         private RelayCommand<Point3D> _voxelClickCommand;
         public ICommand VoxelClickCommand => _voxelClickCommand ?? (_voxelClickCommand = new RelayCommand<Point3D>(p =>
         {
-            if (SelectedTile is FrameViewModel frame)
+            if (SelectedTile is FrameViewModel frameViewModel)
             {
-                int y = (int)frame.To.Y - (int)frame.From.Y + 1;
-                int z = (int)frame.To.Z - (int)frame.From.Z + 1;
-                int index = (int)p.X * y * z + (int)p.Y * z + (int)p.Z;
+                var frame = frameViewModel.Frame;
+                int x = (int)p.X;
+                int y = (int)p.Y;
+                int z = (int)p.Z;
 
                 if (ColorPickerTool)
                 {
-                    SelectedColor = frame.Voxels[index];//.Opaque();
+                    SelectedColor = frame.Voxels[x, y, z];//.Opaque();
                     ColorPickerTool = false;
                 }
                 else
                 {
-                    if (_animation.ColorMode == ColorMode.Mono)
+                    if (Animation.ColorMode == ColorMode.Mono)
                     {
-                        frame.Voxels[index] = frame.Voxels[index] == Colors.Black ? Colors.White : Colors.Black;
+                        var color = frame.Voxels[x, y, z].GetBrightness() > 127 ? Colors.Black : Colors.White;
+                        Model.SetVoxel(frame, color, x, y, z);
                     }
                     else
                     {
-                        frame.Voxels[index] = SelectedColor;
+                        Model.SetVoxel(frame, SelectedColor, x, y, z);
                         AddColorToRecents(SelectedColor);
                     }
-                    RenderFrame();
                 }
             }
         }));
@@ -344,9 +351,31 @@ namespace LedCubeAnimator.ViewModel
             }
         }
 
+        private void ClampTime()
+        {
+            RaisePropertyChanged(nameof(EndDate)); // ToDo: raise if necessary
+            if (Time > EndDate)
+            {
+                Time = EndDate;
+            }
+            else
+            {
+                RenderFrame();
+            }
+        }
+
         private void RenderFrame()
         {
-            Frame = Renderer.Render(_animation, Time, true);
+            Frame = Renderer.Render(Animation, Time, true);
+        }
+
+        private void ResetColors()
+        {
+            SelectedColor = Colors.Black;
+            _recentColors.Clear();
+            RecentColors.Clear();
+            AddColorToRecents(Colors.Black);
+            ColorPickerTool = false;
         }
 
         private void AddColorToRecents(Color color)
@@ -365,7 +394,7 @@ namespace LedCubeAnimator.ViewModel
             {
                 var colorItem = ColorMode == ColorMode.RGB ?
                     new ColorItem(color, color.ToString()) :
-                    new ColorItem(color.Multiply(_animation.MonoColor), color.GetBrightness().ToString());
+                    new ColorItem(color.Multiply(Animation.MonoColor), color.GetBrightness().ToString());
 
                 _recentColors.Add(new Tuple<ColorItem, Color>(colorItem, color));
                 RecentColors.Insert(0, colorItem);
@@ -381,12 +410,159 @@ namespace LedCubeAnimator.ViewModel
 
         private void AddTile(Tile tile)
         {
-            var group = Groups.Last().Group;
-            group.Children.Add(tile);
-            UpdateTiles(group);
+            Model.AddTile(Groups.Last().Group, tile);
         }
 
-        private string _filePath;
+        private void Model_PropertiesChanged(object sender, PropertiesChangedEventArgs e)
+        {
+            var animationChanges = e.Changes.Where(c => c.Key is Animation).ToArray();
+
+            if (animationChanges.Length > 0)
+            {
+                if (animationChanges.Any(c => c.Value == nameof(Animation.ColorMode)))
+                {
+                    RaisePropertyChanged(nameof(ColorMode));
+                }
+                if (animationChanges.Any(c => c.Value == nameof(Animation.ColorMode) || c.Value == nameof(Animation.MonoColor)))
+                {
+                    ResetColors();
+                }
+                if (animationChanges.Any(c => c.Value == nameof(Animation.Size) || c.Value == nameof(Animation.ColorMode) || c.Value == nameof(Animation.MonoColor)))
+                {
+                    RenderFrame();
+                }
+            }
+            else
+            {
+                var change = e.Changes.Last(c => c.Key is Tile);
+                var viewModel = Tiles.Concat(Groups).SingleOrDefault(t => t.Tile == change.Key) ?? CreateViewModel((Tile)change.Key);
+                viewModel.ModelPropertyChanged(change.Value);
+            }
+
+            _undoCommand?.RaiseCanExecuteChanged(); // ToDo: use CommandWpf ???
+            _redoCommand?.RaiseCanExecuteChanged();
+        }
+
+        private void Tile_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            var tile = (TileViewModel)sender;
+
+            if (tile is GroupViewModel group && e.PropertyName == nameof(GroupViewModel.Children))
+            {
+                if (SelectedGroup == group)
+                {
+                    var groups = Groups.Select(g => g.Group).ToArray();
+                    AddNewTilesAndGroups(groups, null);
+                    RemoveOldTilesAndGroups(groups);
+                }
+                else
+                {
+                    SelectedGroup = group;
+                }
+
+                SelectedProperty = nameof(GroupViewModel.ChildrenProperty);
+
+                RenderFrame();
+            }
+            else
+            {
+                if (Groups.Contains(tile))
+                {
+                    SelectedGroup = (GroupViewModel)tile;
+                }
+                else
+                {
+                    SelectedTile = tile;
+                }
+
+                SelectedProperty = tile is FrameViewModel && e.PropertyName == nameof(FrameViewModel.Voxels)
+                    ? nameof(FrameViewModel.VoxelsProperty)
+                    : e.PropertyName;
+
+                if (tile is GroupViewModel && (e.PropertyName == nameof(GroupViewModel.Start)
+                    || e.PropertyName == nameof(GroupViewModel.End)
+                    || e.PropertyName == nameof(GroupViewModel.RepeatCount)
+                    || e.PropertyName == nameof(GroupViewModel.Reverse)))
+                {
+                    ClampTime();
+                }
+                else
+                {
+                    RenderFrame();
+                }
+            }
+        }
+
+        private List<Group> FindTileParents(Tile tile)
+        {
+            var parents = new List<Group>();
+            FindTileParents(tile, parents, Animation.MainGroup);
+            parents.Reverse();
+            return parents;
+        }
+
+        private static bool FindTileParents(Tile tile, List<Group> parents, Group group)
+        {
+            foreach (var t in group.Children)
+            {
+                if (t == tile || (t is Group g && FindTileParents(tile, parents, g)))
+                {
+                    parents.Add(group);
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private void AddNewTilesAndGroups(IList<Group> newGroups, TileViewModel newTile)
+        {
+            var newTiles = newGroups.Last().Children;
+
+            foreach (var tile in newTiles)
+            {
+                if (!Tiles.Any(t => t.Tile == tile))
+                {
+                    Tiles.Add(Groups.Prepend(newTile).FirstOrDefault(t => t?.Tile == tile) ?? CreateViewModel(tile));
+                }
+            }
+            foreach (var group in newGroups)
+            {
+                if (!Groups.Any(g => g.Group == group))
+                {
+                    Groups.Add((GroupViewModel)(Tiles.Prepend(newTile).FirstOrDefault(t => t?.Tile == group) ?? CreateViewModel(group)));
+                }
+            }
+        }
+
+        private void RemoveOldTilesAndGroups(IList<Group> newGroups)
+        {
+            var newTiles = newGroups.Last().Children;
+
+            for (int i = Tiles.Count - 1; i >= 0; i--)
+            {
+                var tile = Tiles[i];
+                if (!newTiles.Contains(tile.Tile))
+                {
+                    Tiles.Remove(tile);
+                    if (!newGroups.Contains(tile.Tile))
+                    {
+                        DeleteViewModel(tile);
+                    }
+                }
+            }
+            for (int i = Groups.Count - 1; i >= 0; i--)
+            {
+                var group = Groups[i];
+                if (!newGroups.Contains(group.Group))
+                {
+                    Groups.Remove(group);
+                    if (!newTiles.Contains(group.Group))
+                    {
+                        DeleteViewModel(group);
+                    }
+                }
+            }
+        }
 
         private RelayCommand _newCommand;
         public ICommand NewCommand => _newCommand ?? (_newCommand = new RelayCommand(() =>
@@ -402,9 +578,8 @@ namespace LedCubeAnimator.ViewModel
                     return;
             }
 
-            _filePath = null;
-
-            CreateDefaultAnimation();
+            Model.New();
+            CreateDefaultViewModel();
         }));
 
         private RelayCommand _openCommand;
@@ -417,28 +592,19 @@ namespace LedCubeAnimator.ViewModel
                 return;
             }
 
-            var a = FileReaderWriter.Open(dialog.FileName);
-
-            if (a == null)
+            if (!Model.Open(dialog.FileName))
             {
                 MessageBox.Show("Error occured when opening file", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
-            _filePath = dialog.FileName;
-
-            _animation = a;
             CreateDefaultViewModel();
         }));
 
         private RelayCommand _saveCommand;
         public ICommand SaveCommand => _saveCommand ?? (_saveCommand = new RelayCommand(() =>
         {
-            if (_filePath != null)
-            {
-                FileReaderWriter.Save(_filePath, _animation);
-            }
-            else
+            if (!Model.Save())
             {
                 SaveAsCommand.Execute(null);
             }
@@ -454,9 +620,7 @@ namespace LedCubeAnimator.ViewModel
                 return;
             }
 
-            _filePath = dialog.FileName;
-
-            FileReaderWriter.Save(_filePath, _animation);
+            Model.SaveAs(dialog.FileName);
         }));
 
         private RelayCommand _exportMWCommand;
@@ -469,7 +633,25 @@ namespace LedCubeAnimator.ViewModel
                 return;
             }
 
-            Exporter.Export(dialog.FileName, _animation);
+            Model.Export(dialog.FileName);
         }));
+
+        private RelayCommand _undoCommand;
+        public ICommand UndoCommand => _undoCommand ?? (_undoCommand = new RelayCommand(() =>
+        {
+            if (Model.CanUndo)
+            {
+                Model.Undo();
+            }
+        }, () => Model.CanUndo));
+
+        private RelayCommand _redoCommand;
+        public ICommand RedoCommand => _redoCommand ?? (_redoCommand = new RelayCommand(() =>
+        {
+            if (Model.CanRedo)
+            {
+                Model.Redo();
+            }
+        }, () => Model.CanRedo));
     }
 }

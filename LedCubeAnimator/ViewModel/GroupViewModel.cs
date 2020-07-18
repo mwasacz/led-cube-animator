@@ -1,5 +1,6 @@
 ﻿using GalaSoft.MvvmLight.Command;
 using LedCubeAnimator.Model;
+using LedCubeAnimator.Model.Undo;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -16,27 +17,40 @@ namespace LedCubeAnimator.ViewModel
     [CategoryOrder("Group", 2)]
     public class GroupViewModel : EffectViewModel
     {
-        public GroupViewModel(Group group) : base(group) { }
+        public GroupViewModel(Group group, IModelManager model) : base(group, model) { }
 
         public Group Group => (Group)Effect;
 
         private RelayCommand _editChildren;
 
         [Category("Group")]
+        [DisplayName("Children")]
         [PropertyOrder(0)]
-        public ICommand Children => _editChildren ?? (_editChildren = new RelayCommand(() => EditChildren?.Invoke(this, EventArgs.Empty))); // ToDo
+        public ICommand ChildrenProperty => _editChildren ?? (_editChildren = new RelayCommand(() => EditChildren?.Invoke(this, EventArgs.Empty))); // ToDo
 
         public event EventHandler EditChildren;
+
+        public List<Tile> Children => Group.Children;
 
         [Category("Group")]
         [PropertyOrder(1)]
         public ColorBlendMode ColorBlendMode
         {
             get => Group.ColorBlendMode;
-            set
+            set => Model.SetTileProperty(Group, nameof(Group.ColorBlendMode), value);
+        }
+
+        public override void ModelPropertyChanged(string propertyName)
+        {
+            base.ModelPropertyChanged(propertyName);
+            switch (propertyName)
             {
-                Group.ColorBlendMode = value;
-                RaisePropertyChanged(nameof(ColorBlendMode));
+                case nameof(Group.Children):
+                    RaisePropertyChanged(nameof(Children));
+                    break;
+                case nameof(Group.ColorBlendMode):
+                    RaisePropertyChanged(nameof(ColorBlendMode));
+                    break;
             }
         }
     }

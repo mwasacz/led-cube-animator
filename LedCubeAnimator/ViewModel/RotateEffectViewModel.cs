@@ -1,4 +1,5 @@
 ﻿using LedCubeAnimator.Model;
+using LedCubeAnimator.Model.Undo;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -14,7 +15,7 @@ namespace LedCubeAnimator.ViewModel
     [CategoryOrder("RotateEffect", 3)]
     public class RotateEffectViewModel : TransformEffectViewModel
     {
-        public RotateEffectViewModel(RotateEffect rotateEffect) : base(rotateEffect) { }
+        public RotateEffectViewModel(RotateEffect rotateEffect, IModelManager model) : base(rotateEffect, model) { }
 
         public RotateEffect RotateEffect => (RotateEffect)TransformEffect;
 
@@ -23,11 +24,7 @@ namespace LedCubeAnimator.ViewModel
         public Axis Axis
         {
             get => RotateEffect.Axis;
-            set
-            {
-                RotateEffect.Axis = value;
-                RaisePropertyChanged(nameof(Axis));
-            }
+            set => Model.SetTileProperty(RotateEffect, nameof(RotateEffect.Axis), value);
         }
 
         [Category("RotateEffect")]
@@ -35,10 +32,20 @@ namespace LedCubeAnimator.ViewModel
         public Point Center
         {
             get => RotateEffect.Center;
-            set
+            set => Model.SetTileProperty(RotateEffect, nameof(RotateEffect.Center), value);
+        }
+
+        public override void ModelPropertyChanged(string propertyName)
+        {
+            base.ModelPropertyChanged(propertyName);
+            switch (propertyName)
             {
-                RotateEffect.Center = value;
-                RaisePropertyChanged(nameof(Center));
+                case nameof(RotateEffect.Axis):
+                    RaisePropertyChanged(nameof(Axis));
+                    break;
+                case nameof(RotateEffect.Center):
+                    RaisePropertyChanged(nameof(Center));
+                    break;
             }
         }
     }
