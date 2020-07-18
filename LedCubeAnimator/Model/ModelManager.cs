@@ -17,7 +17,8 @@ namespace LedCubeAnimator.Model
         }
 
         private readonly UndoManager _undo = new UndoManager();
-        private bool _voxelChange;
+        private object _changedObject;
+        private string _changedProperty;
         private string _filePath;
 
         public Animation Animation { get; private set; }
@@ -28,7 +29,8 @@ namespace LedCubeAnimator.Model
             Animation = new Animation { MainGroup = group, Size = 4, MonoColor = Colors.White };
             _filePath = null;
             _undo.Reset();
-            _voxelChange = false;
+            _changedObject = null;
+            _changedProperty = null;
         }
 
         public bool Open(string path)
@@ -39,7 +41,8 @@ namespace LedCubeAnimator.Model
                 Animation = animation;
                 _filePath = path;
                 _undo.Reset();
-                _voxelChange = false;
+                _changedObject = null;
+                _changedProperty = null;
                 return true;
             }
             return false;
@@ -75,13 +78,15 @@ namespace LedCubeAnimator.Model
         public void Undo()
         {
             _undo.Undo();
-            _voxelChange = false;
+            _changedObject = null;
+            _changedProperty = null;
         }
 
         public void Redo()
         {
             _undo.Redo();
-            _voxelChange = false;
+            _changedObject = null;
+            _changedProperty = null;
         }
 
         public void SetAnimationProperties(int size, ColorMode colorMode, Color monoColor, int frameDuration)
@@ -97,31 +102,36 @@ namespace LedCubeAnimator.Model
                     SetGroupColorMode(Animation.MainGroup, colorMode);
                 }
             });
-            _voxelChange = false;
+            _changedObject = Animation;
+            _changedProperty = null;
         }
 
         public void SetTileProperty(Tile tile, string name, object newValue)
         {
-            _undo.Group(() => _undo.Set(tile, name, newValue));
-            _voxelChange = false;
+            _undo.Group(() => _undo.Set(tile, name, newValue), _changedObject == tile && _changedProperty == name);
+            _changedObject = tile;
+            _changedProperty = name;
         }
 
         public void AddTile(Group group, Tile newTile)
         {
             _undo.Group(() => _undo.Add(group.Children, newTile));
-            _voxelChange = false;
+            _changedObject = group;
+            _changedProperty = nameof(Group.Children);
         }
 
         public void RemoveTile(Group group, Tile oldTile)
         {
             _undo.Group(() => _undo.Remove(group.Children, oldTile));
-            _voxelChange = false;
+            _changedObject = group;
+            _changedProperty = nameof(Group.Children);
         }
 
         public void SetVoxel(Frame frame, Color newColor, params int[] indices)
         {
-            _undo.Group(() => _undo.ChangeArray(frame.Voxels, newColor, indices), _voxelChange);
-            _voxelChange = true;
+            _undo.Group(() => _undo.ChangeArray(frame.Voxels, newColor, indices), _changedObject == frame && _changedProperty == nameof(Frame.Voxels));
+            _changedObject = frame;
+            _changedProperty = nameof(Frame.Voxels);
         }
 
         public event EventHandler<PropertiesChangedEventArgs> PropertiesChanged;
@@ -138,16 +148,17 @@ namespace LedCubeAnimator.Model
 
         private static void MapGroupsAndFrames(Group group, Dictionary<ICollection<Tile>, Group> groups, Dictionary<Array, Frame> frames)
         {
+            groups.Add(group.Children, group);
             foreach (var t in group.Children)
             {
-                if (t is Frame f)
+                switch (t)
                 {
-                    frames.Add(f.Voxels, f);
-                }
-                else if (t is Group g)
-                {
-                    groups.Add(g.Children, g);
-                    MapGroupsAndFrames(g, groups, frames);
+                    case Frame f:
+                        frames.Add(f.Voxels, f);
+                        break;
+                    case Group g:
+                        MapGroupsAndFrames(g, groups, frames);
+                        break;
                 }
             }
         }
