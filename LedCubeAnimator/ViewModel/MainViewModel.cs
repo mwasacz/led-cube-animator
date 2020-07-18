@@ -298,29 +298,31 @@ namespace LedCubeAnimator.ViewModel
         private RelayCommand<Point3D> _voxelClickCommand;
         public ICommand VoxelClickCommand => _voxelClickCommand ?? (_voxelClickCommand = new RelayCommand<Point3D>(p =>
         {
-            if (SelectedTile is FrameViewModel frameViewModel)
+            if (SelectedTile is FrameViewModel frame)
             {
-                var frame = frameViewModel.Frame;
-                int x = (int)p.X;
-                int y = (int)p.Y;
-                int z = (int)p.Z;
+                int x = (int)p.X - (int)frame.Offset.X;
+                int y = (int)p.Y - (int)frame.Offset.Y;
+                int z = (int)p.Z - (int)frame.Offset.Z;
 
-                if (ColorPickerTool)
+                if (x >= 0 && y >= 0 && z >= 0 && x < frame.Voxels.GetLength(0) && y < frame.Voxels.GetLength(1) && z < frame.Voxels.GetLength(2))
                 {
-                    SelectedColor = frame.Voxels[x, y, z];//.Opaque();
-                    ColorPickerTool = false;
-                }
-                else
-                {
-                    if (Animation.ColorMode == ColorMode.Mono)
+                    if (ColorPickerTool)
                     {
-                        var color = frame.Voxels[x, y, z].GetBrightness() > 127 ? Colors.Black : Colors.White;
-                        Model.SetVoxel(frame, color, x, y, z);
+                        SelectedColor = frame.Voxels[x, y, z];
+                        ColorPickerTool = false;
                     }
                     else
                     {
-                        Model.SetVoxel(frame, SelectedColor, x, y, z);
-                        AddColorToRecents(SelectedColor);
+                        if (Animation.ColorMode == ColorMode.Mono)
+                        {
+                            var color = frame.Voxels[x, y, z].GetBrightness() > 127 ? Colors.Black : Colors.White;
+                            Model.SetVoxel(frame.Frame, color, x, y, z);
+                        }
+                        else
+                        {
+                            Model.SetVoxel(frame.Frame, SelectedColor, x, y, z);
+                            AddColorToRecents(SelectedColor);
+                        }
                     }
                 }
             }
@@ -422,7 +424,7 @@ namespace LedCubeAnimator.ViewModel
             }
             else
             {
-                var change = e.Changes.Last(c => c.Key is Tile);
+                var change = e.Changes.First(c => c.Key is Tile);
                 var viewModel = Tiles.Concat(Groups).SingleOrDefault(t => t.Tile == change.Key) ?? CreateViewModel((Tile)change.Key);
                 viewModel.ModelPropertyChanged(change.Value);
             }

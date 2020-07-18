@@ -108,7 +108,14 @@ namespace LedCubeAnimator.Model
 
         public void SetTileProperty(Tile tile, string name, object newValue)
         {
-            _undo.Group(() => _undo.Set(tile, name, newValue), _changedObject == tile && _changedProperty == name);
+            _undo.Group(() =>
+            {
+                if (tile is Frame frame && name == nameof(Frame.Voxels))
+                {
+                    SetFrameVoxels(frame, (Color[,,])newValue);
+                }
+                _undo.Set(tile, name, newValue);
+            }, _changedObject == tile && _changedProperty == name);
             _changedObject = tile;
             _changedProperty = name;
         }
@@ -117,21 +124,21 @@ namespace LedCubeAnimator.Model
         {
             _undo.Group(() => _undo.Add(group.Children, newTile));
             _changedObject = group;
-            _changedProperty = nameof(Group.Children);
+            _changedProperty = null;
         }
 
         public void RemoveTile(Group group, Tile oldTile)
         {
             _undo.Group(() => _undo.Remove(group.Children, oldTile));
             _changedObject = group;
-            _changedProperty = nameof(Group.Children);
+            _changedProperty = null;
         }
 
         public void SetVoxel(Frame frame, Color newColor, params int[] indices)
         {
-            _undo.Group(() => _undo.ChangeArray(frame.Voxels, newColor, indices), _changedObject == frame && _changedProperty == nameof(Frame.Voxels));
+            _undo.Group(() => _undo.ChangeArray(frame.Voxels, newColor, indices), _changedObject == frame && _changedProperty == null);
             _changedObject = frame;
-            _changedProperty = nameof(Frame.Voxels);
+            _changedProperty = null;
         }
 
         public event EventHandler<PropertiesChangedEventArgs> PropertiesChanged;
@@ -208,6 +215,24 @@ namespace LedCubeAnimator.Model
                     case Group g:
                         SetGroupColorMode(g, colorMode);
                         break;
+                }
+            }
+        }
+
+        private static void SetFrameVoxels(Frame frame, Color[,,] voxels)
+        {
+            for (int x = 0; x < voxels.GetLength(0); x++)
+            {
+                for (int y = 0; y < voxels.GetLength(1); y++)
+                {
+                    for (int z = 0; z < voxels.GetLength(2); z++)
+                    {
+                        voxels[x, y, z] = x < frame.Voxels.GetLength(0)
+                            && y < frame.Voxels.GetLength(1)
+                            && z < frame.Voxels.GetLength(2)
+                                ? frame.Voxels[x, y, z]
+                                : Colors.Black;
+                    }
                 }
             }
         }

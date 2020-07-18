@@ -24,7 +24,7 @@ namespace LedCubeAnimator.ViewModel
 
         [Category("Frame")]
         [PropertyOrder(1)]
-        public Point3D From
+        public Point3D Offset
         {
             get => Frame.Offset;
             set => Model.SetTileProperty(Frame, nameof(Frame.Offset), value);
@@ -32,31 +32,10 @@ namespace LedCubeAnimator.ViewModel
 
         [Category("Frame")]
         [PropertyOrder(2)]
-        public Point3D To
+        public Vector3D Size
         {
-            get => Frame.Offset + new Vector3D(Frame.Voxels.GetLength(0) - 1, Frame.Voxels.GetLength(1) - 1, Frame.Voxels.GetLength(2) - 1);
-            set
-            {
-                var oldVoxels = Frame.Voxels;
-                int oldX = (int)To.X - (int)From.X + 1;
-                int oldY = (int)To.Y - (int)From.Y + 1;
-                int oldZ = (int)To.Z - (int)From.Z + 1;
-                int newX = (int)value.X - (int)From.X + 1;
-                int newY = (int)value.Y - (int)From.Y + 1;
-                int newZ = (int)value.Z - (int)From.Z + 1;
-                var voxels = new Color[newX, newY, newZ];
-                for (int x = 0; x < newX; x++)
-                {
-                    for (int y = 0; y < newY; y++)
-                    {
-                        for (int z = 0; z < newZ; z++)
-                        {
-                            voxels[x, y, z] = x < oldX && y < oldY && z < oldZ ? oldVoxels[x, y, z] : Colors.Black;
-                        }
-                    }
-                }
-                Model.SetTileProperty(Frame, nameof(Frame.Voxels), voxels); // ToDo: move to ModelManager
-            }
+            get => new Vector3D(Frame.Voxels.GetLength(0), Frame.Voxels.GetLength(1), Frame.Voxels.GetLength(2));
+            set => Model.SetTileProperty(Frame, nameof(Frame.Voxels), new Color[(int)value.X, (int)value.Y, (int)value.Z]);
         }
 
         [Category("Frame")]
@@ -72,11 +51,10 @@ namespace LedCubeAnimator.ViewModel
             switch (propertyName)
             {
                 case nameof(Frame.Offset):
-                    RaisePropertyChanged(nameof(From));
-                    RaisePropertyChanged(nameof(To));
+                    RaisePropertyChanged(nameof(Offset));
                     break;
                 case nameof(Frame.Voxels):
-                    RaisePropertyChanged(nameof(To));
+                    RaisePropertyChanged(nameof(Size)); // ToDo
                     RaisePropertyChanged(nameof(Voxels));
                     break;
             }
