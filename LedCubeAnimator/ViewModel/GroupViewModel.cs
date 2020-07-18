@@ -21,14 +21,10 @@ namespace LedCubeAnimator.ViewModel
 
         public Group Group => (Group)Effect;
 
-        private RelayCommand _editChildren;
-
         [Category("Group")]
         [DisplayName("Children")]
         [PropertyOrder(0)]
-        public ICommand ChildrenProperty => _editChildren ?? (_editChildren = new RelayCommand(() => EditChildren?.Invoke(this, EventArgs.Empty))); // ToDo
-
-        public event EventHandler EditChildren;
+        public object ChildrenProperty { get; }
 
         public List<Tile> Children => Group.Children;
 

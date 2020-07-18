@@ -64,18 +64,8 @@ namespace LedCubeAnimator.ViewModel
                         AddNewTilesAndGroups(parents, value);
                     }
 
-                    if (_selectedTile is GroupViewModel g)
-                    {
-                        g.EditChildren -= Group_EditChildren;
-                    }
-
                     var oldTileOrGroup = _selectedTile ?? _selectedGroup;
                     _selectedTile = value;
-
-                    if (_selectedTile is GroupViewModel group)
-                    {
-                        group.EditChildren += Group_EditChildren;
-                    }
 
                     Set(ref _selectedGroup, null, nameof(SelectedGroup));
                     RaisePropertyChanged(nameof(SelectedTile));
@@ -110,11 +100,6 @@ namespace LedCubeAnimator.ViewModel
                         AddNewTilesAndGroups(parents, value);
                     }
 
-                    if (_selectedTile is GroupViewModel group)
-                    {
-                        group.EditChildren -= Group_EditChildren;
-                    }
-
                     var oldTileOrGroup = _selectedTile ?? _selectedGroup;
                     _selectedGroup = value;
 
@@ -135,11 +120,6 @@ namespace LedCubeAnimator.ViewModel
         }
 
         public TileViewModel SelectedTileOrGroup => SelectedTile ?? SelectedGroup;
-
-        private void Group_EditChildren(object sender, EventArgs e)
-        {
-            SelectedGroup = (GroupViewModel)SelectedTile;
-        }
 
         private TileViewModel CreateViewModel(Tile tile)
         {
@@ -183,7 +163,15 @@ namespace LedCubeAnimator.ViewModel
         public string SelectedProperty
         {
             get => _selectedProperty;
-            set => Set(ref _selectedProperty, value);
+            set
+            {
+                if (Set(ref _selectedProperty, value)
+                    && SelectedTile is GroupViewModel group
+                    && _selectedProperty == nameof(GroupViewModel.ChildrenProperty))
+                {
+                    SelectedGroup = group;
+                }
+            }
         }
 
         // ToDo: consider storing brightness as alpha
