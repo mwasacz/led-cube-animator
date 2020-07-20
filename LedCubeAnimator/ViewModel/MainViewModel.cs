@@ -334,7 +334,8 @@ namespace LedCubeAnimator.ViewModel
             get => _time;
             set
             {
-                if (Set(ref _time, value))
+                var time = Math.Max(StartDate, Math.Min(value, EndDate));
+                if (Set(ref _time, time))
                 {
                     RenderFrame();
                 }

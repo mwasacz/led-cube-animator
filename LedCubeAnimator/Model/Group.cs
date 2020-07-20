@@ -21,25 +21,19 @@ namespace LedCubeAnimator.Model
                 time /= 2;
             }
 
-            var children = Children
-                .Where(c => c.Start <= time + 0.5 && c.End > time - 0.5)
-                .GroupBy(c => c.Hierarchy)
-                .OrderByDescending(g => g.Key)
-                .ToArray();
-
-            return GetVoxel(point, time, 0);
-
-            Color GetVoxel(Point3D p, double t, int level)
-            {
-                if (level == children.Length)
-                {
-                    return getVoxel(p, t);
-                }
-
-                return children[level]
-                    .Select(c => c.GetVoxel(p, t, (p1, t1) => GetVoxel(p1, t1, level + 1)))
-                    .Aggregate(MixColors);
-            }
+            return Children
+                .GroupBy(tile => tile.Channel)
+                .Select(channel => channel
+                    .GroupBy(tile => tile.Hierarchy)
+                    .OrderBy(group => group.Key)
+                    .Aggregate(getVoxel, (func, group) => (p, t) => group
+                        .Where(tile => tile.Start <= t && tile.End >= t)
+                        .Select(tile => tile.GetVoxel(p, t, func))
+                        .DefaultIfEmpty(func(p, t))
+                        .First()) // ToDo: Single
+                    .Invoke(point, time))
+                .DefaultIfEmpty(getVoxel(point, time))
+                .Aggregate(MixColors);
         }
 
         private Color MixColors(Color c1, Color c2)

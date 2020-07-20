@@ -50,6 +50,14 @@ namespace LedCubeAnimator.ViewModel
 
         [Category("Tile")]
         [PropertyOrder(3)]
+        public int Channel
+        {
+            get => Tile.Channel;
+            set => Model.SetTileProperty(Tile, nameof(Tile.Channel), value);
+        }
+
+        [Category("Tile")]
+        [PropertyOrder(4)]
         public int Hierarchy
         {
             get => Tile.Hierarchy;
@@ -68,6 +76,9 @@ namespace LedCubeAnimator.ViewModel
                     break;
                 case nameof(Tile.End):
                     RaisePropertyChanged(nameof(End));
+                    break;
+                case nameof(Tile.Channel):
+                    RaisePropertyChanged(nameof(Channel));
                     break;
                 case nameof(Tile.Hierarchy):
                     RaisePropertyChanged(nameof(Hierarchy));
