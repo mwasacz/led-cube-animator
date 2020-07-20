@@ -8,28 +8,30 @@ using System.Windows.Media.Media3D;
 
 namespace LedCubeAnimator.Model
 {
-    public class LinearDelayEffect : Effect
+    public class LinearDelay : Delay
     {
         public Axis Axis { get; set; }
 
         public double Center { get; set; }
 
-        public double Value { get; set; }
-
         public override Color GetVoxel(Point3D point, double time, Func<Point3D, double, Color> getVoxel)
         {
-            double d = 0;
+            double distance = 0;
 
             switch (Axis)
             {
-                case Axis.X: d = point.X; break;
-                case Axis.Y: d = point.Y; break;
-                case Axis.Z: d = point.Z; break;
+                case Axis.X:
+                    distance = point.X - Center; 
+                    break;
+                case Axis.Y: 
+                    distance = point.Y - Center; 
+                    break;
+                case Axis.Z: 
+                    distance = point.Z - Center; 
+                    break;
             }
 
-            d -= Center;
-
-            return getVoxel(point, time - d * Value);
+            return getVoxel(point, GetDelayedTime(time, distance));
         }
     }
 }

@@ -199,6 +199,7 @@
                     <xctk:PropertyDefinition TargetProperties="Plane" />
                     <xctk:PropertyDefinition TargetProperties="Center" />
                     <xctk:PropertyDefinition TargetProperties="Value" />
+                    <xctk:PropertyDefinition TargetProperties="WrapAround" />
                 </xctk:PropertyGrid.PropertyDefinitions>
             </xctk:PropertyGrid>
             <Button DockPanel.Dock="Top"

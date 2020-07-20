@@ -144,8 +144,8 @@ namespace LedCubeAnimator.ViewModel
                 case ShearEffect shearEffect:
                     viewModel = new ShearEffectViewModel(shearEffect, Model);
                     break;
-                case LinearDelayEffect linearDelayEffect:
-                    viewModel = new LinearDelayEffectViewModel(linearDelayEffect, Model);
+                case LinearDelay linearDelayEffect:
+                    viewModel = new LinearDelayViewModel(linearDelayEffect, Model);
                     break;
                 default:
                     throw new Exception(); // ToDo
@@ -255,7 +255,7 @@ namespace LedCubeAnimator.ViewModel
         public ICommand AddShearEffectCommand => _addShearEffectCommand ?? (_addShearEffectCommand = new RelayCommand(() => AddTile(new ShearEffect { Name = "ShearEffect" })));
 
         private RelayCommand _addLinearDelayEffectCommand;
-        public ICommand AddLinearDelayEffectCommand => _addLinearDelayEffectCommand ?? (_addLinearDelayEffectCommand = new RelayCommand(() => AddTile(new LinearDelayEffect { Name = "LinearDelayEffect" })));
+        public ICommand AddLinearDelayEffectCommand => _addLinearDelayEffectCommand ?? (_addLinearDelayEffectCommand = new RelayCommand(() => AddTile(new LinearDelay { Name = "LinearDelayEffect" })));
 
         private RelayCommand _removeTileCommand;
         public ICommand RemoveTileCommand => _removeTileCommand ?? (_removeTileCommand = new RelayCommand(() =>

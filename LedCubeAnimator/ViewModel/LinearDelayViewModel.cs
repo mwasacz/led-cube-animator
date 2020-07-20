@@ -11,11 +11,11 @@ using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 namespace LedCubeAnimator.ViewModel
 {
     [CategoryOrder("LinearDelayEffect", 2)]
-    public class LinearDelayEffectViewModel : EffectViewModel
+    public class LinearDelayViewModel : DelayViewModel
     {
-        public LinearDelayEffectViewModel(LinearDelayEffect linearDelayEffect, IModelManager model) : base(linearDelayEffect, model) { }
+        public LinearDelayViewModel(LinearDelay linearDelay, IModelManager model) : base(linearDelay, model) { }
 
-        public LinearDelayEffect LinearDelayEffect => (LinearDelayEffect)Effect;
+        public LinearDelay LinearDelayEffect => (LinearDelay)Delay;
 
         [Category("LinearDelayEffect")]
         [PropertyOrder(0)]
@@ -33,27 +33,16 @@ namespace LedCubeAnimator.ViewModel
             set => Model.SetTileProperty(LinearDelayEffect, nameof(LinearDelayEffect.Center), value);
         }
 
-        [Category("LinearDelayEffect")]
-        [PropertyOrder(2)]
-        public double Value
-        {
-            get => LinearDelayEffect.Value;
-            set => Model.SetTileProperty(LinearDelayEffect, nameof(LinearDelayEffect.Value), value);
-        }
-
         public override void ModelPropertyChanged(string propertyName)
         {
             base.ModelPropertyChanged(propertyName);
             switch (propertyName)
             {
-                case nameof(LinearDelayEffect.Axis):
+                case nameof(LinearDelay.Axis):
                     RaisePropertyChanged(nameof(Axis));
                     break;
-                case nameof(LinearDelayEffect.Center):
+                case nameof(LinearDelay.Center):
                     RaisePropertyChanged(nameof(Center));
-                    break;
-                case nameof(LinearDelayEffect.Value):
-                    RaisePropertyChanged(nameof(Value));
                     break;
             }
         }

@@ -106,8 +106,9 @@
     <Compile Include="IntToDoubleConverter.cs" />
     <Compile Include="InverseBoolConverter.cs" />
     <Compile Include="Model\Animation.cs" />
+    <Compile Include="Model\Delay.cs" />
     <Compile Include="Model\IModelManager.cs" />
-    <Compile Include="Model\LinearDelayEffect.cs" />
+    <Compile Include="Model\LinearDelay.cs" />
     <Compile Include="Model\ModelManager.cs" />
     <Compile Include="Model\PropertiesChangedEventArgs.cs" />
     <Compile Include="Model\Undo\ArrayChangeAction.cs" />
@@ -127,10 +128,11 @@
     <Compile Include="Model\Undo\UndoManagerExtensions.cs" />
     <Compile Include="ValueConverterGroup.cs" />
     <Compile Include="ViewModel\CubeSettingsViewModel.cs" />
+    <Compile Include="ViewModel\DelayViewModel.cs" />
     <Compile Include="ViewModel\EffectViewModel.cs" />
     <Compile Include="ViewModel\FrameViewModel.cs" />
     <Compile Include="ViewModel\GroupViewModel.cs" />
-    <Compile Include="ViewModel\LinearDelayEffectViewModel.cs" />
+    <Compile Include="ViewModel\LinearDelayViewModel.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\MoveEffectViewModel.cs" />
     <Compile Include="ViewModel\RotateEffectViewModel.cs" />
