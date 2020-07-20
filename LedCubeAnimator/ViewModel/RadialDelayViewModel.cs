@@ -4,33 +4,34 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using LedCubeAnimator.Model;
 using LedCubeAnimator.Model.Undo;
 using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 
 namespace LedCubeAnimator.ViewModel
 {
-    [CategoryOrder("LinearDelay", 2)]
-    public class LinearDelayViewModel : DelayViewModel
+    [CategoryOrder("RadialDelay", 2)]
+    public class RadialDelayViewModel : DelayViewModel
     {
-        public LinearDelayViewModel(LinearDelay linearDelay, IModelManager model) : base(linearDelay, model) { }
+        public RadialDelayViewModel(RadialDelay radialDelay, IModelManager model) : base(radialDelay, model) { }
 
-        public LinearDelay LinearDelay => (LinearDelay)Delay;
+        public RadialDelay RadialDelay => (RadialDelay)Delay;
 
-        [Category("LinearDelay")]
+        [Category("RadialDelay")]
         [PropertyOrder(0)]
         public Axis Axis
         {
-            get => LinearDelay.Axis;
-            set => Model.SetTileProperty(LinearDelay, nameof(LinearDelay.Axis), value);
+            get => RadialDelay.Axis;
+            set => Model.SetTileProperty(RadialDelay, nameof(RadialDelay.Axis), value);
         }
 
-        [Category("LinearDelay")]
+        [Category("RadialDelay")]
         [PropertyOrder(1)]
-        public double Center
+        public Point Center
         {
-            get => LinearDelay.Center;
-            set => Model.SetTileProperty(LinearDelay, nameof(LinearDelay.Center), value);
+            get => RadialDelay.Center;
+            set => Model.SetTileProperty(RadialDelay, nameof(RadialDelay.Center), value);
         }
 
         public override void ModelPropertyChanged(string propertyName)
@@ -38,10 +39,10 @@ namespace LedCubeAnimator.ViewModel
             base.ModelPropertyChanged(propertyName);
             switch (propertyName)
             {
-                case nameof(LinearDelay.Axis):
+                case nameof(RadialDelay.Axis):
                     RaisePropertyChanged(nameof(Axis));
                     break;
-                case nameof(LinearDelay.Center):
+                case nameof(RadialDelay.Center):
                     RaisePropertyChanged(nameof(Center));
                     break;
             }

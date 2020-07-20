@@ -27,7 +27,7 @@ namespace LedCubeAnimator.Model
                     .GroupBy(tile => tile.Hierarchy)
                     .OrderBy(group => group.Key)
                     .Aggregate(getVoxel, (func, group) => (p, t) => group
-                        .Where(tile => tile.Start <= t && tile.End >= t)
+                        .Where(tile => tile.Start <= t + 0.5 && tile.End > t - 0.5)
                         .Select(tile => tile.GetVoxel(p, t, func))
                         .DefaultIfEmpty(func(p, t))
                         .First()) // ToDo: Single

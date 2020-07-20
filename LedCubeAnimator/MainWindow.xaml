@@ -65,8 +65,14 @@
                 <MenuItem Header="ShearEffect"
                           Command="{Binding AddShearEffectCommand}" />
                 <Separator />
-                <MenuItem Header="LinearDelayEffect"
-                          Command="{Binding AddLinearDelayEffectCommand}" />
+                <MenuItem Header="LinearDelay"
+                          Command="{Binding AddLinearDelayCommand}" />
+                <MenuItem Header="RadialDelay"
+                          Command="{Binding AddRadialDelayCommand}" />
+                <MenuItem Header="SphericalDelay"
+                          Command="{Binding AddSphericalDelayCommand}" />
+                <MenuItem Header="AngularDelay"
+                          Command="{Binding AddAngularDelayCommand}" />
             </MenuItem>
             <MenuItem Header="Options">
                 <MenuItem Header="Cube settings..."
@@ -200,6 +206,7 @@
                     <xctk:PropertyDefinition TargetProperties="Center" />
                     <xctk:PropertyDefinition TargetProperties="Value" />
                     <xctk:PropertyDefinition TargetProperties="WrapAround" />
+                    <xctk:PropertyDefinition TargetProperties="StartAngle" />
                 </xctk:PropertyGrid.PropertyDefinitions>
             </xctk:PropertyGrid>
             <Button DockPanel.Dock="Top"

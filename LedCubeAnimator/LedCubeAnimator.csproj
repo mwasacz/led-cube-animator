@@ -105,12 +105,15 @@
     <Compile Include="IntToDateTimeConverter.cs" />
     <Compile Include="IntToDoubleConverter.cs" />
     <Compile Include="InverseBoolConverter.cs" />
+    <Compile Include="Model\AngularDelay.cs" />
     <Compile Include="Model\Animation.cs" />
     <Compile Include="Model\Delay.cs" />
     <Compile Include="Model\IModelManager.cs" />
     <Compile Include="Model\LinearDelay.cs" />
     <Compile Include="Model\ModelManager.cs" />
     <Compile Include="Model\PropertiesChangedEventArgs.cs" />
+    <Compile Include="Model\RadialDelay.cs" />
+    <Compile Include="Model\SphericalDelay.cs" />
     <Compile Include="Model\Undo\ArrayChangeAction.cs" />
     <Compile Include="Model\Undo\CollectionChangeAction.cs" />
     <Compile Include="Model\Enums.cs" />
@@ -127,6 +130,7 @@
     <Compile Include="Model\Undo\UndoManager.cs" />
     <Compile Include="Model\Undo\UndoManagerExtensions.cs" />
     <Compile Include="ValueConverterGroup.cs" />
+    <Compile Include="ViewModel\AngularDelayViewModel.cs" />
     <Compile Include="ViewModel\CubeSettingsViewModel.cs" />
     <Compile Include="ViewModel\DelayViewModel.cs" />
     <Compile Include="ViewModel\EffectViewModel.cs" />
@@ -135,9 +139,11 @@
     <Compile Include="ViewModel\LinearDelayViewModel.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\MoveEffectViewModel.cs" />
+    <Compile Include="ViewModel\RadialDelayViewModel.cs" />
     <Compile Include="ViewModel\RotateEffectViewModel.cs" />
     <Compile Include="ViewModel\ScaleEffectViewModel.cs" />
     <Compile Include="ViewModel\ShearEffectViewModel.cs" />
+    <Compile Include="ViewModel\SphericalDelayViewModel.cs" />
     <Compile Include="ViewModel\TileViewModel.cs" />
     <Compile Include="ViewModel\TransformEffectViewModel.cs" />
     <Page Include="Cube3DView.xaml">

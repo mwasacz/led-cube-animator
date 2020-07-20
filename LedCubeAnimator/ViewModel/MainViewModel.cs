@@ -144,8 +144,17 @@ namespace LedCubeAnimator.ViewModel
                 case ShearEffect shearEffect:
                     viewModel = new ShearEffectViewModel(shearEffect, Model);
                     break;
-                case LinearDelay linearDelayEffect:
-                    viewModel = new LinearDelayViewModel(linearDelayEffect, Model);
+                case LinearDelay linearDelay:
+                    viewModel = new LinearDelayViewModel(linearDelay, Model);
+                    break;
+                case RadialDelay radialDelay:
+                    viewModel = new RadialDelayViewModel(radialDelay, Model);
+                    break;
+                case SphericalDelay sphericalDelay:
+                    viewModel = new SphericalDelayViewModel(sphericalDelay, Model);
+                    break;
+                case AngularDelay angularDelay:
+                    viewModel = new AngularDelayViewModel(angularDelay, Model);
                     break;
                 default:
                     throw new Exception(); // ToDo
@@ -254,8 +263,17 @@ namespace LedCubeAnimator.ViewModel
         private RelayCommand _addShearEffectCommand;
         public ICommand AddShearEffectCommand => _addShearEffectCommand ?? (_addShearEffectCommand = new RelayCommand(() => AddTile(new ShearEffect { Name = "ShearEffect" })));
 
-        private RelayCommand _addLinearDelayEffectCommand;
-        public ICommand AddLinearDelayEffectCommand => _addLinearDelayEffectCommand ?? (_addLinearDelayEffectCommand = new RelayCommand(() => AddTile(new LinearDelay { Name = "LinearDelayEffect" })));
+        private RelayCommand _addLinearDelayCommand;
+        public ICommand AddLinearDelayCommand => _addLinearDelayCommand ?? (_addLinearDelayCommand = new RelayCommand(() => AddTile(new LinearDelay { Name = "LinearDelay" })));
+
+        private RelayCommand _addRadialDelayCommand;
+        public ICommand AddRadialDelayCommand => _addRadialDelayCommand ?? (_addRadialDelayCommand = new RelayCommand(() => AddTile(new RadialDelay { Name = "RadialDelay" })));
+
+        private RelayCommand _addSphericalDelayCommand;
+        public ICommand AddSphericalDelayCommand => _addSphericalDelayCommand ?? (_addSphericalDelayCommand = new RelayCommand(() => AddTile(new SphericalDelay { Name = "SphericalDelay" })));
+
+        private RelayCommand _addAngularDelayCommand;
+        public ICommand AddAngularDelayCommand => _addAngularDelayCommand ?? (_addAngularDelayCommand = new RelayCommand(() => AddTile(new AngularDelay { Name = "AngularDelay" })));
 
         private RelayCommand _removeTileCommand;
         public ICommand RemoveTileCommand => _removeTileCommand ?? (_removeTileCommand = new RelayCommand(() =>
