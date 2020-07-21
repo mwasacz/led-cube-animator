@@ -132,6 +132,9 @@ namespace LedCubeAnimator.ViewModel
                 case Group group:
                     viewModel = new GroupViewModel(group, Model);
                     break;
+                case GradientEffect gradientEffect:
+                    viewModel = new GradientEffectViewModel(gradientEffect, Model);
+                    break;
                 case MoveEffect moveEffect:
                     viewModel = new MoveEffectViewModel(moveEffect, Model);
                     break;
@@ -250,6 +253,9 @@ namespace LedCubeAnimator.ViewModel
 
         private RelayCommand _addGroupCommand;
         public ICommand AddGroupCommand => _addGroupCommand ?? (_addGroupCommand = new RelayCommand(() => AddTile(new Group { Name = "Group" })));
+
+        private RelayCommand _addGradientEffectCommand;
+        public ICommand AddGradientEffectCommand => _addGradientEffectCommand ?? (_addGradientEffectCommand = new RelayCommand(() => AddTile(new GradientEffect { Name = "GradientEffect" })));
 
         private RelayCommand _addMoveEffectCommand;
         public ICommand AddMoveEffectCommand => _addMoveEffectCommand ?? (_addMoveEffectCommand = new RelayCommand(() => AddTile(new MoveEffect { Name = "MoveEffect" })));

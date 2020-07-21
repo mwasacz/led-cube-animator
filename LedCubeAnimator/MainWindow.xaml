@@ -56,6 +56,9 @@
                 <MenuItem Header="Group"
                           Command="{Binding AddGroupCommand}" />
                 <Separator />
+                <MenuItem Header="GradientEffect"
+                          Command="{Binding AddGradientEffectCommand}" />
+                <Separator />
                 <MenuItem Header="MoveEffect"
                           Command="{Binding AddMoveEffectCommand}" />
                 <MenuItem Header="RotateEffect"
@@ -195,6 +198,7 @@
                     <xctk:PropertyDefinition TargetProperties="Size" />
                     <xctk:PropertyDefinition TargetProperties="From" />
                     <xctk:PropertyDefinition TargetProperties="To" />
+                    <xctk:PropertyDefinition TargetProperties="ColorInterpolation" />
                     <xctk:PropertyDefinition TargetProperties="TimeInterpolation" />
                     <xctk:PropertyDefinition TargetProperties="RepeatCount" />
                     <xctk:PropertyDefinition TargetProperties="Reverse" />
@@ -208,6 +212,24 @@
                     <xctk:PropertyDefinition TargetProperties="WrapAround" />
                     <xctk:PropertyDefinition TargetProperties="StartAngle" />
                 </xctk:PropertyGrid.PropertyDefinitions>
+                <xctk:PropertyGrid.EditorDefinitions>
+                    <xctk:EditorTemplateDefinition>
+                        <xctk:EditorTemplateDefinition.TargetProperties>
+                            <xctk:TargetPropertyType Type="{x:Type Color}" />
+                        </xctk:EditorTemplateDefinition.TargetProperties>
+                        <xctk:EditorTemplateDefinition.EditingTemplate>
+                            <DataTemplate>
+                                <xctk:ColorPicker ShowAvailableColors="False"
+                                                  ShowRecentColors="False"
+                                                  ShowStandardColors="False"
+                                                  ShowTabHeaders="False"
+                                                  ColorMode="ColorCanvas"
+                                                  UsingAlphaChannel="False"
+                                                  SelectedColor="{Binding Value}" />
+                            </DataTemplate>
+                        </xctk:EditorTemplateDefinition.EditingTemplate>
+                    </xctk:EditorTemplateDefinition>
+                </xctk:PropertyGrid.EditorDefinitions>
             </xctk:PropertyGrid>
             <Button DockPanel.Dock="Top"
                     Content="Delete tile"

@@ -108,6 +108,7 @@
     <Compile Include="Model\AngularDelay.cs" />
     <Compile Include="Model\Animation.cs" />
     <Compile Include="Model\Delay.cs" />
+    <Compile Include="Model\GradientEffect.cs" />
     <Compile Include="Model\IModelManager.cs" />
     <Compile Include="Model\LinearDelay.cs" />
     <Compile Include="Model\ModelManager.cs" />
@@ -135,6 +136,7 @@
     <Compile Include="ViewModel\DelayViewModel.cs" />
     <Compile Include="ViewModel\EffectViewModel.cs" />
     <Compile Include="ViewModel\FrameViewModel.cs" />
+    <Compile Include="ViewModel\GradientEffectViewModel.cs" />
     <Compile Include="ViewModel\GroupViewModel.cs" />
     <Compile Include="ViewModel\LinearDelayViewModel.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
