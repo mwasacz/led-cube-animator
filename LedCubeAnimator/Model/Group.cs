@@ -15,11 +15,8 @@ namespace LedCubeAnimator.Model
 
         public override Color GetVoxel(Point3D point, double time, Func<Point3D, double, Color> getVoxel)
         {
-            time = (End - Start) / RepeatCount * Fraction(time);
-            if (Reverse)
-            {
-                time /= 2;
-            }
+            time = GetLength() * Fraction(time);
+            time /= Reverse ? RepeatCount * 2 : RepeatCount;
 
             return Children
                 .GroupBy(tile => tile.Channel)
@@ -27,7 +24,7 @@ namespace LedCubeAnimator.Model
                     .GroupBy(tile => tile.Hierarchy)
                     .OrderBy(group => group.Key)
                     .Aggregate(getVoxel, (func, group) => (p, t) => group
-                        .FirstOrDefault(tile => tile.Start <= t + 0.5 && tile.End > t - 0.5) // ToDo: SingleOrDefault
+                        .FirstOrDefault(tile => t >= tile.Start && t < tile.End + 1) // ToDo: SingleOrDefault
                         ?.GetVoxel(p, t, func)
                         ?? func(p, t)))
                 .DefaultIfEmpty(getVoxel)

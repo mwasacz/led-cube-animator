@@ -14,12 +14,7 @@ namespace LedCubeAnimator.Model
 
         protected double Fraction(double time)
         {
-            if (time == End)
-            {
-                return Reverse ? 0 : 1;
-            }
-
-            double frac = RepeatCount * (time - Start) / (End - Start) % 1;
+            double frac = RepeatCount * (time - Start) / GetLength() % 1;
             
             if (Reverse)
             {

@@ -18,8 +18,8 @@ namespace LedCubeAnimator.Model
 
             if (WrapAround)
             {
-                int len = End - Start;
-                time = ((time - Start) % len + len) % len + Start;
+                var length = GetLength();
+                time = ((time - Start) % length + length) % length + Start;
             }
 
             return time;

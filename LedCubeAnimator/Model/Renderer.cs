@@ -10,8 +10,9 @@ namespace LedCubeAnimator.Model
 {
     public static class Renderer
     {
-        public static Color[,,] Render(Animation animation, int time, bool preview)
+        public static Color[,,] Render(Animation animation, int frame, bool preview)
         {
+            double time = frame + 0.5;
             int size = animation.Size;
             var voxels = new Color[size, size, size];
             for (int x = 0; x < size; x++)
