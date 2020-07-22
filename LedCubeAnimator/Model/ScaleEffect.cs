@@ -18,14 +18,14 @@ namespace LedCubeAnimator.Model
             double value = Value(time);
 
             var scale = new Vector3D(
-                Axis == Axis.X ? value : 0,
-                Axis == Axis.Y ? value : 0,
-                Axis == Axis.Z ? value : 0);
+                Axis == Axis.X ? value : 1,
+                Axis == Axis.Y ? value : 1,
+                Axis == Axis.Z ? value : 1);
 
             var center = new Point3D(
-                Axis == Axis.X ? value : 0,
-                Axis == Axis.Y ? value : 0,
-                Axis == Axis.Z ? value : 0);
+                Axis == Axis.X ? Center : 0,
+                Axis == Axis.Y ? Center : 0,
+                Axis == Axis.Z ? Center : 0);
 
             var matrix = Matrix3D.Identity;
             matrix.ScaleAt(scale, center);
