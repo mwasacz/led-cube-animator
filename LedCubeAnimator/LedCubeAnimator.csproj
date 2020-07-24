@@ -94,6 +94,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ViewModel\IViewModelFactory.cs" />
+    <Compile Include="ViewModel\ViewModelFactory.cs" />
     <Compile Include="View\Converters\ColorToValueConverter.cs" />
     <Compile Include="View\UserControls\Cube3DView.xaml.cs">
       <DependentUpon>Cube3DView.xaml</DependentUpon>

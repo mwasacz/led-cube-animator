@@ -24,6 +24,7 @@ namespace LedCubeAnimator.ViewModel.WindowViewModels
         public MainViewModel()
         {
             Model = new ModelManager();
+            _viewModelFactory = new ViewModelFactory(Model);
             CreateDefaultViewModel();
             Model.PropertiesChanged += Model_PropertiesChanged;
         }
@@ -31,6 +32,8 @@ namespace LedCubeAnimator.ViewModel.WindowViewModels
         public IModelManager Model { get; }
 
         public Animation Animation => Model.Animation;
+
+        private IViewModelFactory _viewModelFactory;
 
         private void CreateDefaultViewModel()
         {
@@ -124,45 +127,7 @@ namespace LedCubeAnimator.ViewModel.WindowViewModels
 
         private TileViewModel CreateViewModel(Tile tile)
         {
-            TileViewModel viewModel;
-            switch (tile)
-            {
-                case Frame frame:
-                    viewModel = new FrameViewModel(frame, Model);
-                    break;
-                case Group group:
-                    viewModel = new GroupViewModel(group, Model);
-                    break;
-                case GradientEffect gradientEffect:
-                    viewModel = new GradientEffectViewModel(gradientEffect, Model);
-                    break;
-                case MoveEffect moveEffect:
-                    viewModel = new MoveEffectViewModel(moveEffect, Model);
-                    break;
-                case RotateEffect rotateEffect:
-                    viewModel = new RotateEffectViewModel(rotateEffect, Model);
-                    break;
-                case ScaleEffect scaleEffect:
-                    viewModel = new ScaleEffectViewModel(scaleEffect, Model);
-                    break;
-                case ShearEffect shearEffect:
-                    viewModel = new ShearEffectViewModel(shearEffect, Model);
-                    break;
-                case LinearDelay linearDelay:
-                    viewModel = new LinearDelayViewModel(linearDelay, Model);
-                    break;
-                case RadialDelay radialDelay:
-                    viewModel = new RadialDelayViewModel(radialDelay, Model);
-                    break;
-                case SphericalDelay sphericalDelay:
-                    viewModel = new SphericalDelayViewModel(sphericalDelay, Model);
-                    break;
-                case AngularDelay angularDelay:
-                    viewModel = new AngularDelayViewModel(angularDelay, Model);
-                    break;
-                default:
-                    throw new Exception(); // ToDo
-            }
+            var viewModel = (TileViewModel)_viewModelFactory.Create(tile);
             viewModel.PropertyChanged += Tile_PropertyChanged;
             return viewModel;
         }
