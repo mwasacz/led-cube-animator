@@ -10,10 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -524,7 +521,7 @@ namespace LedCubeAnimator.ViewModel.WindowViewModels
         {
             foreach (var t in group.Children)
             {
-                if (t == tile || t is Group g && FindTileParents(tile, parents, g))
+                if (t == tile || (t is Group g && FindTileParents(tile, parents, g)))
                 {
                     parents.Add(group);
                     return true;

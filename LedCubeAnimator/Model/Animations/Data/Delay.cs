@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace LedCubeAnimator.Model.Animations.Data
+﻿namespace LedCubeAnimator.Model.Animations.Data
 {
     public abstract class Delay : Tile
     {

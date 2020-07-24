@@ -1,10 +1,5 @@
 ﻿using GalaSoft.MvvmLight;
 using LedCubeAnimator.Model.Animations.Data;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Media;
 
 namespace LedCubeAnimator.ViewModel.WindowViewModels

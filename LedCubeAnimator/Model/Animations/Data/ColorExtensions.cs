@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Media;
 
 namespace LedCubeAnimator.Model.Animations.Data
 {
-    public static class Extensions
+    public static class ColorExtensions
     {
         public static Color Add(this Color color1, Color color2)
         {

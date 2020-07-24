@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
 
@@ -35,7 +31,7 @@ namespace LedCubeAnimator.Model.Animations.Data
 
                 double d1 = toH - fromH + (toH < fromH ? 360 : 0);
                 double d2 = fromH - toH + (fromH <= toH ? 360 : 0);
-                double d = d1 < d2 == (ColorInterpolation == ColorInterpolation.HSV) ? d1 : -d2;
+                double d = (d1 < d2) == (ColorInterpolation == ColorInterpolation.HSV) ? d1 : -d2;
                 double h = (fromH + d * fraction + 360) % 360;
 
                 return ColorFromHSV(

@@ -1,10 +1,7 @@
 ﻿using LedCubeAnimator.Model.Animations.Data;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Media;
 
 namespace LedCubeAnimator.Model.Animations
@@ -86,7 +83,7 @@ namespace LedCubeAnimator.Model.Animations
             for (int l; d > 0; d -= l)
             {
                 l = d <= 0x0FFF ? d : Math.Min(d - step, 0x0FFF);
-                prevBytes[8] = (byte)(l >> 8 & 0x0F | prev8);
+                prevBytes[8] = (byte)((l >> 8 & 0x0F) | prev8);
                 prevBytes[9] = (byte)l;
                 prevBytes[10] = 0;
 

@@ -119,7 +119,7 @@
     <Compile Include="Model\Undo\CollectionChangeAction.cs" />
     <Compile Include="Model\Animations\Data\Enums.cs" />
     <Compile Include="Model\Animations\Exporter.cs" />
-    <Compile Include="Model\Animations\Data\Extensions.cs" />
+    <Compile Include="Model\Animations\Data\ColorExtensions.cs" />
     <Compile Include="Model\Animations\FileReaderWriter.cs" />
     <Compile Include="Model\Animations\Renderer.cs" />
     <Compile Include="Model\Animations\Data\ShearEffect.cs" />

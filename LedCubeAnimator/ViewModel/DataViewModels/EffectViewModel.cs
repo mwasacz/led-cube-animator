@@ -1,13 +1,6 @@
-﻿using GalaSoft.MvvmLight;
-using LedCubeAnimator.Model;
+﻿using LedCubeAnimator.Model;
 using LedCubeAnimator.Model.Animations.Data;
-using LedCubeAnimator.Model.Undo;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 
 namespace LedCubeAnimator.ViewModel.DataViewModels
