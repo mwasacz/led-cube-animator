@@ -100,8 +100,8 @@
             <Button MinWidth="75"
                     Margin="0,0,10,0"
                     Content="Ok"
-                    IsDefault="True"
-                    Click="OkButton_Click" />
+                    Command="{Binding OkCommand}"
+                    IsDefault="True" />
             <Button MinWidth="75"
                     Content="Cancel"
                     IsCancel="True" />

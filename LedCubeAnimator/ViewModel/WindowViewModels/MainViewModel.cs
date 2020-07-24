@@ -3,9 +3,11 @@ using GalaSoft.MvvmLight.Command;
 using LedCubeAnimator.Model;
 using LedCubeAnimator.Model.Animations;
 using LedCubeAnimator.Model.Animations.Data;
-using LedCubeAnimator.View.Windows;
+using LedCubeAnimator.View;
 using LedCubeAnimator.ViewModel.DataViewModels;
-using Microsoft.Win32;
+using MvvmDialogs;
+using MvvmDialogs.FrameworkDialogs.OpenFile;
+using MvvmDialogs.FrameworkDialogs.SaveFile;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -25,6 +27,7 @@ namespace LedCubeAnimator.ViewModel.WindowViewModels
         {
             Model = new ModelManager();
             _viewModelFactory = new ViewModelFactory(Model);
+            _dialogService = new DialogService(dialogTypeLocator: new ViewFactory());
             CreateDefaultViewModel();
             Model.PropertiesChanged += Model_PropertiesChanged;
         }
@@ -34,6 +37,7 @@ namespace LedCubeAnimator.ViewModel.WindowViewModels
         public Animation Animation => Model.Animation;
 
         private IViewModelFactory _viewModelFactory;
+        private IDialogService _dialogService;
 
         private void CreateDefaultViewModel()
         {
@@ -270,9 +274,10 @@ namespace LedCubeAnimator.ViewModel.WindowViewModels
                 MonoColor = Animation.MonoColor,
                 FrameDuration = Animation.FrameDuration
             };
-            var dialog = new CubeSettingsDialog(viewModel);
 
-            if (dialog.ShowDialog() == true)
+            var result = _dialogService.ShowDialog(this, viewModel);
+
+            if (result == true)
             {
                 Model.SetAnimationProperties(viewModel.Size, viewModel.ColorMode, viewModel.MonoColor, viewModel.FrameDuration);
             }
@@ -548,7 +553,9 @@ namespace LedCubeAnimator.ViewModel.WindowViewModels
         private RelayCommand _newCommand;
         public ICommand NewCommand => _newCommand ?? (_newCommand = new RelayCommand(() =>
         {
-            switch (MessageBox.Show("Save changes?", "Unsaved changes", MessageBoxButton.YesNoCancel, MessageBoxImage.Warning))
+            var result = _dialogService.ShowMessageBox(this, "Save changes?", "Unsaved changes", MessageBoxButton.YesNoCancel, MessageBoxImage.Warning);
+
+            switch (result)
             {
                 case MessageBoxResult.Yes:
                     SaveCommand.Execute(null);
@@ -566,14 +573,18 @@ namespace LedCubeAnimator.ViewModel.WindowViewModels
         private RelayCommand _openCommand;
         public ICommand OpenCommand => _openCommand ?? (_openCommand = new RelayCommand(() =>
         {
-            var dialog = new OpenFileDialog();
-            dialog.Filter = "Animation files (*.json)|*.json|All files (*.*)|*.*";
-            if (dialog.ShowDialog() != true)
+            var settings = new OpenFileDialogSettings
+            {
+                Filter = "Animation files (*.json)|*.json|All files (*.*)|*.*"
+            };
+            var result = _dialogService.ShowOpenFileDialog(this, settings);
+
+            if (result != true)
             {
                 return;
             }
 
-            if (!Model.Open(dialog.FileName))
+            if (!Model.Open(settings.FileName))
             {
                 MessageBox.Show("Error occured when opening file", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
@@ -594,27 +605,35 @@ namespace LedCubeAnimator.ViewModel.WindowViewModels
         private RelayCommand _saveAsCommand;
         public ICommand SaveAsCommand => _saveAsCommand ?? (_saveAsCommand = new RelayCommand(() =>
         {
-            var dialog = new SaveFileDialog();
-            dialog.Filter = "Animation files (*.json)|*.json|All files (*.*)|*.*";
-            if (dialog.ShowDialog() != true)
+            var settings = new SaveFileDialogSettings
+            {
+                Filter = "Animation files (*.json)|*.json|All files (*.*)|*.*"
+            };
+            var result = _dialogService.ShowSaveFileDialog(this, settings);
+
+            if (result != true)
             {
                 return;
             }
 
-            Model.SaveAs(dialog.FileName);
+            Model.SaveAs(settings.FileName);
         }));
 
         private RelayCommand _exportMWCommand;
         public ICommand ExportMWCommand => _exportMWCommand ?? (_exportMWCommand = new RelayCommand(() =>
         {
-            var dialog = new SaveFileDialog();
-            dialog.Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*";
-            if (dialog.ShowDialog() != true)
+            var settings = new SaveFileDialogSettings
+            {
+                Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*"
+            };
+            var result = _dialogService.ShowSaveFileDialog(this, settings);
+
+            if (result != true)
             {
                 return;
             }
 
-            Model.Export(dialog.FileName);
+            Model.Export(settings.FileName);
         }));
 
         private RelayCommand _undoCommand;

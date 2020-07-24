@@ -1,5 +1,4 @@
-﻿using LedCubeAnimator.ViewModel.WindowViewModels;
-using System.Windows;
+﻿using System.Windows;
 
 namespace LedCubeAnimator.View.Windows
 {
@@ -8,16 +7,9 @@ namespace LedCubeAnimator.View.Windows
     /// </summary>
     public partial class CubeSettingsDialog : Window
     {
-        public CubeSettingsDialog(CubeSettingsViewModel viewModel)
+        public CubeSettingsDialog()
         {
             InitializeComponent();
-
-            DataContext = viewModel;
-        }
-
-        private void OkButton_Click(object sender, RoutedEventArgs e)
-        {
-            DialogResult = true;
         }
     }
 }
