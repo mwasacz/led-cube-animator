@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:md="https://github.com/fantasticfiasco/mvvm-dialogs"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
         xmlns:controls="clr-namespace:LedCubeAnimator.View.UserControls"
         xmlns:converters="clr-namespace:LedCubeAnimator.View.Converters"
         xmlns:model="clr-namespace:LedCubeAnimator.Model.Animations.Data"
@@ -17,6 +18,15 @@
         Closing="MainWindow_Closing"
         Height="450"
         Width="800">
+    <Window.Resources>
+        <converters:ColorToValueConverter x:Key="ColorToValueConverter" />
+        <converters:IntToDateTimeConverter x:Key="IntToDateTimeConverter" />
+        <converters:IntToDoubleConverter x:Key="IntToDoubleConverter" />
+        <sys:Int32 x:Key="StartDateCorrection">0</sys:Int32>
+        <sys:Int32 x:Key="EndDateCorrection">1</sys:Int32>
+        <sys:Double x:Key="StartSliderCorrection">-0.5</sys:Double>
+        <sys:Double x:Key="EndSliderCorrection">0.5</sys:Double>
+    </Window.Resources>
     <Window.InputBindings>
         <KeyBinding Command="{Binding UndoCommand}"
                     Key="Z"

@@ -3,22 +3,5 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:sys="clr-namespace:System;assembly=mscorlib"
-             xmlns:converters="clr-namespace:LedCubeAnimator.View.Converters"
              mc:Ignorable="d">
-    <Application.Resources>
-        <ResourceDictionary>
-            <converters:EnumToBoolConverter x:Key="EnumToBoolConverter" />
-            <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
-            <converters:ColorToValueConverter x:Key="ColorToValueConverter" />
-            <converters:ValueConverterGroup x:Key="ValueConverterGroup" />
-            <converters:IntToDateTimeConverter x:Key="IntToDateTimeConverter" />
-            <converters:IntToDoubleConverter x:Key="IntToDoubleConverter" />
-            <sys:Int32 x:Key="StartDateCorrection">0</sys:Int32>
-            <sys:Int32 x:Key="EndDateCorrection">1</sys:Int32>
-            <sys:Double x:Key="StartSliderCorrection">-0.5</sys:Double>
-            <sys:Double x:Key="EndSliderCorrection">0.5</sys:Double>
-            <!--<vm:ViewModelLocator x:Key="Locator" d:IsDataSource="True" xmlns:vm="clr-namespace:LedCubeAnimator.ViewModel" />-->
-        </ResourceDictionary>
-    </Application.Resources>
 </Application>
