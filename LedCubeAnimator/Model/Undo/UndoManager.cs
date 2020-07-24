@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace LedCubeAnimator.Model.Undo
 {
-    public class UndoManager
+    public class UndoManager : IUndoManager
     {
         private IAction _currentAction;
         private readonly Stack<IAction> _undoStack = new Stack<IAction>();
@@ -26,12 +26,6 @@ namespace LedCubeAnimator.Model.Undo
             }
 
             _redoStack.Clear();
-        }
-
-        public void RecordAndFinishAction(IAction action, bool allowMerge = false)
-        {
-            RecordAction(action);
-            FinishAction(allowMerge);
         }
 
         public void FinishAction(bool allowMerge = false)

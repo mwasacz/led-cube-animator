@@ -3,7 +3,6 @@ using GalaSoft.MvvmLight.Command;
 using LedCubeAnimator.Model;
 using LedCubeAnimator.Model.Animations;
 using LedCubeAnimator.Model.Animations.Data;
-using LedCubeAnimator.View;
 using LedCubeAnimator.ViewModel.DataViewModels;
 using MvvmDialogs;
 using MvvmDialogs.FrameworkDialogs.OpenFile;
@@ -23,11 +22,12 @@ namespace LedCubeAnimator.ViewModel.WindowViewModels
 {
     public class MainViewModel : ViewModelBase
     {
-        public MainViewModel()
+        public MainViewModel(IModelManager model, IViewModelFactory viewModelFactory, IDialogService dialogService)
         {
-            Model = new ModelManager();
-            _viewModelFactory = new ViewModelFactory(Model);
-            _dialogService = new DialogService(dialogTypeLocator: new ViewFactory());
+            Model = model;
+            _viewModelFactory = viewModelFactory;
+            _dialogService = dialogService;
+
             CreateDefaultViewModel();
             Model.PropertiesChanged += Model_PropertiesChanged;
         }

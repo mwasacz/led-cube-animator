@@ -5,8 +5,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:converters="clr-namespace:LedCubeAnimator.View.Converters"
-             mc:Ignorable="d"
-             StartupUri="View/Windows/MainWindow.xaml">
+             mc:Ignorable="d">
     <Application.Resources>
         <ResourceDictionary>
             <converters:EnumToBoolConverter x:Key="EnumToBoolConverter" />
