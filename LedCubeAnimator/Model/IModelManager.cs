@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LedCubeAnimator.Model.Animations.Data;
+using System;
 using System.Windows.Media;
 
 namespace LedCubeAnimator.Model
