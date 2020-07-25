@@ -653,5 +653,23 @@ namespace LedCubeAnimator.ViewModel.WindowViewModels
                 Model.Redo();
             }
         }, () => Model.CanRedo));
+
+        private RelayCommand<CancelEventArgs> _closingCommand;
+        public ICommand ClosingCommand => _closingCommand ?? (_closingCommand = new RelayCommand<CancelEventArgs>(e =>
+        {
+            var result = _dialogService.ShowMessageBox(this, "Save changes?", "Unsaved changes", MessageBoxButton.YesNoCancel, MessageBoxImage.Warning);
+
+            switch (result)
+            {
+                case MessageBoxResult.Yes:
+                    SaveCommand.Execute(null);
+                    break;
+                case MessageBoxResult.No:
+                    break;
+                default:
+                    e.Cancel = true;
+                    break;
+            }
+        }));
     }
 }

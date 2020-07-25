@@ -5,6 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:md="https://github.com/fantasticfiasco/mvvm-dialogs"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        xmlns:cmd="http://www.galasoft.ch/mvvmlight"
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         xmlns:controls="clr-namespace:LedCubeAnimator.View.UserControls"
         xmlns:converters="clr-namespace:LedCubeAnimator.View.Converters"
@@ -15,7 +17,6 @@
         TextOptions.TextFormattingMode="Display"
         Title="MainWindow"
         WindowState="Maximized"
-        Closing="MainWindow_Closing"
         Height="450"
         Width="800">
     <Window.Resources>
@@ -27,6 +28,12 @@
         <sys:Double x:Key="StartSliderCorrection">-0.5</sys:Double>
         <sys:Double x:Key="EndSliderCorrection">0.5</sys:Double>
     </Window.Resources>
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Closing">
+            <cmd:EventToCommand Command="{Binding ClosingCommand}"
+                                PassEventArgsToCommand="True" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
     <Window.InputBindings>
         <KeyBinding Command="{Binding UndoCommand}"
                     Key="Z"
