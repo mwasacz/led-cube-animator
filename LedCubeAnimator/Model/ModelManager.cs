@@ -10,14 +10,13 @@ namespace LedCubeAnimator.Model
 {
     public class ModelManager : IModelManager
     {
-        public ModelManager(IUndoManager undoManager)
+        public ModelManager()
         {
-            _undo = undoManager;
             _undo.ActionExecuted += Undo_ActionExecuted;
             New();
         }
 
-        private readonly IUndoManager _undo;
+        private readonly UndoManager _undo = new UndoManager();
         private object _changedObject;
         private string _changedProperty;
         private string _filePath;

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace LedCubeAnimator.Model.Undo
 {
-    public class UndoManager : IUndoManager
+    public class UndoManager
     {
         private IAction _currentAction;
         private readonly Stack<IAction> _undoStack = new Stack<IAction>();

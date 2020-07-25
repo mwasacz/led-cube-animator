@@ -1,5 +1,4 @@
 ﻿using LedCubeAnimator.Model;
-using LedCubeAnimator.Model.Undo;
 using LedCubeAnimator.View;
 using LedCubeAnimator.ViewModel;
 using LedCubeAnimator.ViewModel.WindowViewModels;
@@ -17,8 +16,7 @@ namespace LedCubeAnimator
         {
             base.OnStartup(e);
 
-            var undoManager = new UndoManager();
-            var modelManager = new ModelManager(undoManager);
+            var modelManager = new ModelManager();
             var viewModelFactory = new ViewModelFactory(modelManager);
             var viewFactory = new ViewFactory();
             var dialogService = new DialogService(dialogTypeLocator: viewFactory);
