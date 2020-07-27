@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LedCubeAnimator.Model.Undo
 {
@@ -29,12 +26,6 @@ namespace LedCubeAnimator.Model.Undo
             }
 
             _redoStack.Clear();
-        }
-
-        public void RecordAndFinishAction(IAction action, bool allowMerge = false)
-        {
-            RecordAction(action);
-            FinishAction(allowMerge);
         }
 
         public void FinishAction(bool allowMerge = false)

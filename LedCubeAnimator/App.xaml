@@ -1,25 +1,7 @@
 <Application x:Class="LedCubeAnimator.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:LedCubeAnimator"
-             StartupUri="MainWindow.xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             d1p1:Ignorable="d"
-             xmlns:d1p1="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:sys="clr-namespace:System;assembly=mscorlib">
-    <Application.Resources>
-        <ResourceDictionary>
-            <local:EnumToBoolConverter x:Key="EnumToBoolConverter" />
-            <local:InverseBoolConverter x:Key="InverseBoolConverter" />
-            <local:ColorToValueConverter x:Key="ColorToValueConverter" />
-            <local:ValueConverterGroup x:Key="ValueConverterGroup" />
-            <local:IntToDateTimeConverter x:Key="IntToDateTimeConverter" />
-            <local:IntToDoubleConverter x:Key="IntToDoubleConverter" />
-            <sys:Int32 x:Key="StartDateCorrection">0</sys:Int32>
-            <sys:Int32 x:Key="EndDateCorrection">1</sys:Int32>
-            <sys:Double x:Key="StartSliderCorrection">-0.5</sys:Double>
-            <sys:Double x:Key="EndSliderCorrection">0.5</sys:Double>
-            <!--<vm:ViewModelLocator x:Key="Locator" d:IsDataSource="True" xmlns:vm="clr-namespace:LedCubeAnimator.ViewModel" />-->
-        </ResourceDictionary>
-    </Application.Resources>
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d">
 </Application>

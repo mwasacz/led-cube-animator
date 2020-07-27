@@ -53,6 +53,9 @@
     <Reference Include="HelixToolkit.Wpf, Version=2.12.0.0, Culture=neutral, PublicKeyToken=52aa3500039caf0d, processorArchitecture=MSIL">
       <HintPath>..\packages\HelixToolkit.Wpf.2.12.0\lib\net45\HelixToolkit.Wpf.dll</HintPath>
     </Reference>
+    <Reference Include="MvvmDialogs, Version=7.1.0.0, Culture=neutral, PublicKeyToken=3d3b9708589bc73e, processorArchitecture=MSIL">
+      <HintPath>..\packages\MvvmDialogs.7.1.0\lib\net472\MvvmDialogs.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -94,69 +97,73 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="ColorToValueConverter.cs" />
-    <Compile Include="Cube3DView.xaml.cs">
+    <Compile Include="ViewModel\IViewModelFactory.cs" />
+    <Compile Include="ViewModel\ViewModelFactory.cs" />
+    <Compile Include="View\Converters\ColorToValueConverter.cs" />
+    <Compile Include="View\IViewFactory.cs" />
+    <Compile Include="View\UserControls\Cube3DView.xaml.cs">
       <DependentUpon>Cube3DView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="CubeSettingsDialog.xaml.cs">
+    <Compile Include="View\ViewFactory.cs" />
+    <Compile Include="View\Windows\CubeSettingsDialog.xaml.cs">
       <DependentUpon>CubeSettingsDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="EnumToBoolConverter.cs" />
-    <Compile Include="IntToDateTimeConverter.cs" />
-    <Compile Include="IntToDoubleConverter.cs" />
-    <Compile Include="InverseBoolConverter.cs" />
-    <Compile Include="Model\AngularDelay.cs" />
-    <Compile Include="Model\Animation.cs" />
-    <Compile Include="Model\Delay.cs" />
-    <Compile Include="Model\GradientEffect.cs" />
+    <Compile Include="View\Converters\EnumToBoolConverter.cs" />
+    <Compile Include="View\Converters\IntToDateTimeConverter.cs" />
+    <Compile Include="View\Converters\IntToDoubleConverter.cs" />
+    <Compile Include="View\Converters\InverseBoolConverter.cs" />
+    <Compile Include="Model\Animations\Data\AngularDelay.cs" />
+    <Compile Include="Model\Animations\Data\Animation.cs" />
+    <Compile Include="Model\Animations\Data\Delay.cs" />
+    <Compile Include="Model\Animations\Data\GradientEffect.cs" />
     <Compile Include="Model\IModelManager.cs" />
-    <Compile Include="Model\LinearDelay.cs" />
+    <Compile Include="Model\Animations\Data\LinearDelay.cs" />
     <Compile Include="Model\ModelManager.cs" />
     <Compile Include="Model\PropertiesChangedEventArgs.cs" />
-    <Compile Include="Model\RadialDelay.cs" />
-    <Compile Include="Model\SphericalDelay.cs" />
+    <Compile Include="Model\Animations\Data\RadialDelay.cs" />
+    <Compile Include="Model\Animations\Data\SphericalDelay.cs" />
     <Compile Include="Model\Undo\ArrayChangeAction.cs" />
     <Compile Include="Model\Undo\CollectionChangeAction.cs" />
-    <Compile Include="Model\Enums.cs" />
-    <Compile Include="Model\Exporter.cs" />
-    <Compile Include="Model\Extensions.cs" />
-    <Compile Include="Model\FileReaderWriter.cs" />
-    <Compile Include="Model\Renderer.cs" />
-    <Compile Include="Model\ShearEffect.cs" />
-    <Compile Include="Model\TransformEffect.cs" />
+    <Compile Include="Model\Animations\Data\Enums.cs" />
+    <Compile Include="Model\Animations\Exporter.cs" />
+    <Compile Include="Model\Animations\Data\ColorExtensions.cs" />
+    <Compile Include="Model\Animations\FileReaderWriter.cs" />
+    <Compile Include="Model\Animations\Renderer.cs" />
+    <Compile Include="Model\Animations\Data\ShearEffect.cs" />
+    <Compile Include="Model\Animations\Data\TransformEffect.cs" />
     <Compile Include="Model\Undo\ActionExecutedEventArgs.cs" />
     <Compile Include="Model\Undo\GroupAction.cs" />
     <Compile Include="Model\Undo\IAction.cs" />
     <Compile Include="Model\Undo\PropertyChangeAction.cs" />
     <Compile Include="Model\Undo\UndoManager.cs" />
     <Compile Include="Model\Undo\UndoManagerExtensions.cs" />
-    <Compile Include="ValueConverterGroup.cs" />
-    <Compile Include="ViewModel\AngularDelayViewModel.cs" />
-    <Compile Include="ViewModel\CubeSettingsViewModel.cs" />
-    <Compile Include="ViewModel\DelayViewModel.cs" />
-    <Compile Include="ViewModel\EffectViewModel.cs" />
-    <Compile Include="ViewModel\FrameViewModel.cs" />
-    <Compile Include="ViewModel\GradientEffectViewModel.cs" />
-    <Compile Include="ViewModel\GroupViewModel.cs" />
-    <Compile Include="ViewModel\LinearDelayViewModel.cs" />
-    <Compile Include="ViewModel\MainViewModel.cs" />
-    <Compile Include="ViewModel\MoveEffectViewModel.cs" />
-    <Compile Include="ViewModel\RadialDelayViewModel.cs" />
-    <Compile Include="ViewModel\RotateEffectViewModel.cs" />
-    <Compile Include="ViewModel\ScaleEffectViewModel.cs" />
-    <Compile Include="ViewModel\ShearEffectViewModel.cs" />
-    <Compile Include="ViewModel\SphericalDelayViewModel.cs" />
-    <Compile Include="ViewModel\TileViewModel.cs" />
-    <Compile Include="ViewModel\TransformEffectViewModel.cs" />
-    <Page Include="Cube3DView.xaml">
+    <Compile Include="View\Converters\ValueConverterGroup.cs" />
+    <Compile Include="ViewModel\DataViewModels\AngularDelayViewModel.cs" />
+    <Compile Include="ViewModel\WindowViewModels\CubeSettingsViewModel.cs" />
+    <Compile Include="ViewModel\DataViewModels\DelayViewModel.cs" />
+    <Compile Include="ViewModel\DataViewModels\EffectViewModel.cs" />
+    <Compile Include="ViewModel\DataViewModels\FrameViewModel.cs" />
+    <Compile Include="ViewModel\DataViewModels\GradientEffectViewModel.cs" />
+    <Compile Include="ViewModel\DataViewModels\GroupViewModel.cs" />
+    <Compile Include="ViewModel\DataViewModels\LinearDelayViewModel.cs" />
+    <Compile Include="ViewModel\WindowViewModels\MainViewModel.cs" />
+    <Compile Include="ViewModel\DataViewModels\MoveEffectViewModel.cs" />
+    <Compile Include="ViewModel\DataViewModels\RadialDelayViewModel.cs" />
+    <Compile Include="ViewModel\DataViewModels\RotateEffectViewModel.cs" />
+    <Compile Include="ViewModel\DataViewModels\ScaleEffectViewModel.cs" />
+    <Compile Include="ViewModel\DataViewModels\ShearEffectViewModel.cs" />
+    <Compile Include="ViewModel\DataViewModels\SphericalDelayViewModel.cs" />
+    <Compile Include="ViewModel\DataViewModels\TileViewModel.cs" />
+    <Compile Include="ViewModel\DataViewModels\TransformEffectViewModel.cs" />
+    <Page Include="View\UserControls\Cube3DView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="CubeSettingsDialog.xaml">
+    <Page Include="View\Windows\CubeSettingsDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="MainWindow.xaml">
+    <Page Include="View\Windows\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -164,19 +171,19 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="MainWindow.xaml.cs">
+    <Compile Include="View\Windows\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Model\Effect.cs" />
-    <Compile Include="Model\Frame.cs" />
-    <Compile Include="Model\Group.cs" />
-    <Compile Include="Model\MoveEffect.cs" />
-    <Compile Include="Model\RotateEffect.cs" />
-    <Compile Include="Model\ScaleEffect.cs" />
-    <Compile Include="Model\Tile.cs" />
+    <Compile Include="Model\Animations\Data\Effect.cs" />
+    <Compile Include="Model\Animations\Data\Frame.cs" />
+    <Compile Include="Model\Animations\Data\Group.cs" />
+    <Compile Include="Model\Animations\Data\MoveEffect.cs" />
+    <Compile Include="Model\Animations\Data\RotateEffect.cs" />
+    <Compile Include="Model\Animations\Data\ScaleEffect.cs" />
+    <Compile Include="Model\Animations\Data\Tile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

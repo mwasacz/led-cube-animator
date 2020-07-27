@@ -1,9 +1,9 @@
-﻿using LedCubeAnimator.Model.Undo;
+﻿using LedCubeAnimator.Model.Animations;
+using LedCubeAnimator.Model.Animations.Data;
+using LedCubeAnimator.Model.Undo;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Media;
 
 namespace LedCubeAnimator.Model
@@ -181,7 +181,7 @@ namespace LedCubeAnimator.Model
                 case ArrayChangeAction<Color> arrayChange:
                     return new KeyValuePair<object, string>(frames[arrayChange.Array], nameof(Frame.Voxels));
                 default:
-                    throw new Exception(); // ToDo
+                    throw new ArgumentException("Invalid type of action", "action");
             }
         }
 
