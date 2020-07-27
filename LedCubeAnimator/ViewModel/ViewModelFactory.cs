@@ -42,7 +42,7 @@ namespace LedCubeAnimator.ViewModel
                 case AngularDelay angularDelay:
                     return new AngularDelayViewModel(angularDelay, _manager);
                 default:
-                    throw new Exception(); // ToDo
+                    throw new ArgumentException("Could not find suitable viewModel for this type of model", "model");
             }
         }
     }

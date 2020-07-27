@@ -45,7 +45,7 @@ namespace LedCubeAnimator.Model.Animations.Data
                 case ColorBlendMode.Average:
                     return c1.Average(c2);
                 default:
-                    throw new Exception(); // ToDo: NotSupportedException
+                    return c1; // ToDo: throw new InvalidOperationException("Current ColorBlendMode is invalid");
             }
         }
     }

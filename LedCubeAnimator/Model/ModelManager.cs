@@ -181,7 +181,7 @@ namespace LedCubeAnimator.Model
                 case ArrayChangeAction<Color> arrayChange:
                     return new KeyValuePair<object, string>(frames[arrayChange.Array], nameof(Frame.Voxels));
                 default:
-                    throw new Exception(); // ToDo
+                    throw new ArgumentException("Invalid type of action", "action");
             }
         }
 
