@@ -16,7 +16,7 @@ namespace LedCubeAnimator.Model.Animations.Data
             time = GetLength() * Fraction(time);
             time /= Reverse ? RepeatCount * 2 : RepeatCount;
 
-            return Children
+            var colors = Children
                 .GroupBy(tile => tile.Channel)
                 .Select(channel => channel
                     .GroupBy(tile => tile.Hierarchy)
@@ -27,6 +27,9 @@ namespace LedCubeAnimator.Model.Animations.Data
                         ?? func(p, t)))
                 .DefaultIfEmpty(getVoxel)
                 .Select(func => func(point, time))
+                .ToArray();
+
+            return (ColorBlendMode == ColorBlendMode.Average ? colors.Select(c => c.Multiply((double)1 / colors.Length)) : colors)
                 .Aggregate(MixColors);
         }
 
@@ -35,6 +38,7 @@ namespace LedCubeAnimator.Model.Animations.Data
             switch (ColorBlendMode)
             {
                 case ColorBlendMode.Add:
+                case ColorBlendMode.Average:
                     return c1.Add(c2);
                 case ColorBlendMode.Multiply:
                     return c1.Multiply(c2);
@@ -42,8 +46,6 @@ namespace LedCubeAnimator.Model.Animations.Data
                     return c1.Min(c2);
                 case ColorBlendMode.Max:
                     return c1.Max(c2);
-                case ColorBlendMode.Average:
-                    return c1.Average(c2);
                 default:
                     return c1; // ToDo: throw new InvalidOperationException("Current ColorBlendMode is invalid");
             }
