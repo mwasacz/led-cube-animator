@@ -206,7 +206,8 @@
                                AutoGenerateProperties="False"
                                ShowSortOptions="False"
                                ShowSearchBox="False"
-                               ShowSummary="False">
+                               ShowSummary="False"
+                               NameColumnWidth="120">
                 <xctk:PropertyGrid.PropertyDefinitions>
                     <xctk:PropertyDefinition TargetProperties="Name" />
                     <xctk:PropertyDefinition TargetProperties="Start" />
@@ -246,6 +247,63 @@
                                                   ColorMode="ColorCanvas"
                                                   UsingAlphaChannel="False"
                                                   SelectedColor="{Binding Value}" />
+                            </DataTemplate>
+                        </xctk:EditorTemplateDefinition.EditingTemplate>
+                    </xctk:EditorTemplateDefinition>
+                    <xctk:EditorTemplateDefinition>
+                        <xctk:EditorTemplateDefinition.TargetProperties>
+                            <xctk:TargetPropertyType Type="{x:Type Point}" />
+                            <xctk:TargetPropertyType Type="{x:Type Vector}" />
+                        </xctk:EditorTemplateDefinition.TargetProperties>
+                        <xctk:EditorTemplateDefinition.EditingTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition Width="1" />
+                                        <ColumnDefinition />
+                                    </Grid.ColumnDefinitions>
+                                    <xctk:PropertyGridEditorDoubleUpDown Grid.Column="0"
+                                                                         Value="{Binding Value.X}"
+                                                                         TextAlignment="Left" />
+                                    <Rectangle Grid.Column="1"
+                                               Fill="#F0F0F0" />
+                                    <xctk:PropertyGridEditorDoubleUpDown Grid.Column="2"
+                                                                         Value="{Binding Value.Y}"
+                                                                         TextAlignment="Left" />
+                                </Grid>
+                            </DataTemplate>
+                        </xctk:EditorTemplateDefinition.EditingTemplate>
+                    </xctk:EditorTemplateDefinition>
+                    <xctk:EditorTemplateDefinition>
+                        <xctk:EditorTemplateDefinition.TargetProperties>
+                            <xctk:TargetPropertyType Type="{x:Type Point3D}" />
+                            <xctk:TargetPropertyType Type="{x:Type Vector3D}" />
+                        </xctk:EditorTemplateDefinition.TargetProperties>
+                        <xctk:EditorTemplateDefinition.EditingTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition Width="1" />
+                                        <ColumnDefinition />
+                                        <ColumnDefinition Width="1" />
+                                        <ColumnDefinition />
+                                    </Grid.ColumnDefinitions>
+                                    <xctk:PropertyGridEditorDoubleUpDown Grid.Column="0"
+                                                                         Value="{Binding Value.X}"
+                                                                         TextAlignment="Left" />
+                                    <Rectangle Grid.Column="1"
+                                               Fill="#F0F0F0" />
+                                    <xctk:PropertyGridEditorDoubleUpDown Grid.Column="2"
+                                                                         Value="{Binding Value.Y}"
+                                                                         TextAlignment="Left" />
+                                    <Rectangle Grid.Column="3"
+                                               Fill="#F0F0F0" />
+                                    <xctk:PropertyGridEditorDoubleUpDown Grid.Column="4"
+                                                                         Value="{Binding Value.Z}"
+                                                                         TextAlignment="Left" />
+                                </Grid>
                             </DataTemplate>
                         </xctk:EditorTemplateDefinition.EditingTemplate>
                     </xctk:EditorTemplateDefinition>
@@ -313,6 +371,6 @@
             </ListBox.ItemContainerStyle>
         </ListBox>
         <controls:Cube3DView Frame="{Binding Frame}"
-                          Command="{Binding VoxelClickCommand}" />
+                             Command="{Binding VoxelClickCommand}" />
     </DockPanel>
 </Window>
