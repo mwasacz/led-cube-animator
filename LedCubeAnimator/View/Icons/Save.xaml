@@ -1,0 +1,25 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Viewbox x:Key="SaveIcon"
+             x:Shared="false"
+             Width="16"
+             Height="16">
+        <Rectangle Width="16"
+                   Height="16">
+            <Rectangle.Fill>
+                <DrawingBrush>
+                    <DrawingBrush.Drawing>
+                        <DrawingGroup>
+                            <DrawingGroup.Children>
+                                <GeometryDrawing Brush="#00FFFFFF"
+                                                 Geometry="M16,16L0,16 0,0 16,0z" />
+                                <GeometryDrawing Brush="#FF424242"
+                                                 Geometry="M13.3528 1.146L14.8528 2.646L14.9998 3V14.5L14.4998 15H1.49982L0.999817 14.5V1.5L1.49982 1H12.9998L13.3528 1.146ZM1.99982 2V14H13.9998V3.208L12.7928 2H10.9998V6H3.99982V2H1.99982ZM7.99982 2V5H9.99982V2H7.99982Z" />
+                            </DrawingGroup.Children>
+                        </DrawingGroup>
+                    </DrawingBrush.Drawing>
+                </DrawingBrush>
+            </Rectangle.Fill>
+        </Rectangle>
+    </Viewbox>
+</ResourceDictionary>

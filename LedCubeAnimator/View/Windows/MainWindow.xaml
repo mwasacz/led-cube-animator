@@ -20,13 +20,25 @@
         Height="450"
         Width="800">
     <Window.Resources>
-        <converters:ColorToValueConverter x:Key="ColorToValueConverter" />
-        <converters:IntToDateTimeConverter x:Key="IntToDateTimeConverter" />
-        <converters:IntToDoubleConverter x:Key="IntToDoubleConverter" />
-        <sys:Int32 x:Key="StartDateCorrection">0</sys:Int32>
-        <sys:Int32 x:Key="EndDateCorrection">1</sys:Int32>
-        <sys:Double x:Key="StartSliderCorrection">-0.5</sys:Double>
-        <sys:Double x:Key="EndSliderCorrection">0.5</sys:Double>
+        <ResourceDictionary>
+            <converters:ColorToValueConverter x:Key="ColorToValueConverter" />
+            <converters:IntToDateTimeConverter x:Key="IntToDateTimeConverter" />
+            <converters:IntToDoubleConverter x:Key="IntToDoubleConverter" />
+            <sys:Int32 x:Key="StartDateCorrection">0</sys:Int32>
+            <sys:Int32 x:Key="EndDateCorrection">1</sys:Int32>
+            <sys:Double x:Key="StartSliderCorrection">-0.5</sys:Double>
+            <sys:Double x:Key="EndSliderCorrection">0.5</sys:Double>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/View/Icons/New.xaml" />
+                <ResourceDictionary Source="/View/Icons/Open.xaml" />
+                <ResourceDictionary Source="/View/Icons/Redo.xaml" />
+                <ResourceDictionary Source="/View/Icons/RedoGray.xaml" />
+                <ResourceDictionary Source="/View/Icons/Save.xaml" />
+                <ResourceDictionary Source="/View/Icons/SaveAs.xaml" />
+                <ResourceDictionary Source="/View/Icons/Undo.xaml" />
+                <ResourceDictionary Source="/View/Icons/UndoGray.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
     </Window.Resources>
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Closing">
@@ -47,12 +59,16 @@
               IsMainMenu="True">
             <MenuItem Header="File">
                 <MenuItem Header="New"
+                          Icon="{StaticResource NewIcon}"
                           Command="{Binding NewCommand}" />
                 <MenuItem Header="Open..."
+                          Icon="{StaticResource OpenIcon}"
                           Command="{Binding OpenCommand}" />
                 <MenuItem Header="Save"
+                          Icon="{StaticResource SaveIcon}"
                           Command="{Binding SaveCommand}" />
                 <MenuItem Header="Save as..."
+                          Icon="{StaticResource SaveAsIcon}"
                           Command="{Binding SaveAsCommand}" />
                 <Separator />
                 <MenuItem Header="Export">
@@ -65,9 +81,37 @@
             </MenuItem>
             <MenuItem Header="Edit">
                 <MenuItem Header="Undo"
-                          Command="{Binding UndoCommand}" />
+                          Command="{Binding UndoCommand}">
+                    <MenuItem.Style>
+                        <Style TargetType="MenuItem">
+                            <Setter Property="Icon"
+                                    Value="{StaticResource UndoIcon}" />
+                            <Style.Triggers>
+                                <Trigger Property="IsEnabled"
+                                         Value="False">
+                                    <Setter Property="Icon"
+                                            Value="{StaticResource UndoGrayIcon}" />
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </MenuItem.Style>
+                </MenuItem>
                 <MenuItem Header="Redo"
-                          Command="{Binding RedoCommand}" />
+                          Command="{Binding RedoCommand}">
+                    <MenuItem.Style>
+                        <Style TargetType="MenuItem">
+                            <Setter Property="Icon"
+                                    Value="{StaticResource RedoIcon}" />
+                            <Style.Triggers>
+                                <Trigger Property="IsEnabled"
+                                         Value="False">
+                                    <Setter Property="Icon"
+                                            Value="{StaticResource RedoGrayIcon}" />
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </MenuItem.Style>
+                </MenuItem>
             </MenuItem>
             <MenuItem Header="Tile">
                 <MenuItem Header="Frame"
@@ -102,6 +146,58 @@
                           Command="{Binding CubeSettingsCommand}" />
             </MenuItem>
         </Menu>
+        <ToolBarTray DockPanel.Dock="Top"
+                     IsLocked="True"
+                     Background="#F0F0F0">
+            <ToolBar>
+                <Button ToolTip="New"
+                        Content="{StaticResource NewIcon}"
+                        Command="{Binding NewCommand}" />
+                <Button ToolTip="Open..."
+                        Content="{StaticResource OpenIcon}"
+                        Command="{Binding OpenCommand}" />
+                <Button ToolTip="Save"
+                        Content="{StaticResource SaveIcon}"
+                        Command="{Binding SaveCommand}" />
+                <Button ToolTip="Save as..."
+                        Content="{StaticResource SaveAsIcon}"
+                        Command="{Binding SaveAsCommand}" />
+            </ToolBar>
+            <ToolBar>
+                <Button ToolTip="Undo"
+                        Command="{Binding UndoCommand}">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Content"
+                                    Value="{StaticResource UndoIcon}" />
+                            <Style.Triggers>
+                                <Trigger Property="IsEnabled"
+                                         Value="False">
+                                    <Setter Property="Content"
+                                            Value="{StaticResource UndoGrayIcon}" />
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+                <Button ToolTip="Redo"
+                        Command="{Binding RedoCommand}">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Content"
+                                    Value="{StaticResource RedoIcon}" />
+                            <Style.Triggers>
+                                <Trigger Property="IsEnabled"
+                                         Value="False">
+                                    <Setter Property="Content"
+                                            Value="{StaticResource RedoGrayIcon}" />
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+            </ToolBar>
+        </ToolBarTray>
         <DockPanel DockPanel.Dock="Right"
                    Width="233">
             <Border DockPanel.Dock="Top"
