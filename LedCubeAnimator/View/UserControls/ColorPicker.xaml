@@ -1,0 +1,102 @@
+﻿<UserControl x:Class="LedCubeAnimator.View.UserControls.ColorPicker"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:converters="clr-namespace:LedCubeAnimator.View.Converters"
+             xmlns:model="clr-namespace:LedCubeAnimator.Model.Animations.Data"
+             mc:Ignorable="d">
+    <UserControl.Resources>
+        <converters:ColorToValueConverter x:Key="ColorToValueConverter" />
+    </UserControl.Resources>
+    <StackPanel>
+        <DockPanel Margin="5">
+            <DockPanel.Visibility>
+                <Binding Path="ColorMode"
+                         ConverterParameter="{x:Static model:ColorMode.MonoBrightness}">
+                    <Binding.Converter>
+                        <converters:ValueConverterGroup>
+                            <converters:EnumToBoolConverter />
+                            <BooleanToVisibilityConverter />
+                        </converters:ValueConverterGroup>
+                    </Binding.Converter>
+                </Binding>
+            </DockPanel.Visibility>
+            <Border DockPanel.Dock="Left"
+                    VerticalAlignment="Center"
+                    Height="22"
+                    Width="22"
+                    BorderThickness="1"
+                    BorderBrush="#FFC9CACA">
+                <Border.Resources>
+                    <ResourceDictionary>
+                        <ResourceDictionary.MergedDictionaries>
+                            <ResourceDictionary Source="pack://application:,,,/Xceed.Wpf.Toolkit;component/ColorCanvas/Themes/Generic.xaml" />
+                            <ResourceDictionary Source="pack://application:,,,/Xceed.Wpf.Toolkit;component/ColorCanvas/Themes/Aero2.NormalColor.xaml" />
+                        </ResourceDictionary.MergedDictionaries>
+                    </ResourceDictionary>
+                </Border.Resources>
+                <Rectangle Fill="{Binding DisplayColor, Converter={StaticResource ColorToSolidColorBrushConverter}}" />
+            </Border>
+            <xctk:ByteUpDown DockPanel.Dock="Right"
+                             VerticalAlignment="Center"
+                             Width="44"
+                             Value="{Binding SelectedColor, Converter={StaticResource ColorToValueConverter}}">
+            </xctk:ByteUpDown>
+            <Slider VerticalAlignment="Center"
+                    Margin="4,6,4,6"
+                    Maximum="255"
+                    SmallChange="1"
+                    LargeChange="10"
+                    TickFrequency="1"
+                    Value="{Binding SelectedColor, Converter={StaticResource ColorToValueConverter}}">
+            </Slider>
+        </DockPanel>
+        <xctk:ColorCanvas SelectedColor="{Binding SelectedColor}"
+                          UsingAlphaChannel="False">
+            <xctk:ColorCanvas.Visibility>
+                <Binding Path="ColorMode"
+                         ConverterParameter="{x:Static model:ColorMode.RGB}">
+                    <Binding.Converter>
+                        <converters:ValueConverterGroup>
+                            <converters:EnumToBoolConverter />
+                            <BooleanToVisibilityConverter />
+                        </converters:ValueConverterGroup>
+                    </Binding.Converter>
+                </Binding>
+            </xctk:ColorCanvas.Visibility>
+        </xctk:ColorCanvas>
+        <DockPanel>
+            <DockPanel.Visibility>
+                <Binding Path="ColorMode"
+                         ConverterParameter="{x:Static model:ColorMode.Mono}">
+                    <Binding.Converter>
+                        <converters:ValueConverterGroup>
+                            <converters:EnumToBoolConverter />
+                            <converters:InverseBoolConverter />
+                            <BooleanToVisibilityConverter />
+                        </converters:ValueConverterGroup>
+                    </Binding.Converter>
+                </Binding>
+            </DockPanel.Visibility>
+            <ToggleButton DockPanel.Dock="Right"
+                          Content="Pick"
+                          IsChecked="{Binding ColorPickerTool}" />
+            <ListBox ItemsSource="{Binding RecentColors}"
+                     SelectedItem="{Binding RecentColor}">
+                <ListBox.Resources>
+                    <ResourceDictionary>
+                        <ResourceDictionary.MergedDictionaries>
+                            <ResourceDictionary Source="pack://application:,,,/Xceed.Wpf.Toolkit;component/ColorPicker/Themes/Generic.xaml" />
+                            <ResourceDictionary Source="pack://application:,,,/Xceed.Wpf.Toolkit;component/ColorPicker/Themes/Aero2.NormalColor.xaml" />
+                        </ResourceDictionary.MergedDictionaries>
+                    </ResourceDictionary>
+                </ListBox.Resources>
+                <ListBox.Style>
+                    <StaticResource ResourceKey="ColorListStyle" />
+                </ListBox.Style>
+            </ListBox>
+        </DockPanel>
+    </StackPanel>
+</UserControl>
