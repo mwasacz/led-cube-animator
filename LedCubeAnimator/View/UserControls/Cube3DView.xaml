@@ -7,24 +7,21 @@
              mc:Ignorable="d"
              d:DesignHeight="450"
              d:DesignWidth="800">
-    <Border BorderBrush="DarkGray"
-            BorderThickness="1">
-        <helix:HelixViewport3D Name="MainViewport"
-                               IsMoveEnabled="False"
-                               IsPanEnabled="False"
-                               ShowCameraTarget="False"
-                               ShowCoordinateSystem="True"
-                               ZoomExtentsWhenLoaded="True"
-                               Background="White"
-                               MouseDown="MainViewport_MouseDown">
-            <helix:DirectionalHeadLight Position="3,0,5"
-                                        Brightness="0.7" />
-            <ModelVisual3D>
-                <ModelVisual3D.Content>
-                    <AmbientLight Color="Gray" />
-                </ModelVisual3D.Content>
-            </ModelVisual3D>
-            <helix:SortingVisual3D x:Name="SortingVisual3D" />
-        </helix:HelixViewport3D>
-    </Border>
+    <helix:HelixViewport3D Name="MainViewport"
+                           IsMoveEnabled="False"
+                           IsPanEnabled="False"
+                           ShowCameraTarget="False"
+                           ShowCoordinateSystem="True"
+                           ZoomExtentsWhenLoaded="True"
+                           Background="White"
+                           MouseDown="MainViewport_MouseDown">
+        <helix:DirectionalHeadLight Position="3,0,5"
+                                    Brightness="0.7" />
+        <ModelVisual3D>
+            <ModelVisual3D.Content>
+                <AmbientLight Color="Gray" />
+            </ModelVisual3D.Content>
+        </ModelVisual3D>
+        <helix:SortingVisual3D x:Name="SortingVisual3D" />
+    </helix:HelixViewport3D>
 </UserControl>

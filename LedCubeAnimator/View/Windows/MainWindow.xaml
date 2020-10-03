@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock"
         xmlns:md="https://github.com/fantasticfiasco/mvvm-dialogs"
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:cmd="http://www.galasoft.ch/mvvmlight"
@@ -198,275 +199,307 @@
                 </Button>
             </ToolBar>
         </ToolBarTray>
-        <DockPanel DockPanel.Dock="Right"
-                   Width="233">
-            <Border DockPanel.Dock="Top"
-                    BorderBrush="DarkGray"
-                    BorderThickness="1">
-                <Border.Visibility>
-                    <Binding Path="ColorMode"
-                             ConverterParameter="{x:Static model:ColorMode.MonoBrightness}">
-                        <Binding.Converter>
-                            <converters:ValueConverterGroup>
-                                <converters:EnumToBoolConverter />
-                                <BooleanToVisibilityConverter />
-                            </converters:ValueConverterGroup>
-                        </Binding.Converter>
-                    </Binding>
-                </Border.Visibility>
-                <DockPanel Margin="5">
-                    <Border DockPanel.Dock="Left"
-                            VerticalAlignment="Center"
-                            Height="22"
-                            Width="22"
-                            BorderThickness="1"
-                            BorderBrush="#FFC9CACA">
-                        <Border.Resources>
-                            <ResourceDictionary>
-                                <ResourceDictionary.MergedDictionaries>
-                                    <ResourceDictionary Source="pack://application:,,,/Xceed.Wpf.Toolkit;component/ColorCanvas/Themes/Generic.xaml" />
-                                    <ResourceDictionary Source="pack://application:,,,/Xceed.Wpf.Toolkit;component/ColorCanvas/Themes/Aero2.NormalColor.xaml" />
-                                </ResourceDictionary.MergedDictionaries>
-                            </ResourceDictionary>
-                        </Border.Resources>
-                        <Rectangle Fill="{Binding DisplayColor, Converter={StaticResource ColorToSolidColorBrushConverter}}" />
-                    </Border>
-                    <xctk:ByteUpDown DockPanel.Dock="Right"
-                                     VerticalAlignment="Center"
-                                     Width="44"
-                                     Value="{Binding SelectedColor, Converter={StaticResource ColorToValueConverter}}">
-                    </xctk:ByteUpDown>
-                    <Slider VerticalAlignment="Center"
-                            Margin="4,6,4,6"
-                            Maximum="255"
-                            SmallChange="1"
-                            LargeChange="10"
-                            TickFrequency="1"
-                            Value="{Binding SelectedColor, Converter={StaticResource ColorToValueConverter}}">
-                    </Slider>
-                </DockPanel>
-            </Border>
-            <xctk:ColorCanvas DockPanel.Dock="Top"
-                              SelectedColor="{Binding SelectedColor}"
-                              UsingAlphaChannel="False">
-                <xctk:ColorCanvas.Visibility>
-                    <Binding Path="ColorMode"
-                             ConverterParameter="{x:Static model:ColorMode.RGB}">
-                        <Binding.Converter>
-                            <converters:ValueConverterGroup>
-                                <converters:EnumToBoolConverter />
-                                <BooleanToVisibilityConverter />
-                            </converters:ValueConverterGroup>
-                        </Binding.Converter>
-                    </Binding>
-                </xctk:ColorCanvas.Visibility>
-            </xctk:ColorCanvas>
-            <Border DockPanel.Dock="Top"
-                    BorderBrush="DarkGray"
-                    BorderThickness="1">
-                <Border.Visibility>
-                    <Binding Path="ColorMode"
-                             ConverterParameter="{x:Static model:ColorMode.Mono}">
-                        <Binding.Converter>
-                            <converters:ValueConverterGroup>
-                                <converters:EnumToBoolConverter />
-                                <converters:InverseBoolConverter />
-                                <BooleanToVisibilityConverter />
-                            </converters:ValueConverterGroup>
-                        </Binding.Converter>
-                    </Binding>
-                </Border.Visibility>
-                <DockPanel>
-                    <ToggleButton DockPanel.Dock="Right"
-                                  Content="Pick"
-                                  IsChecked="{Binding ColorPickerTool}" />
-                    <ListBox ItemsSource="{Binding RecentColors}"
-                             SelectedItem="{Binding RecentColor}">
-                        <ListBox.Resources>
-                            <ResourceDictionary>
-                                <ResourceDictionary.MergedDictionaries>
-                                    <ResourceDictionary Source="pack://application:,,,/Xceed.Wpf.Toolkit;component/ColorPicker/Themes/Generic.xaml" />
-                                    <ResourceDictionary Source="pack://application:,,,/Xceed.Wpf.Toolkit;component/ColorPicker/Themes/Aero2.NormalColor.xaml" />
-                                </ResourceDictionary.MergedDictionaries>
-                            </ResourceDictionary>
-                        </ListBox.Resources>
-                        <ListBox.Style>
-                            <StaticResource ResourceKey="ColorListStyle" />
-                        </ListBox.Style>
-                    </ListBox>
-                </DockPanel>
-            </Border>
-            <xctk:PropertyGrid DockPanel.Dock="Top"
-                               SelectedObject="{Binding SelectedTileOrGroup}"
-                               SelectedProperty="{Binding SelectedProperty, Mode=TwoWay}"
-                               AutoGenerateProperties="False"
-                               ShowSortOptions="False"
-                               ShowSearchBox="False"
-                               ShowSummary="False"
-                               NameColumnWidth="120">
-                <xctk:PropertyGrid.PropertyDefinitions>
-                    <xctk:PropertyDefinition TargetProperties="Name" />
-                    <xctk:PropertyDefinition TargetProperties="Start" />
-                    <xctk:PropertyDefinition TargetProperties="End" />
-                    <xctk:PropertyDefinition TargetProperties="Channel" />
-                    <xctk:PropertyDefinition TargetProperties="Hierarchy" />
-                    <xctk:PropertyDefinition TargetProperties="VoxelsProperty" />
-                    <xctk:PropertyDefinition TargetProperties="Offset" />
-                    <xctk:PropertyDefinition TargetProperties="Size" />
-                    <xctk:PropertyDefinition TargetProperties="From" />
-                    <xctk:PropertyDefinition TargetProperties="To" />
-                    <xctk:PropertyDefinition TargetProperties="ColorInterpolation" />
-                    <xctk:PropertyDefinition TargetProperties="TimeInterpolation" />
-                    <xctk:PropertyDefinition TargetProperties="RepeatCount" />
-                    <xctk:PropertyDefinition TargetProperties="Reverse" />
-                    <xctk:PropertyDefinition TargetProperties="ChildrenProperty" />
-                    <xctk:PropertyDefinition TargetProperties="ColorBlendMode" />
-                    <xctk:PropertyDefinition TargetProperties="Round" />
-                    <xctk:PropertyDefinition TargetProperties="Axis" />
-                    <xctk:PropertyDefinition TargetProperties="Plane" />
-                    <xctk:PropertyDefinition TargetProperties="Center" />
-                    <xctk:PropertyDefinition TargetProperties="Value" />
-                    <xctk:PropertyDefinition TargetProperties="WrapAround" />
-                    <xctk:PropertyDefinition TargetProperties="StartAngle" />
-                </xctk:PropertyGrid.PropertyDefinitions>
-                <xctk:PropertyGrid.EditorDefinitions>
-                    <xctk:EditorTemplateDefinition>
-                        <xctk:EditorTemplateDefinition.TargetProperties>
-                            <xctk:TargetPropertyType Type="{x:Type Color}" />
-                        </xctk:EditorTemplateDefinition.TargetProperties>
-                        <xctk:EditorTemplateDefinition.EditingTemplate>
-                            <DataTemplate>
-                                <xctk:ColorPicker ShowAvailableColors="False"
-                                                  ShowRecentColors="False"
-                                                  ShowStandardColors="False"
-                                                  ShowTabHeaders="False"
-                                                  ColorMode="ColorCanvas"
-                                                  UsingAlphaChannel="False"
-                                                  SelectedColor="{Binding Value}" />
-                            </DataTemplate>
-                        </xctk:EditorTemplateDefinition.EditingTemplate>
-                    </xctk:EditorTemplateDefinition>
-                    <xctk:EditorTemplateDefinition>
-                        <xctk:EditorTemplateDefinition.TargetProperties>
-                            <xctk:TargetPropertyType Type="{x:Type Point}" />
-                            <xctk:TargetPropertyType Type="{x:Type Vector}" />
-                        </xctk:EditorTemplateDefinition.TargetProperties>
-                        <xctk:EditorTemplateDefinition.EditingTemplate>
-                            <DataTemplate>
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition />
-                                        <ColumnDefinition Width="1" />
-                                        <ColumnDefinition />
-                                    </Grid.ColumnDefinitions>
-                                    <xctk:PropertyGridEditorDoubleUpDown Grid.Column="0"
-                                                                         Value="{Binding Value.X}"
-                                                                         TextAlignment="Left" />
-                                    <Rectangle Grid.Column="1"
-                                               Fill="#F0F0F0" />
-                                    <xctk:PropertyGridEditorDoubleUpDown Grid.Column="2"
-                                                                         Value="{Binding Value.Y}"
-                                                                         TextAlignment="Left" />
-                                </Grid>
-                            </DataTemplate>
-                        </xctk:EditorTemplateDefinition.EditingTemplate>
-                    </xctk:EditorTemplateDefinition>
-                    <xctk:EditorTemplateDefinition>
-                        <xctk:EditorTemplateDefinition.TargetProperties>
-                            <xctk:TargetPropertyType Type="{x:Type Point3D}" />
-                            <xctk:TargetPropertyType Type="{x:Type Vector3D}" />
-                        </xctk:EditorTemplateDefinition.TargetProperties>
-                        <xctk:EditorTemplateDefinition.EditingTemplate>
-                            <DataTemplate>
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition />
-                                        <ColumnDefinition Width="1" />
-                                        <ColumnDefinition />
-                                        <ColumnDefinition Width="1" />
-                                        <ColumnDefinition />
-                                    </Grid.ColumnDefinitions>
-                                    <xctk:PropertyGridEditorDoubleUpDown Grid.Column="0"
-                                                                         Value="{Binding Value.X}"
-                                                                         TextAlignment="Left" />
-                                    <Rectangle Grid.Column="1"
-                                               Fill="#F0F0F0" />
-                                    <xctk:PropertyGridEditorDoubleUpDown Grid.Column="2"
-                                                                         Value="{Binding Value.Y}"
-                                                                         TextAlignment="Left" />
-                                    <Rectangle Grid.Column="3"
-                                               Fill="#F0F0F0" />
-                                    <xctk:PropertyGridEditorDoubleUpDown Grid.Column="4"
-                                                                         Value="{Binding Value.Z}"
-                                                                         TextAlignment="Left" />
-                                </Grid>
-                            </DataTemplate>
-                        </xctk:EditorTemplateDefinition.EditingTemplate>
-                    </xctk:EditorTemplateDefinition>
-                </xctk:PropertyGrid.EditorDefinitions>
-            </xctk:PropertyGrid>
-            <Button DockPanel.Dock="Top"
-                    Content="Delete tile"
-                    Command="{Binding RemoveTileCommand}" />
-            <xctk:IntegerUpDown DockPanel.Dock="Bottom"
-                                Width="50"
-                                VerticalAlignment="Bottom"
-                                HorizontalAlignment="Center"
-                                Value="{Binding Time}"
-                                Minimum="{Binding StartDate}"
-                                Maximum="{Binding EndDate}" />
-        </DockPanel>
-        <Border DockPanel.Dock="Bottom"
-                BorderBrush="DarkGray"
-                BorderThickness="1">
-            <Slider TickPlacement="TopLeft"
-                    Value="{Binding Time}"
-                    Minimum="{Binding StartDate, Converter={StaticResource IntToDoubleConverter}, ConverterParameter={StaticResource StartSliderCorrection}}"
-                    Maximum="{Binding EndDate, Converter={StaticResource IntToDoubleConverter}, ConverterParameter={StaticResource EndSliderCorrection}}" />
-        </Border>
-        <ListBox DockPanel.Dock="Bottom"
-                 Height="100"
-                 ItemsSource="{Binding Tiles}"
-                 DisplayMemberPath="Name"
-                 SelectedItem="{Binding SelectedTile}">
-            <ListBox.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <xctk:TimelinePanel  Margin="4,0,4,0"
-                                         VerticalAlignment="Top"
-                                         BeginDate="{Binding StartDate, Converter={StaticResource IntToDateTimeConverter}, ConverterParameter={StaticResource StartDateCorrection}}"
-                                         EndDate="{Binding EndDate, Converter={StaticResource IntToDateTimeConverter}, ConverterParameter={StaticResource EndDateCorrection}}"
-                                         KeepOriginalOrderForOverlap="True" />
-                </ItemsPanelTemplate>
-            </ListBox.ItemsPanel>
-            <ListBox.ItemContainerStyle>
-                <Style>
-                    <Setter Property="Panel.Background"
-                            Value="LightGray" />
-                    <Setter Property="xctk:TimelinePanel.Date"
-                            Value="{Binding Start, Converter={StaticResource IntToDateTimeConverter}, ConverterParameter={StaticResource StartDateCorrection}}" />
-                    <Setter Property="xctk:TimelinePanel.DateEnd"
-                            Value="{Binding End, Converter={StaticResource IntToDateTimeConverter}, ConverterParameter={StaticResource EndDateCorrection}}" />
-                </Style>
-            </ListBox.ItemContainerStyle>
-        </ListBox>
-        <ListBox DockPanel.Dock="Bottom"
-                 ItemsSource="{Binding Groups}"
-                 DisplayMemberPath="Name"
-                 SelectedItem="{Binding SelectedGroup}">
-            <ListBox.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <StackPanel Margin="4,0,4,0"
-                                Orientation="Horizontal" />
-                </ItemsPanelTemplate>
-            </ListBox.ItemsPanel>
-            <ListBox.ItemContainerStyle>
-                <Style>
-                    <Setter Property="Panel.Background"
-                            Value="LightGray" />
-                </Style>
-            </ListBox.ItemContainerStyle>
-        </ListBox>
-        <controls:Cube3DView Frame="{Binding Frame}"
-                             Command="{Binding VoxelClickCommand}" />
+        <xcad:DockingManager Margin="4,0,4,2"
+                             AllowMixedOrientation="True">
+            <xcad:LayoutRoot>
+                <xcad:LayoutPanel>
+                    <xcad:LayoutAnchorablePaneGroup Orientation="Vertical">
+                        <xcad:LayoutAnchorablePane>
+                            <xcad:LayoutAnchorable Title="3D View"
+                                                   CanClose="False"
+                                                   CanDockAsTabbedDocument="False"
+                                                   CanHide="False"
+                                                   CanAutoHide="False">
+                                <controls:Cube3DView Frame="{Binding Frame}"
+                                                     Command="{Binding VoxelClickCommand}" />
+                            </xcad:LayoutAnchorable>
+                        </xcad:LayoutAnchorablePane>
+                        <xcad:LayoutAnchorablePane DockHeight="200">
+                            <xcad:LayoutAnchorable Title="Timeline"
+                                                   CanClose="False"
+                                                   CanDockAsTabbedDocument="False"
+                                                   CanHide="False"
+                                                   AutoHideWidth="300">
+                                <StackPanel>
+                                    <DockPanel>
+                                        <xctk:IntegerUpDown DockPanel.Dock="Right"
+                                                            Width="50"
+                                                            VerticalAlignment="Bottom"
+                                                            HorizontalAlignment="Center"
+                                                            Value="{Binding Time}"
+                                                            Minimum="{Binding StartDate}"
+                                                            Maximum="{Binding EndDate}" />
+                                        <ListBox ItemsSource="{Binding Groups}"
+                                                 DisplayMemberPath="Name"
+                                                 SelectedItem="{Binding SelectedGroup}">
+                                            <ListBox.ItemsPanel>
+                                                <ItemsPanelTemplate>
+                                                    <StackPanel Margin="4,0,4,0"
+                                                                Orientation="Horizontal" />
+                                                </ItemsPanelTemplate>
+                                            </ListBox.ItemsPanel>
+                                            <ListBox.ItemContainerStyle>
+                                                <Style>
+                                                    <Setter Property="Panel.Background"
+                                                            Value="LightGray" />
+                                                </Style>
+                                            </ListBox.ItemContainerStyle>
+                                        </ListBox>
+                                    </DockPanel>
+                                    <ListBox Height="100"
+                                             ItemsSource="{Binding Tiles}"
+                                             DisplayMemberPath="Name"
+                                             SelectedItem="{Binding SelectedTile}">
+                                        <ListBox.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <xctk:TimelinePanel  Margin="4,0,4,0"
+                                                                     VerticalAlignment="Top"
+                                                                     BeginDate="{Binding StartDate, Converter={StaticResource IntToDateTimeConverter}, ConverterParameter={StaticResource StartDateCorrection}}"
+                                                                     EndDate="{Binding EndDate, Converter={StaticResource IntToDateTimeConverter}, ConverterParameter={StaticResource EndDateCorrection}}"
+                                                                     KeepOriginalOrderForOverlap="True" />
+                                            </ItemsPanelTemplate>
+                                        </ListBox.ItemsPanel>
+                                        <ListBox.ItemContainerStyle>
+                                            <Style>
+                                                <Setter Property="Panel.Background"
+                                                        Value="LightGray" />
+                                                <Setter Property="xctk:TimelinePanel.Date"
+                                                        Value="{Binding Start, Converter={StaticResource IntToDateTimeConverter}, ConverterParameter={StaticResource StartDateCorrection}}" />
+                                                <Setter Property="xctk:TimelinePanel.DateEnd"
+                                                        Value="{Binding End, Converter={StaticResource IntToDateTimeConverter}, ConverterParameter={StaticResource EndDateCorrection}}" />
+                                            </Style>
+                                        </ListBox.ItemContainerStyle>
+                                    </ListBox>
+                                    <Slider TickPlacement="TopLeft"
+                                            Value="{Binding Time}"
+                                            Minimum="{Binding StartDate, Converter={StaticResource IntToDoubleConverter}, ConverterParameter={StaticResource StartSliderCorrection}}"
+                                            Maximum="{Binding EndDate, Converter={StaticResource IntToDoubleConverter}, ConverterParameter={StaticResource EndSliderCorrection}}" />
+                                </StackPanel>
+                            </xcad:LayoutAnchorable>
+                        </xcad:LayoutAnchorablePane>
+                    </xcad:LayoutAnchorablePaneGroup>
+                    <xcad:LayoutAnchorablePaneGroup Orientation="Vertical"
+                                                    DockWidth="300">
+                        <xcad:LayoutAnchorablePane>
+                            <xcad:LayoutAnchorable Title="Colors"
+                                                   CanClose="False"
+                                                   CanDockAsTabbedDocument="False"
+                                                   CanHide="False"
+                                                   AutoHideWidth="300">
+                                <StackPanel>
+                                    <DockPanel Margin="5">
+                                        <DockPanel.Visibility>
+                                            <Binding Path="ColorMode"
+                                                     ConverterParameter="{x:Static model:ColorMode.MonoBrightness}">
+                                                <Binding.Converter>
+                                                    <converters:ValueConverterGroup>
+                                                        <converters:EnumToBoolConverter />
+                                                        <BooleanToVisibilityConverter />
+                                                    </converters:ValueConverterGroup>
+                                                </Binding.Converter>
+                                            </Binding>
+                                        </DockPanel.Visibility>
+                                        <Border DockPanel.Dock="Left"
+                                                VerticalAlignment="Center"
+                                                Height="22"
+                                                Width="22"
+                                                BorderThickness="1"
+                                                BorderBrush="#FFC9CACA">
+                                            <Border.Resources>
+                                                <ResourceDictionary>
+                                                    <ResourceDictionary.MergedDictionaries>
+                                                        <ResourceDictionary Source="pack://application:,,,/Xceed.Wpf.Toolkit;component/ColorCanvas/Themes/Generic.xaml" />
+                                                        <ResourceDictionary Source="pack://application:,,,/Xceed.Wpf.Toolkit;component/ColorCanvas/Themes/Aero2.NormalColor.xaml" />
+                                                    </ResourceDictionary.MergedDictionaries>
+                                                </ResourceDictionary>
+                                            </Border.Resources>
+                                            <Rectangle Fill="{Binding DisplayColor, Converter={StaticResource ColorToSolidColorBrushConverter}}" />
+                                        </Border>
+                                        <xctk:ByteUpDown DockPanel.Dock="Right"
+                                                         VerticalAlignment="Center"
+                                                         Width="44"
+                                                         Value="{Binding SelectedColor, Converter={StaticResource ColorToValueConverter}}">
+                                        </xctk:ByteUpDown>
+                                        <Slider VerticalAlignment="Center"
+                                                Margin="4,6,4,6"
+                                                Maximum="255"
+                                                SmallChange="1"
+                                                LargeChange="10"
+                                                TickFrequency="1"
+                                                Value="{Binding SelectedColor, Converter={StaticResource ColorToValueConverter}}">
+                                        </Slider>
+                                    </DockPanel>
+                                    <xctk:ColorCanvas SelectedColor="{Binding SelectedColor}"
+                                                      UsingAlphaChannel="False">
+                                        <xctk:ColorCanvas.Visibility>
+                                            <Binding Path="ColorMode"
+                                                     ConverterParameter="{x:Static model:ColorMode.RGB}">
+                                                <Binding.Converter>
+                                                    <converters:ValueConverterGroup>
+                                                        <converters:EnumToBoolConverter />
+                                                        <BooleanToVisibilityConverter />
+                                                    </converters:ValueConverterGroup>
+                                                </Binding.Converter>
+                                            </Binding>
+                                        </xctk:ColorCanvas.Visibility>
+                                    </xctk:ColorCanvas>
+                                    <DockPanel>
+                                        <DockPanel.Visibility>
+                                            <Binding Path="ColorMode"
+                                                     ConverterParameter="{x:Static model:ColorMode.Mono}">
+                                                <Binding.Converter>
+                                                    <converters:ValueConverterGroup>
+                                                        <converters:EnumToBoolConverter />
+                                                        <converters:InverseBoolConverter />
+                                                        <BooleanToVisibilityConverter />
+                                                    </converters:ValueConverterGroup>
+                                                </Binding.Converter>
+                                            </Binding>
+                                        </DockPanel.Visibility>
+                                        <ToggleButton DockPanel.Dock="Right"
+                                                      Content="Pick"
+                                                      IsChecked="{Binding ColorPickerTool}" />
+                                        <ListBox ItemsSource="{Binding RecentColors}"
+                                                 SelectedItem="{Binding RecentColor}">
+                                            <ListBox.Resources>
+                                                <ResourceDictionary>
+                                                    <ResourceDictionary.MergedDictionaries>
+                                                        <ResourceDictionary Source="pack://application:,,,/Xceed.Wpf.Toolkit;component/ColorPicker/Themes/Generic.xaml" />
+                                                        <ResourceDictionary Source="pack://application:,,,/Xceed.Wpf.Toolkit;component/ColorPicker/Themes/Aero2.NormalColor.xaml" />
+                                                    </ResourceDictionary.MergedDictionaries>
+                                                </ResourceDictionary>
+                                            </ListBox.Resources>
+                                            <ListBox.Style>
+                                                <StaticResource ResourceKey="ColorListStyle" />
+                                            </ListBox.Style>
+                                        </ListBox>
+                                    </DockPanel>
+                                </StackPanel>
+                            </xcad:LayoutAnchorable>
+                        </xcad:LayoutAnchorablePane>
+                        <xcad:LayoutAnchorablePane>
+                            <xcad:LayoutAnchorable Title="Properties"
+                                                   CanClose="False"
+                                                   CanDockAsTabbedDocument="False"
+                                                   CanHide="False"
+                                                   AutoHideWidth="300">
+                                <StackPanel>
+                                    <xctk:PropertyGrid SelectedObject="{Binding SelectedTileOrGroup}"
+                                                       SelectedProperty="{Binding SelectedProperty, Mode=TwoWay}"
+                                                       AutoGenerateProperties="False"
+                                                       ShowSortOptions="False"
+                                                       ShowSearchBox="False"
+                                                       ShowSummary="False"
+                                                       NameColumnWidth="120">
+                                        <xctk:PropertyGrid.PropertyDefinitions>
+                                            <xctk:PropertyDefinition TargetProperties="Name" />
+                                            <xctk:PropertyDefinition TargetProperties="Start" />
+                                            <xctk:PropertyDefinition TargetProperties="End" />
+                                            <xctk:PropertyDefinition TargetProperties="Channel" />
+                                            <xctk:PropertyDefinition TargetProperties="Hierarchy" />
+                                            <xctk:PropertyDefinition TargetProperties="VoxelsProperty" />
+                                            <xctk:PropertyDefinition TargetProperties="Offset" />
+                                            <xctk:PropertyDefinition TargetProperties="Size" />
+                                            <xctk:PropertyDefinition TargetProperties="From" />
+                                            <xctk:PropertyDefinition TargetProperties="To" />
+                                            <xctk:PropertyDefinition TargetProperties="ColorInterpolation" />
+                                            <xctk:PropertyDefinition TargetProperties="TimeInterpolation" />
+                                            <xctk:PropertyDefinition TargetProperties="RepeatCount" />
+                                            <xctk:PropertyDefinition TargetProperties="Reverse" />
+                                            <xctk:PropertyDefinition TargetProperties="ChildrenProperty" />
+                                            <xctk:PropertyDefinition TargetProperties="ColorBlendMode" />
+                                            <xctk:PropertyDefinition TargetProperties="Round" />
+                                            <xctk:PropertyDefinition TargetProperties="Axis" />
+                                            <xctk:PropertyDefinition TargetProperties="Plane" />
+                                            <xctk:PropertyDefinition TargetProperties="Center" />
+                                            <xctk:PropertyDefinition TargetProperties="Value" />
+                                            <xctk:PropertyDefinition TargetProperties="WrapAround" />
+                                            <xctk:PropertyDefinition TargetProperties="StartAngle" />
+                                        </xctk:PropertyGrid.PropertyDefinitions>
+                                        <xctk:PropertyGrid.EditorDefinitions>
+                                            <xctk:EditorTemplateDefinition>
+                                                <xctk:EditorTemplateDefinition.TargetProperties>
+                                                    <xctk:TargetPropertyType Type="{x:Type Color}" />
+                                                </xctk:EditorTemplateDefinition.TargetProperties>
+                                                <xctk:EditorTemplateDefinition.EditingTemplate>
+                                                    <DataTemplate>
+                                                        <xctk:ColorPicker ShowAvailableColors="False"
+                                                                          ShowRecentColors="False"
+                                                                          ShowStandardColors="False"
+                                                                          ShowTabHeaders="False"
+                                                                          ColorMode="ColorCanvas"
+                                                                          UsingAlphaChannel="False"
+                                                                          SelectedColor="{Binding Value}" />
+                                                    </DataTemplate>
+                                                </xctk:EditorTemplateDefinition.EditingTemplate>
+                                            </xctk:EditorTemplateDefinition>
+                                            <xctk:EditorTemplateDefinition>
+                                                <xctk:EditorTemplateDefinition.TargetProperties>
+                                                    <xctk:TargetPropertyType Type="{x:Type Point}" />
+                                                    <xctk:TargetPropertyType Type="{x:Type Vector}" />
+                                                </xctk:EditorTemplateDefinition.TargetProperties>
+                                                <xctk:EditorTemplateDefinition.EditingTemplate>
+                                                    <DataTemplate>
+                                                        <Grid>
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition />
+                                                                <ColumnDefinition Width="1" />
+                                                                <ColumnDefinition />
+                                                            </Grid.ColumnDefinitions>
+                                                            <xctk:PropertyGridEditorDoubleUpDown Grid.Column="0"
+                                                                                                 Value="{Binding Value.X}"
+                                                                                                 TextAlignment="Left" />
+                                                            <Rectangle Grid.Column="1"
+                                                                       Fill="#F0F0F0" />
+                                                            <xctk:PropertyGridEditorDoubleUpDown Grid.Column="2"
+                                                                                                 Value="{Binding Value.Y}"
+                                                                                                 TextAlignment="Left" />
+                                                        </Grid>
+                                                    </DataTemplate>
+                                                </xctk:EditorTemplateDefinition.EditingTemplate>
+                                            </xctk:EditorTemplateDefinition>
+                                            <xctk:EditorTemplateDefinition>
+                                                <xctk:EditorTemplateDefinition.TargetProperties>
+                                                    <xctk:TargetPropertyType Type="{x:Type Point3D}" />
+                                                    <xctk:TargetPropertyType Type="{x:Type Vector3D}" />
+                                                </xctk:EditorTemplateDefinition.TargetProperties>
+                                                <xctk:EditorTemplateDefinition.EditingTemplate>
+                                                    <DataTemplate>
+                                                        <Grid>
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition />
+                                                                <ColumnDefinition Width="1" />
+                                                                <ColumnDefinition />
+                                                                <ColumnDefinition Width="1" />
+                                                                <ColumnDefinition />
+                                                            </Grid.ColumnDefinitions>
+                                                            <xctk:PropertyGridEditorDoubleUpDown Grid.Column="0"
+                                                                                                 Value="{Binding Value.X}"
+                                                                                                 TextAlignment="Left" />
+                                                            <Rectangle Grid.Column="1"
+                                                                       Fill="#F0F0F0" />
+                                                            <xctk:PropertyGridEditorDoubleUpDown Grid.Column="2"
+                                                                                                 Value="{Binding Value.Y}"
+                                                                                                 TextAlignment="Left" />
+                                                            <Rectangle Grid.Column="3"
+                                                                       Fill="#F0F0F0" />
+                                                            <xctk:PropertyGridEditorDoubleUpDown Grid.Column="4"
+                                                                                                 Value="{Binding Value.Z}"
+                                                                                                 TextAlignment="Left" />
+                                                        </Grid>
+                                                    </DataTemplate>
+                                                </xctk:EditorTemplateDefinition.EditingTemplate>
+                                            </xctk:EditorTemplateDefinition>
+                                        </xctk:PropertyGrid.EditorDefinitions>
+                                    </xctk:PropertyGrid>
+                                    <Button Content="Delete tile"
+                                            Command="{Binding RemoveTileCommand}" />
+                                </StackPanel>
+                            </xcad:LayoutAnchorable>
+                        </xcad:LayoutAnchorablePane>
+                    </xcad:LayoutAnchorablePaneGroup>
+                </xcad:LayoutPanel>
+            </xcad:LayoutRoot>
+        </xcad:DockingManager>
     </DockPanel>
 </Window>
