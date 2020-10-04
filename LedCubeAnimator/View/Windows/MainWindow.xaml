@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock"
+        xmlns:dock="https://github.com/Dirkster99/AvalonDock"
         xmlns:md="https://github.com/fantasticfiasco/mvvm-dialogs"
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:cmd="http://www.galasoft.ch/mvvmlight"
@@ -188,54 +188,54 @@
                 </Button>
             </ToolBar>
         </ToolBarTray>
-        <xcad:DockingManager Margin="4,0,4,2"
+        <dock:DockingManager Margin="4,0,4,2"
                              AllowMixedOrientation="True">
-            <xcad:LayoutRoot>
-                <xcad:LayoutPanel>
-                    <xcad:LayoutAnchorablePaneGroup Orientation="Vertical">
-                        <xcad:LayoutAnchorablePane>
-                            <xcad:LayoutAnchorable Title="3D View"
+            <dock:LayoutRoot>
+                <dock:LayoutPanel>
+                    <dock:LayoutAnchorablePaneGroup Orientation="Vertical"
+                                                    DockWidth="4*">
+                        <dock:LayoutAnchorablePane DockHeight="4*">
+                            <dock:LayoutAnchorable Title="3D View"
                                                    CanClose="False"
                                                    CanDockAsTabbedDocument="False"
                                                    CanHide="False"
                                                    CanAutoHide="False">
-                                <controls:Cube3DView Frame="{Binding Frame}"
-                                                     Command="{Binding VoxelClickCommand}" />
-                            </xcad:LayoutAnchorable>
-                        </xcad:LayoutAnchorablePane>
-                        <xcad:LayoutAnchorablePane DockHeight="200">
-                            <xcad:LayoutAnchorable Title="Timeline"
+                                <controls:Cube3DControl Frame="{Binding Frame}"
+                                                        Command="{Binding VoxelClickCommand}" />
+                            </dock:LayoutAnchorable>
+                        </dock:LayoutAnchorablePane>
+                        <dock:LayoutAnchorablePane>
+                            <dock:LayoutAnchorable Title="Timeline"
                                                    CanClose="False"
                                                    CanDockAsTabbedDocument="False"
                                                    CanHide="False"
                                                    AutoHideWidth="300">
-                                <controls:Timeline />
-                            </xcad:LayoutAnchorable>
-                        </xcad:LayoutAnchorablePane>
-                    </xcad:LayoutAnchorablePaneGroup>
-                    <xcad:LayoutAnchorablePaneGroup Orientation="Vertical"
-                                                    DockWidth="300">
-                        <xcad:LayoutAnchorablePane>
-                            <xcad:LayoutAnchorable Title="Colors"
+                                <controls:TimelineControl />
+                            </dock:LayoutAnchorable>
+                        </dock:LayoutAnchorablePane>
+                    </dock:LayoutAnchorablePaneGroup>
+                    <dock:LayoutAnchorablePaneGroup Orientation="Vertical">
+                        <dock:LayoutAnchorablePane>
+                            <dock:LayoutAnchorable Title="Colors"
                                                    CanClose="False"
                                                    CanDockAsTabbedDocument="False"
                                                    CanHide="False"
                                                    AutoHideWidth="300">
-                                <controls:ColorPicker />
-                            </xcad:LayoutAnchorable>
-                        </xcad:LayoutAnchorablePane>
-                        <xcad:LayoutAnchorablePane>
-                            <xcad:LayoutAnchorable Title="Properties"
+                                <controls:ColorPickerControl />
+                            </dock:LayoutAnchorable>
+                        </dock:LayoutAnchorablePane>
+                        <dock:LayoutAnchorablePane>
+                            <dock:LayoutAnchorable Title="Properties"
                                                    CanClose="False"
                                                    CanDockAsTabbedDocument="False"
                                                    CanHide="False"
                                                    AutoHideWidth="300">
-                                <controls:PropertyView />
-                            </xcad:LayoutAnchorable>
-                        </xcad:LayoutAnchorablePane>
-                    </xcad:LayoutAnchorablePaneGroup>
-                </xcad:LayoutPanel>
-            </xcad:LayoutRoot>
-        </xcad:DockingManager>
+                                <controls:PropertyControl />
+                            </dock:LayoutAnchorable>
+                        </dock:LayoutAnchorablePane>
+                    </dock:LayoutAnchorablePaneGroup>
+                </dock:LayoutPanel>
+            </dock:LayoutRoot>
+        </dock:DockingManager>
     </DockPanel>
 </Window>

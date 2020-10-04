@@ -11,11 +11,11 @@ using HelixToolkit.Wpf;
 namespace LedCubeAnimator.View.UserControls
 {
     /// <summary>
-    /// Interaction logic for Cube3DView.xaml
+    /// Interaction logic for Cube3DControl.xaml
     /// </summary>
-    public partial class Cube3DView : UserControl
+    public partial class Cube3DControl : UserControl
     {
-        public Cube3DView()
+        public Cube3DControl()
         {
             InitializeComponent();
         }
@@ -28,9 +28,9 @@ namespace LedCubeAnimator.View.UserControls
             set => SetValue(FrameProperty, value);
         }
 
-        public static readonly DependencyProperty FrameProperty = DependencyProperty.Register("Frame", typeof(Color[,,]), typeof(Cube3DView), new PropertyMetadata(new PropertyChangedCallback(OnFrameChanged)));
+        public static readonly DependencyProperty FrameProperty = DependencyProperty.Register("Frame", typeof(Color[,,]), typeof(Cube3DControl), new PropertyMetadata(new PropertyChangedCallback(OnFrameChanged)));
 
-        private static void OnFrameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) => ((Cube3DView)d).OnFrameChanged(e);
+        private static void OnFrameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) => ((Cube3DControl)d).OnFrameChanged(e);
 
         private void OnFrameChanged(DependencyPropertyChangedEventArgs e) => UpdateSpheres(e.OldValue as Color[,,], e.NewValue as Color[,,]);
 
@@ -42,7 +42,7 @@ namespace LedCubeAnimator.View.UserControls
             set => SetValue(CommandProperty, value);
         }
 
-        public static readonly DependencyProperty CommandProperty = DependencyProperty.Register("Command", typeof(ICommand), typeof(Cube3DView));
+        public static readonly DependencyProperty CommandProperty = DependencyProperty.Register("Command", typeof(ICommand), typeof(Cube3DControl));
 
 
 

@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace LedCubeAnimator.View.UserControls
 {
     /// <summary>
-    /// Interaction logic for PropertyView.xaml
+    /// Interaction logic for PropertyControl.xaml
     /// </summary>
-    public partial class PropertyView : UserControl
+    public partial class PropertyControl : UserControl
     {
-        public PropertyView()
+        public PropertyControl()
         {
             InitializeComponent();
         }

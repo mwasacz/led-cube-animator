@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace LedCubeAnimator.View.UserControls
 {
     /// <summary>
-    /// Interaction logic for Timeline.xaml
+    /// Interaction logic for ColorPickerControl.xaml
     /// </summary>
-    public partial class Timeline : UserControl
+    public partial class ColorPickerControl : UserControl
     {
-        public Timeline()
+        public ColorPickerControl()
         {
             InitializeComponent();
         }
