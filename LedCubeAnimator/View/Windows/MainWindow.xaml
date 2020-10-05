@@ -103,6 +103,20 @@
                     </MenuItem.Style>
                 </MenuItem>
             </MenuItem>
+            <MenuItem Header="View">
+                <MenuItem Header="3D View"
+                          IsCheckable="True"
+                          IsChecked="{Binding IsVisible, ElementName=Cube3DAnchorable}" />
+                <MenuItem Header="Timeline"
+                          IsCheckable="True"
+                          IsChecked="{Binding IsVisible, ElementName=TimelineAnchorable}" />
+                <MenuItem Header="Colors"
+                          IsCheckable="True"
+                          IsChecked="{Binding IsVisible, ElementName=ColorPickerAnchorable}" />
+                <MenuItem Header="Properties"
+                          IsCheckable="True"
+                          IsChecked="{Binding IsVisible, ElementName=PropertiesAnchorable}" />
+            </MenuItem>
             <MenuItem Header="Tile">
                 <MenuItem Header="Frame"
                           Command="{Binding AddFrameCommand}" />
@@ -195,20 +209,18 @@
                     <dock:LayoutAnchorablePaneGroup Orientation="Vertical"
                                                     DockWidth="4*">
                         <dock:LayoutAnchorablePane DockHeight="4*">
-                            <dock:LayoutAnchorable Title="3D View"
-                                                   CanClose="False"
+                            <dock:LayoutAnchorable x:Name="Cube3DAnchorable"
+                                                   Title="3D View"
                                                    CanDockAsTabbedDocument="False"
-                                                   CanHide="False"
                                                    CanAutoHide="False">
                                 <controls:Cube3DControl Frame="{Binding Frame}"
                                                         Command="{Binding VoxelClickCommand}" />
                             </dock:LayoutAnchorable>
                         </dock:LayoutAnchorablePane>
                         <dock:LayoutAnchorablePane>
-                            <dock:LayoutAnchorable Title="Timeline"
-                                                   CanClose="False"
+                            <dock:LayoutAnchorable x:Name="TimelineAnchorable"
+                                                   Title="Timeline"
                                                    CanDockAsTabbedDocument="False"
-                                                   CanHide="False"
                                                    AutoHideWidth="300">
                                 <controls:TimelineControl />
                             </dock:LayoutAnchorable>
@@ -216,19 +228,17 @@
                     </dock:LayoutAnchorablePaneGroup>
                     <dock:LayoutAnchorablePaneGroup Orientation="Vertical">
                         <dock:LayoutAnchorablePane>
-                            <dock:LayoutAnchorable Title="Colors"
-                                                   CanClose="False"
+                            <dock:LayoutAnchorable x:Name="ColorPickerAnchorable"
+                                                   Title="Colors"
                                                    CanDockAsTabbedDocument="False"
-                                                   CanHide="False"
                                                    AutoHideWidth="300">
                                 <controls:ColorPickerControl />
                             </dock:LayoutAnchorable>
                         </dock:LayoutAnchorablePane>
                         <dock:LayoutAnchorablePane>
-                            <dock:LayoutAnchorable Title="Properties"
-                                                   CanClose="False"
+                            <dock:LayoutAnchorable x:Name="PropertiesAnchorable"
+                                                   Title="Properties"
                                                    CanDockAsTabbedDocument="False"
-                                                   CanHide="False"
                                                    AutoHideWidth="300">
                                 <controls:PropertyControl />
                             </dock:LayoutAnchorable>
