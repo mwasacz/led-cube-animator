@@ -235,6 +235,20 @@ namespace LedCubeAnimator.ViewModel.WindowViewModels
             }
         }));
 
+        private RelayCommand _exportCommand;
+        public ICommand ExportCommand => _exportCommand ?? (_exportCommand = new RelayCommand(() =>
+        {
+            var settings = new SaveFileDialogSettings
+            {
+                Filter = "LED Cube binary files (*.3db)|*.3db|All files (*.*)|*.*"
+            };
+            var result = _dialogService.ShowSaveFileDialog(this, settings);
+            if (result == true)
+            {
+                Model.Export(settings.FileName);
+            }
+        }));
+
         private RelayCommand _exportMWCommand;
         public ICommand ExportMWCommand => _exportMWCommand ?? (_exportMWCommand = new RelayCommand(() =>
         {
@@ -245,7 +259,7 @@ namespace LedCubeAnimator.ViewModel.WindowViewModels
             var result = _dialogService.ShowSaveFileDialog(this, settings);
             if (result == true)
             {
-                Model.Export(settings.FileName);
+                Model.ExportMW(settings.FileName);
             }
         }));
 

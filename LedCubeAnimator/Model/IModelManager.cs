@@ -13,6 +13,7 @@ namespace LedCubeAnimator.Model
         bool Save();
         void SaveAs(string path);
         void Export(string path);
+        void ExportMW(string path);
 
         Color[,,] Render(int time);
 

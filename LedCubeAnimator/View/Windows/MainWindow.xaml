@@ -62,7 +62,9 @@
                           Command="{Binding SaveAsCommand}" />
                 <Separator />
                 <MenuItem Header="Export">
-                    <MenuItem Header="MW LED Cube 4x4x4..."
+                    <MenuItem Header="Binary file (.3db)..."
+                              Command="{Binding ExportCommand}" />
+                    <MenuItem Header="MW LED Cube file (.txt)..."
                               Command="{Binding ExportMWCommand}" />
                 </MenuItem>
                 <Separator />

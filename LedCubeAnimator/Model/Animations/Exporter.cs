@@ -1,19 +1,165 @@
-﻿using LedCubeAnimator.Model.Animations.Data;
+﻿using LedCubeAnimator.Model.Animations;
+using LedCubeAnimator.Model.Animations.Data;
 using System;
 using System.IO;
 using System.Linq;
 using System.Windows.Media;
 
-namespace LedCubeAnimator.Model.Animations
+namespace LedCubeAnimator.Model
 {
     public static class Exporter
     {
+        // FILE FORMAT
+        // u16 Version number
+        // u16 Header length
+        // u08 Bits per frame length
+        // u24 Frame length (in us)
+        // u24 Frame count
+        // u16 Bits per color (xrgb)
+        // u24 Size (xyz)
+        // For each frame: frame length, voxel data
+
         public static void Export(string path, Animation animation)
         {
             using (var bw = new BinaryWriter(File.Open(path, FileMode.Create)))
             {
+                WriteHeader(animation, bw);
+
                 //int repeat = animation.MainGroup.RepeatCount; // ToDo
-                int duration = Math.Max(animation.FrameDuration, 1);
+
+                int start = animation.MainGroup.Start;
+                int end = animation.MainGroup.End;
+
+                byte[] prevBytes = null;
+                int prevT = 0;
+                for (int t = start; t <= end; t++)
+                {
+                    var voxels = Renderer.Render(animation, t, false);
+
+                    int byteCount = voxels.Length;
+                    if (animation.ColorMode == ColorMode.Mono)
+                    {
+                        byteCount = (byteCount + 7) / 8;
+                    }
+                    else if (animation.ColorMode == ColorMode.RGB)
+                    {
+                        byteCount *= 3;
+                    }
+
+                    byte[] bytes = new byte[byteCount];
+
+                    int i = 0;
+                    foreach (var v in voxels)
+                    {
+                        switch (animation.ColorMode)
+                        {
+                            case ColorMode.Mono:
+                                bytes[i / 8] |= (byte)(v == Colors.Black ? 0 : 1 << (i % 8));
+                                break;
+                            case ColorMode.MonoBrightness:
+                                bytes[i] = v.GetBrightness();
+                                break;
+                            case ColorMode.RGB:
+                                bytes[i * 3] = v.B;
+                                bytes[i * 3 + 1] = v.G;
+                                bytes[i * 3 + 2] = v.R;
+                                break;
+                        }
+                        i++;
+                    }
+
+                    if (t == start)
+                    {
+                        prevBytes = bytes;
+                        prevT = t;
+                    }
+                    else if (!bytes.SequenceEqual(prevBytes))
+                    {
+                        WriteBytes(bw, prevBytes, t - prevT);
+
+                        prevBytes = bytes;
+                        prevT = t;
+                    }
+                }
+
+                if (prevBytes != null)
+                {
+                    WriteBytes(bw, prevBytes, end - prevT);
+                }
+            }
+        }
+
+        private static void WriteBytes(BinaryWriter bw, byte[] prevBytes, int d)
+        {
+            for (byte l; d > 0; d -= l) // ToDo: set bytesPerFrame instead of repeating frames
+            {
+                l = (byte)Math.Min(d, 0xFF);
+
+                bw.Write(l);
+                bw.Write(prevBytes);
+            }
+        }
+
+        private static void WriteHeader(Animation animation, BinaryWriter bw)
+        {
+            const ushort versionNumber = 0;
+            const ushort headerLength = 16; // ToDo
+            const byte bitsPerFrame = 8; // ToDo
+
+            uint frameLength = (uint)(animation.FrameDuration * 1000); // ToDo: exported frameLength may be different than FrameDuration
+
+            if (animation.MainGroup.End - animation.MainGroup.Start < 0 || animation.MainGroup.End - animation.MainGroup.Start > 0xFFFFFF)
+            {
+                throw new InvalidOperationException("Animation length out of bounds");
+            }
+            uint frameCount = (uint)(animation.MainGroup.End - animation.MainGroup.Start);
+
+            ushort bitsPerColor;
+            switch (animation.ColorMode)
+            {
+                case ColorMode.Mono:
+                    bitsPerColor = 1;
+                    break;
+                case ColorMode.MonoBrightness:
+                    bitsPerColor = 8;
+                    break;
+                case ColorMode.RGB:
+                    bitsPerColor = 0x888;
+                    break;
+                default:
+                    throw new InvalidOperationException("Invalid ColorMode");
+            }
+
+            if (animation.Size > 0xFF)
+            {
+                throw new InvalidOperationException("Cube size out of bounds");
+            }
+            byte size = (byte)animation.Size;
+
+            bw.Write(versionNumber);
+            bw.Write(headerLength);
+            bw.Write(bitsPerFrame);
+            WriteUInt24(bw, frameLength);
+            WriteUInt24(bw, frameCount);
+            bw.Write(bitsPerColor);
+            bw.Write(size);
+            bw.Write(size);
+            bw.Write(size);
+        }
+
+        private static void WriteUInt24(BinaryWriter bw, uint value)
+        {
+            bw.Write((byte)value);
+            bw.Write((byte)(value >> 8));
+            bw.Write((byte)(value >> 16));
+        }
+
+        public static void ExportMW(string path, Animation animation)
+        {
+            using (var bw = new BinaryWriter(File.Open(path, FileMode.Create)))
+            {
+                //int repeat = animation.MainGroup.RepeatCount; // ToDo
+                int duration = animation.FrameDuration;
 
                 int start = animation.MainGroup.Start * duration;
                 int end = animation.MainGroup.End * duration;
@@ -60,7 +206,10 @@ namespace LedCubeAnimator.Model.Animations
                     }
                 }
 
-                WriteBytes(bw, prevBytes, end - prevT, endStep);
+                if (prevBytes != null)
+                {
+                    WriteBytes(bw, prevBytes, end - prevT, endStep);
+                }
             }
         }
 

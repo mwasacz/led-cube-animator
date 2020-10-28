@@ -26,7 +26,7 @@ namespace LedCubeAnimator.Model
         public void New()
         {
             var group = new Group { Name = "MainGroup" };
-            Animation = new Animation { MainGroup = group, Size = 4, MonoColor = Colors.White };
+            Animation = new Animation { MainGroup = group, Size = 4, MonoColor = Colors.White, FrameDuration = 1 };
             _filePath = null;
             _undo.Reset();
             _changedObject = null;
@@ -69,6 +69,11 @@ namespace LedCubeAnimator.Model
         public void Export(string path)
         {
             Exporter.Export(path, Animation);
+        }
+
+        public void ExportMW(string path)
+        {
+            Exporter.ExportMW(path, Animation);
         }
 
         public Color[,,] Render(int time) => Renderer.Render(Animation, time, true);
