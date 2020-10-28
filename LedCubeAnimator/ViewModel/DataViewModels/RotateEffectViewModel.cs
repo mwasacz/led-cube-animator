@@ -27,7 +27,7 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
         public Point Center
         {
             get => RotateEffect.Center;
-            set => Model.SetTileProperty(RotateEffect, nameof(RotateEffect.Center), value);
+            set => Model.SetTileProperty(RotateEffect, nameof(RotateEffect.Center), GetNewValue(value, RotateEffect.Center));
         }
 
         public override void ModelPropertyChanged(object obj, string propertyName, out TileViewModel changedViewModel, out string changedProperty)

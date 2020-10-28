@@ -4,7 +4,14 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:converters="clr-namespace:LedCubeAnimator.View.Converters"
              mc:Ignorable="d">
+    <UserControl.Resources>
+        <converters:PointToDoubleConverter x:Key="PointToDoubleConverter" />
+        <converters:VectorToDoubleConverter x:Key="VectorToDoubleConverter" />
+        <converters:Point3DToDoubleConverter x:Key="Point3DToDoubleConverter" />
+        <converters:Vector3DToDoubleConverter x:Key="Vector3DToDoubleConverter" />
+    </UserControl.Resources>
     <StackPanel>
         <xctk:PropertyGrid SelectedObject="{Binding Shared.SelectedTile}"
                            SelectedProperty="{Binding Shared.SelectedProperty, Mode=TwoWay}"
@@ -32,6 +39,29 @@
                 <xctk:EditorTemplateDefinition>
                     <xctk:EditorTemplateDefinition.TargetProperties>
                         <xctk:TargetPropertyType Type="{x:Type Point}" />
+                    </xctk:EditorTemplateDefinition.TargetProperties>
+                    <xctk:EditorTemplateDefinition.EditingTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition />
+                                    <ColumnDefinition Width="1" />
+                                    <ColumnDefinition />
+                                </Grid.ColumnDefinitions>
+                                <xctk:PropertyGridEditorDoubleUpDown Grid.Column="0"
+                                                                     Value="{Binding Value, Converter={StaticResource PointToDoubleConverter}, ConverterParameter='X'}"
+                                                                     TextAlignment="Left" />
+                                <Rectangle Grid.Column="1"
+                                           Fill="#F0F0F0" />
+                                <xctk:PropertyGridEditorDoubleUpDown Grid.Column="2"
+                                                                     Value="{Binding Value, Converter={StaticResource PointToDoubleConverter}, ConverterParameter='Y'}"
+                                                                     TextAlignment="Left" />
+                            </Grid>
+                        </DataTemplate>
+                    </xctk:EditorTemplateDefinition.EditingTemplate>
+                </xctk:EditorTemplateDefinition>
+                <xctk:EditorTemplateDefinition>
+                    <xctk:EditorTemplateDefinition.TargetProperties>
                         <xctk:TargetPropertyType Type="{x:Type Vector}" />
                     </xctk:EditorTemplateDefinition.TargetProperties>
                     <xctk:EditorTemplateDefinition.EditingTemplate>
@@ -43,12 +73,12 @@
                                     <ColumnDefinition />
                                 </Grid.ColumnDefinitions>
                                 <xctk:PropertyGridEditorDoubleUpDown Grid.Column="0"
-                                                                     Value="{Binding Value.X}"
+                                                                     Value="{Binding Value, Converter={StaticResource VectorToDoubleConverter}, ConverterParameter='X'}"
                                                                      TextAlignment="Left" />
                                 <Rectangle Grid.Column="1"
                                            Fill="#F0F0F0" />
                                 <xctk:PropertyGridEditorDoubleUpDown Grid.Column="2"
-                                                                     Value="{Binding Value.Y}"
+                                                                     Value="{Binding Value, Converter={StaticResource VectorToDoubleConverter}, ConverterParameter='Y'}"
                                                                      TextAlignment="Left" />
                             </Grid>
                         </DataTemplate>
@@ -57,6 +87,36 @@
                 <xctk:EditorTemplateDefinition>
                     <xctk:EditorTemplateDefinition.TargetProperties>
                         <xctk:TargetPropertyType Type="{x:Type Point3D}" />
+                    </xctk:EditorTemplateDefinition.TargetProperties>
+                    <xctk:EditorTemplateDefinition.EditingTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition />
+                                    <ColumnDefinition Width="1" />
+                                    <ColumnDefinition />
+                                    <ColumnDefinition Width="1" />
+                                    <ColumnDefinition />
+                                </Grid.ColumnDefinitions>
+                                <xctk:PropertyGridEditorDoubleUpDown Grid.Column="0"
+                                                                     Value="{Binding Value, Converter={StaticResource Point3DToDoubleConverter}, ConverterParameter='X'}"
+                                                                     TextAlignment="Left" />
+                                <Rectangle Grid.Column="1"
+                                           Fill="#F0F0F0" />
+                                <xctk:PropertyGridEditorDoubleUpDown Grid.Column="2"
+                                                                     Value="{Binding Value, Converter={StaticResource Point3DToDoubleConverter}, ConverterParameter='Y'}"
+                                                                     TextAlignment="Left" />
+                                <Rectangle Grid.Column="3"
+                                           Fill="#F0F0F0" />
+                                <xctk:PropertyGridEditorDoubleUpDown Grid.Column="4"
+                                                                     Value="{Binding Value, Converter={StaticResource Point3DToDoubleConverter}, ConverterParameter='Z'}"
+                                                                     TextAlignment="Left" />
+                            </Grid>
+                        </DataTemplate>
+                    </xctk:EditorTemplateDefinition.EditingTemplate>
+                </xctk:EditorTemplateDefinition>
+                <xctk:EditorTemplateDefinition>
+                    <xctk:EditorTemplateDefinition.TargetProperties>
                         <xctk:TargetPropertyType Type="{x:Type Vector3D}" />
                     </xctk:EditorTemplateDefinition.TargetProperties>
                     <xctk:EditorTemplateDefinition.EditingTemplate>
@@ -70,17 +130,17 @@
                                     <ColumnDefinition />
                                 </Grid.ColumnDefinitions>
                                 <xctk:PropertyGridEditorDoubleUpDown Grid.Column="0"
-                                                                     Value="{Binding Value.X}"
+                                                                     Value="{Binding Value, Converter={StaticResource Vector3DToDoubleConverter}, ConverterParameter='X'}"
                                                                      TextAlignment="Left" />
                                 <Rectangle Grid.Column="1"
                                            Fill="#F0F0F0" />
                                 <xctk:PropertyGridEditorDoubleUpDown Grid.Column="2"
-                                                                     Value="{Binding Value.Y}"
+                                                                     Value="{Binding Value, Converter={StaticResource Vector3DToDoubleConverter}, ConverterParameter='Y'}"
                                                                      TextAlignment="Left" />
                                 <Rectangle Grid.Column="3"
                                            Fill="#F0F0F0" />
                                 <xctk:PropertyGridEditorDoubleUpDown Grid.Column="4"
-                                                                     Value="{Binding Value.Z}"
+                                                                     Value="{Binding Value, Converter={StaticResource Vector3DToDoubleConverter}, ConverterParameter='Z'}"
                                                                      TextAlignment="Left" />
                             </Grid>
                         </DataTemplate>

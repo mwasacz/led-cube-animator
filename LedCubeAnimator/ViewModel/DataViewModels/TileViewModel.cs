@@ -2,6 +2,8 @@
 using LedCubeAnimator.Model;
 using LedCubeAnimator.Model.Animations.Data;
 using System.ComponentModel;
+using System.Windows;
+using System.Windows.Media.Media3D;
 using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 
 namespace LedCubeAnimator.ViewModel.DataViewModels
@@ -97,6 +99,36 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
                 changedViewModel = this;
                 RaisePropertyChanged(changedProperty);
             }
+        }
+
+        protected Point GetNewValue(Point newValue, Point oldValue)
+        {
+            return new Point(
+                double.IsNaN(newValue.X) ? oldValue.X : newValue.X,
+                double.IsNaN(newValue.Y) ? oldValue.Y : newValue.Y);
+        }
+
+        protected Vector GetNewValue(Vector newValue, Vector oldValue)
+        {
+            return new Vector(
+                double.IsNaN(newValue.X) ? oldValue.X : newValue.X,
+                double.IsNaN(newValue.Y) ? oldValue.Y : newValue.Y);
+        }
+
+        protected Point3D GetNewValue(Point3D newValue, Point3D oldValue)
+        {
+            return new Point3D(
+                double.IsNaN(newValue.X) ? oldValue.X : newValue.X,
+                double.IsNaN(newValue.Y) ? oldValue.Y : newValue.Y,
+                double.IsNaN(newValue.Z) ? oldValue.Z : newValue.Z);
+        }
+
+        protected Vector3D GetNewValue(Vector3D newValue, Vector3D oldValue)
+        {
+            return new Vector3D(
+                double.IsNaN(newValue.X) ? oldValue.X : newValue.X,
+                double.IsNaN(newValue.Y) ? oldValue.Y : newValue.Y,
+                double.IsNaN(newValue.Z) ? oldValue.Z : newValue.Z);
         }
     }
 }

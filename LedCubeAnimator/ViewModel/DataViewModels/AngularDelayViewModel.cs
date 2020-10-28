@@ -27,7 +27,7 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
         public Point Center
         {
             get => AngularDelay.Center;
-            set => Model.SetTileProperty(AngularDelay, nameof(AngularDelay.Center), value);
+            set => Model.SetTileProperty(AngularDelay, nameof(AngularDelay.Center), GetNewValue(value, AngularDelay.Center));
         }
 
         [Category("AngularDelay")]

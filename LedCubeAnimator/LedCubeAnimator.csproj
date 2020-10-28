@@ -98,6 +98,10 @@
     <Compile Include="ViewModel\UserControlViewModels\TimelineViewModel.cs" />
     <Compile Include="ViewModel\ViewModelFactory.cs" />
     <Compile Include="View\Converters\ColorToValueConverter.cs" />
+    <Compile Include="View\Converters\Point3DToDoubleConverter.cs" />
+    <Compile Include="View\Converters\PointToDoubleConverter.cs" />
+    <Compile Include="View\Converters\Vector3DToDoubleConverter.cs" />
+    <Compile Include="View\Converters\VectorToDoubleConverter.cs" />
     <Compile Include="View\IViewFactory.cs" />
     <Compile Include="View\UserControls\ColorPickerControl.xaml.cs">
       <DependentUpon>ColorPickerControl.xaml</DependentUpon>

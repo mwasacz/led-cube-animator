@@ -24,7 +24,7 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
         public Point3D Offset
         {
             get => Frame.Offset;
-            set => Model.SetTileProperty(Frame, nameof(Frame.Offset), value);
+            set => Model.SetTileProperty(Frame, nameof(Frame.Offset), GetNewValue(value, Frame.Offset));
         }
 
         [Category("Frame")]
@@ -32,7 +32,11 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
         public Vector3D Size
         {
             get => new Vector3D(Frame.Voxels.GetLength(0), Frame.Voxels.GetLength(1), Frame.Voxels.GetLength(2));
-            set => Model.SetTileProperty(Frame, nameof(Frame.Voxels), new Color[(int)value.X, (int)value.Y, (int)value.Z]);
+            set
+            {
+                var size = GetNewValue(value, Size);
+                Model.SetTileProperty(Frame, nameof(Frame.Voxels), new Color[(int)size.X, (int)size.Y, (int)size.Z]);
+            }
         }
 
         public override void ModelPropertyChanged(object obj, string propertyName, out TileViewModel changedViewModel, out string changedProperty)

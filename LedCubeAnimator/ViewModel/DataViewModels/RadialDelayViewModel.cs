@@ -27,7 +27,7 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
         public Point Center
         {
             get => RadialDelay.Center;
-            set => Model.SetTileProperty(RadialDelay, nameof(RadialDelay.Center), value);
+            set => Model.SetTileProperty(RadialDelay, nameof(RadialDelay.Center), GetNewValue(value, RadialDelay.Center));
         }
 
         public override void ModelPropertyChanged(object obj, string propertyName, out TileViewModel changedViewModel, out string changedProperty)

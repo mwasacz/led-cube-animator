@@ -19,7 +19,7 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
         public Point3D Center
         {
             get => SphericalDelay.Center;
-            set => Model.SetTileProperty(SphericalDelay, nameof(SphericalDelay.Center), value);
+            set => Model.SetTileProperty(SphericalDelay, nameof(SphericalDelay.Center), GetNewValue(value, SphericalDelay.Center));
         }
 
         public override void ModelPropertyChanged(object obj, string propertyName, out TileViewModel changedViewModel, out string changedProperty)
