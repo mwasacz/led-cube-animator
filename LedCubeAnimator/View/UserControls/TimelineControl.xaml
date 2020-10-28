@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              xmlns:converters="clr-namespace:LedCubeAnimator.View.Converters"
-             xmlns:sys="clr-namespace:System;assembly=System.Runtime"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
              mc:Ignorable="d">
     <UserControl.Resources>
         <converters:IntToDateTimeConverter x:Key="IntToDateTimeConverter" />
@@ -21,7 +21,7 @@
                                 Width="50"
                                 VerticalAlignment="Bottom"
                                 HorizontalAlignment="Center"
-                                Value="{Binding Time}"
+                                Value="{Binding Shared.Time}"
                                 Minimum="{Binding StartDate}"
                                 Maximum="{Binding EndDate}" />
             <ListBox ItemsSource="{Binding Groups}"
@@ -66,7 +66,7 @@
             </ListBox.ItemContainerStyle>
         </ListBox>
         <Slider TickPlacement="TopLeft"
-                Value="{Binding Time}"
+                Value="{Binding Shared.Time}"
                 Minimum="{Binding StartDate, Converter={StaticResource IntToDoubleConverter}, ConverterParameter={StaticResource StartSliderCorrection}}"
                 Maximum="{Binding EndDate, Converter={StaticResource IntToDoubleConverter}, ConverterParameter={StaticResource EndSliderCorrection}}" />
     </StackPanel>

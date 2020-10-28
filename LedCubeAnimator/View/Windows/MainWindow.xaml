@@ -213,7 +213,8 @@
                                                    Title="3D View"
                                                    CanDockAsTabbedDocument="False"
                                                    CanAutoHide="False">
-                                <controls:Cube3DControl Frame="{Binding Frame}"
+                                <controls:Cube3DControl DataContext="{Binding Cube3DViewModel}"
+                                                        Frame="{Binding Frame}"
                                                         Command="{Binding VoxelClickCommand}" />
                             </dock:LayoutAnchorable>
                         </dock:LayoutAnchorablePane>
@@ -222,7 +223,7 @@
                                                    Title="Timeline"
                                                    CanDockAsTabbedDocument="False"
                                                    AutoHideWidth="300">
-                                <controls:TimelineControl />
+                                <controls:TimelineControl DataContext="{Binding TimelineViewModel}" />
                             </dock:LayoutAnchorable>
                         </dock:LayoutAnchorablePane>
                     </dock:LayoutAnchorablePaneGroup>
@@ -232,7 +233,7 @@
                                                    Title="Colors"
                                                    CanDockAsTabbedDocument="False"
                                                    AutoHideWidth="300">
-                                <controls:ColorPickerControl />
+                                <controls:ColorPickerControl DataContext="{Binding ColorPickerViewModel}" />
                             </dock:LayoutAnchorable>
                         </dock:LayoutAnchorablePane>
                         <dock:LayoutAnchorablePane>
@@ -240,7 +241,7 @@
                                                    Title="Properties"
                                                    CanDockAsTabbedDocument="False"
                                                    AutoHideWidth="300">
-                                <controls:PropertyControl />
+                                <controls:PropertyControl DataContext="{Binding PropertyViewModel}" />
                             </dock:LayoutAnchorable>
                         </dock:LayoutAnchorablePane>
                     </dock:LayoutAnchorablePaneGroup>

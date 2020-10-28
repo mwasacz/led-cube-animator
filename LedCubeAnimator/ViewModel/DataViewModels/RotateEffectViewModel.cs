@@ -9,9 +9,10 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
     [CategoryOrder("RotateEffect", 3)]
     public class RotateEffectViewModel : TransformEffectViewModel
     {
-        public RotateEffectViewModel(RotateEffect rotateEffect, IModelManager model) : base(rotateEffect, model) { }
+        public RotateEffectViewModel(RotateEffect rotateEffect, IModelManager model, GroupViewModel parent) : base(rotateEffect, model, parent) { }
 
-        public RotateEffect RotateEffect => (RotateEffect)TransformEffect;
+        [Browsable(false)]
+        public RotateEffect RotateEffect => (RotateEffect)Tile;
 
         [Category("RotateEffect")]
         [PropertyOrder(0)]
@@ -29,17 +30,24 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
             set => Model.SetTileProperty(RotateEffect, nameof(RotateEffect.Center), value);
         }
 
-        public override void ModelPropertyChanged(string propertyName)
+        public override void ModelPropertyChanged(object obj, string propertyName, out TileViewModel changedViewModel, out string changedProperty)
         {
-            base.ModelPropertyChanged(propertyName);
-            switch (propertyName)
+            base.ModelPropertyChanged(obj, propertyName, out changedViewModel, out changedProperty);
+            if (obj == RotateEffect)
             {
-                case nameof(RotateEffect.Axis):
-                    RaisePropertyChanged(nameof(Axis));
-                    break;
-                case nameof(RotateEffect.Center):
-                    RaisePropertyChanged(nameof(Center));
-                    break;
+                switch (propertyName)
+                {
+                    case nameof(RotateEffect.Axis):
+                        changedProperty = nameof(Axis);
+                        break;
+                    case nameof(RotateEffect.Center):
+                        changedProperty = nameof(Center);
+                        break;
+                    default:
+                        return;
+                }
+                changedViewModel = this;
+                RaisePropertyChanged(changedProperty);
             }
         }
     }

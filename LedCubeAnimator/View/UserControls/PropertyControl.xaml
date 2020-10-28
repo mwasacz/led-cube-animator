@@ -6,38 +6,12 @@
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              mc:Ignorable="d">
     <StackPanel>
-        <xctk:PropertyGrid SelectedObject="{Binding SelectedTileOrGroup}"
-                           SelectedProperty="{Binding SelectedProperty, Mode=TwoWay}"
-                           AutoGenerateProperties="False"
+        <xctk:PropertyGrid SelectedObject="{Binding Shared.SelectedTile}"
+                           SelectedProperty="{Binding Shared.SelectedProperty, Mode=TwoWay}"
                            ShowSortOptions="False"
                            ShowSearchBox="False"
                            ShowSummary="False"
                            NameColumnWidth="120">
-            <xctk:PropertyGrid.PropertyDefinitions>
-                <xctk:PropertyDefinition TargetProperties="Name" />
-                <xctk:PropertyDefinition TargetProperties="Start" />
-                <xctk:PropertyDefinition TargetProperties="End" />
-                <xctk:PropertyDefinition TargetProperties="Channel" />
-                <xctk:PropertyDefinition TargetProperties="Hierarchy" />
-                <xctk:PropertyDefinition TargetProperties="VoxelsProperty" />
-                <xctk:PropertyDefinition TargetProperties="Offset" />
-                <xctk:PropertyDefinition TargetProperties="Size" />
-                <xctk:PropertyDefinition TargetProperties="From" />
-                <xctk:PropertyDefinition TargetProperties="To" />
-                <xctk:PropertyDefinition TargetProperties="ColorInterpolation" />
-                <xctk:PropertyDefinition TargetProperties="TimeInterpolation" />
-                <xctk:PropertyDefinition TargetProperties="RepeatCount" />
-                <xctk:PropertyDefinition TargetProperties="Reverse" />
-                <xctk:PropertyDefinition TargetProperties="ChildrenProperty" />
-                <xctk:PropertyDefinition TargetProperties="ColorBlendMode" />
-                <xctk:PropertyDefinition TargetProperties="Round" />
-                <xctk:PropertyDefinition TargetProperties="Axis" />
-                <xctk:PropertyDefinition TargetProperties="Plane" />
-                <xctk:PropertyDefinition TargetProperties="Center" />
-                <xctk:PropertyDefinition TargetProperties="Value" />
-                <xctk:PropertyDefinition TargetProperties="WrapAround" />
-                <xctk:PropertyDefinition TargetProperties="StartAngle" />
-            </xctk:PropertyGrid.PropertyDefinitions>
             <xctk:PropertyGrid.EditorDefinitions>
                 <xctk:EditorTemplateDefinition>
                     <xctk:EditorTemplateDefinition.TargetProperties>

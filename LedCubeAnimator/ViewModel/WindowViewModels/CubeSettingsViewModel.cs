@@ -1,5 +1,6 @@
 ﻿using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
+using LedCubeAnimator.Model;
 using LedCubeAnimator.Model.Animations.Data;
 using MvvmDialogs;
 using System.Windows.Input;
@@ -9,6 +10,17 @@ namespace LedCubeAnimator.ViewModel.WindowViewModels
 {
     public class CubeSettingsViewModel : ViewModelBase, IModalDialogViewModel
     {
+        public CubeSettingsViewModel(IModelManager model)
+        {
+            Model = model;
+            Size = Model.Animation.Size;
+            ColorMode = Model.Animation.ColorMode;
+            MonoColor = Model.Animation.MonoColor;
+            FrameDuration = Model.Animation.FrameDuration;
+        }
+
+        public IModelManager Model { get; }
+
         private int _size;
         public int Size
         {
@@ -45,16 +57,20 @@ namespace LedCubeAnimator.ViewModel.WindowViewModels
         }
 
         private RelayCommand _okCommand;
-        public ICommand OkCommand => _okCommand ?? (_okCommand = new RelayCommand(() =>
-        {
-            DialogResult = true;
-        }));
+        public ICommand OkCommand => _okCommand ?? (_okCommand = new RelayCommand(() => DialogResult = true));
 
         private bool? _dialogResult;
         public bool? DialogResult
         {
             get => _dialogResult;
-            set => Set(ref _dialogResult, value);
+            set
+            {
+                if (value == true)
+                {
+                    Model.SetAnimationProperties(Size, ColorMode, MonoColor, FrameDuration);
+                }
+                Set(ref _dialogResult, value);
+            }
         }
     }
 }

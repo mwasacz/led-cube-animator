@@ -15,32 +15,32 @@ namespace LedCubeAnimator.ViewModel
 
         private readonly IModelManager _manager;
         
-        public INotifyPropertyChanged Create(object model)
+        public INotifyPropertyChanged Create(object model, params object[] args)
         {
             switch (model)
             {
                 case Frame frame:
-                    return new FrameViewModel(frame, _manager);
+                    return new FrameViewModel(frame, _manager, (GroupViewModel)args[0]);
                 case Group group:
-                    return new GroupViewModel(group, _manager);
+                    return new GroupViewModel(group, _manager, (GroupViewModel)args[0], this);
                 case GradientEffect gradientEffect:
-                    return new GradientEffectViewModel(gradientEffect, _manager);
+                    return new GradientEffectViewModel(gradientEffect, _manager, (GroupViewModel)args[0]);
                 case MoveEffect moveEffect:
-                    return new MoveEffectViewModel(moveEffect, _manager);
+                    return new MoveEffectViewModel(moveEffect, _manager, (GroupViewModel)args[0]);
                 case RotateEffect rotateEffect:
-                    return new RotateEffectViewModel(rotateEffect, _manager);
+                    return new RotateEffectViewModel(rotateEffect, _manager, (GroupViewModel)args[0]);
                 case ScaleEffect scaleEffect:
-                    return new ScaleEffectViewModel(scaleEffect, _manager);
+                    return new ScaleEffectViewModel(scaleEffect, _manager, (GroupViewModel)args[0]);
                 case ShearEffect shearEffect:
-                    return new ShearEffectViewModel(shearEffect, _manager);
+                    return new ShearEffectViewModel(shearEffect, _manager, (GroupViewModel)args[0]);
                 case LinearDelay linearDelay:
-                    return new LinearDelayViewModel(linearDelay, _manager);
+                    return new LinearDelayViewModel(linearDelay, _manager, (GroupViewModel)args[0]);
                 case RadialDelay radialDelay:
-                    return new RadialDelayViewModel(radialDelay, _manager);
+                    return new RadialDelayViewModel(radialDelay, _manager, (GroupViewModel)args[0]);
                 case SphericalDelay sphericalDelay:
-                    return new SphericalDelayViewModel(sphericalDelay, _manager);
+                    return new SphericalDelayViewModel(sphericalDelay, _manager, (GroupViewModel)args[0]);
                 case AngularDelay angularDelay:
-                    return new AngularDelayViewModel(angularDelay, _manager);
+                    return new AngularDelayViewModel(angularDelay, _manager, (GroupViewModel)args[0]);
                 default:
                     throw new ArgumentException("Could not find suitable viewModel for this type of model", "model");
             }

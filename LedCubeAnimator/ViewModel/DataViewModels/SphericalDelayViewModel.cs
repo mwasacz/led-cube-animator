@@ -9,9 +9,10 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
     [CategoryOrder("SphericalDelay", 2)]
     public class SphericalDelayViewModel : DelayViewModel
     {
-        public SphericalDelayViewModel(SphericalDelay sphericalDelay, IModelManager model) : base(sphericalDelay, model) { }
+        public SphericalDelayViewModel(SphericalDelay sphericalDelay, IModelManager model, GroupViewModel parent) : base(sphericalDelay, model, parent) { }
 
-        public SphericalDelay SphericalDelay => (SphericalDelay)Delay;
+        [Browsable(false)]
+        public SphericalDelay SphericalDelay => (SphericalDelay)Tile;
 
         [Category("SphericalDelay")]
         [PropertyOrder(0)]
@@ -21,14 +22,21 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
             set => Model.SetTileProperty(SphericalDelay, nameof(SphericalDelay.Center), value);
         }
 
-        public override void ModelPropertyChanged(string propertyName)
+        public override void ModelPropertyChanged(object obj, string propertyName, out TileViewModel changedViewModel, out string changedProperty)
         {
-            base.ModelPropertyChanged(propertyName);
-            switch (propertyName)
+            base.ModelPropertyChanged(obj, propertyName, out changedViewModel, out changedProperty);
+            if (obj == SphericalDelay)
             {
-                case nameof(SphericalDelay.Center):
-                    RaisePropertyChanged(nameof(Center));
-                    break;
+                switch (propertyName)
+                {
+                    case nameof(SphericalDelay.Center):
+                        changedProperty = nameof(Center);
+                        break;
+                    default:
+                        return;
+                }
+                changedViewModel = this;
+                RaisePropertyChanged(changedProperty);
             }
         }
     }

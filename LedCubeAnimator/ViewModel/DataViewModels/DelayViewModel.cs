@@ -8,8 +8,9 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
     [CategoryOrder("Delay", 1)]
     public class DelayViewModel : TileViewModel
     {
-        public DelayViewModel(Delay delay, IModelManager model) : base(delay, model) { }
+        public DelayViewModel(Delay delay, IModelManager model, GroupViewModel parent) : base(delay, model, parent) { }
 
+        [Browsable(false)]
         public Delay Delay => (Delay)Tile;
 
         [Category("Delay")]
@@ -28,17 +29,24 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
             set => Model.SetTileProperty(Delay, nameof(Delay.WrapAround), value);
         }
 
-        public override void ModelPropertyChanged(string propertyName)
+        public override void ModelPropertyChanged(object obj, string propertyName, out TileViewModel changedViewModel, out string changedProperty)
         {
-            base.ModelPropertyChanged(propertyName);
-            switch (propertyName)
+            base.ModelPropertyChanged(obj, propertyName, out changedViewModel, out changedProperty);
+            if (obj == Delay)
             {
-                case nameof(Delay.Value):
-                    RaisePropertyChanged(nameof(Value));
-                    break;
-                case nameof(Delay.WrapAround):
-                    RaisePropertyChanged(nameof(WrapAround));
-                    break;
+                switch (propertyName)
+                {
+                    case nameof(Delay.Value):
+                        changedProperty = nameof(Value);
+                        break;
+                    case nameof(Delay.WrapAround):
+                        changedProperty = nameof(WrapAround);
+                        break;
+                    default:
+                        return;
+                }
+                changedViewModel = this;
+                RaisePropertyChanged(changedProperty);
             }
         }
     }

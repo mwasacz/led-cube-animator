@@ -8,9 +8,10 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
     [CategoryOrder("LinearDelay", 2)]
     public class LinearDelayViewModel : DelayViewModel
     {
-        public LinearDelayViewModel(LinearDelay linearDelay, IModelManager model) : base(linearDelay, model) { }
+        public LinearDelayViewModel(LinearDelay linearDelay, IModelManager model, GroupViewModel parent) : base(linearDelay, model, parent) { }
 
-        public LinearDelay LinearDelay => (LinearDelay)Delay;
+        [Browsable(false)]
+        public LinearDelay LinearDelay => (LinearDelay)Tile;
 
         [Category("LinearDelay")]
         [PropertyOrder(0)]
@@ -28,17 +29,24 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
             set => Model.SetTileProperty(LinearDelay, nameof(LinearDelay.Center), value);
         }
 
-        public override void ModelPropertyChanged(string propertyName)
+        public override void ModelPropertyChanged(object obj, string propertyName, out TileViewModel changedViewModel, out string changedProperty)
         {
-            base.ModelPropertyChanged(propertyName);
-            switch (propertyName)
+            base.ModelPropertyChanged(obj, propertyName, out changedViewModel, out changedProperty);
+            if (obj == LinearDelay)
             {
-                case nameof(LinearDelay.Axis):
-                    RaisePropertyChanged(nameof(Axis));
-                    break;
-                case nameof(LinearDelay.Center):
-                    RaisePropertyChanged(nameof(Center));
-                    break;
+                switch (propertyName)
+                {
+                    case nameof(LinearDelay.Axis):
+                        changedProperty = nameof(Axis);
+                        break;
+                    case nameof(LinearDelay.Center):
+                        changedProperty = nameof(Center);
+                        break;
+                    default:
+                        return;
+                }
+                changedViewModel = this;
+                RaisePropertyChanged(changedProperty);
             }
         }
     }

@@ -89,7 +89,13 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ViewModel\ColorClickedEventArgs.cs" />
+    <Compile Include="ViewModel\ISharedViewModel.cs" />
     <Compile Include="ViewModel\IViewModelFactory.cs" />
+    <Compile Include="ViewModel\UserControlViewModels\ColorPickerViewModel.cs" />
+    <Compile Include="ViewModel\UserControlViewModels\Cube3DViewModel.cs" />
+    <Compile Include="ViewModel\UserControlViewModels\PropertyViewModel.cs" />
+    <Compile Include="ViewModel\UserControlViewModels\TimelineViewModel.cs" />
     <Compile Include="ViewModel\ViewModelFactory.cs" />
     <Compile Include="View\Converters\ColorToValueConverter.cs" />
     <Compile Include="View\IViewFactory.cs" />
