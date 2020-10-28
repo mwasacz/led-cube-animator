@@ -31,6 +31,7 @@ namespace LedCubeAnimator.Model
             _undo.Reset();
             _changedObject = null;
             _changedProperty = null;
+            AnimationChanged?.Invoke(this, EventArgs.Empty);
         }
 
         public bool Open(string path)
@@ -43,6 +44,7 @@ namespace LedCubeAnimator.Model
                 _undo.Reset();
                 _changedObject = null;
                 _changedProperty = null;
+                AnimationChanged?.Invoke(this, EventArgs.Empty);
                 return true;
             }
             return false;
@@ -142,6 +144,8 @@ namespace LedCubeAnimator.Model
         }
 
         public event EventHandler<PropertiesChangedEventArgs> PropertiesChanged;
+
+        public event EventHandler AnimationChanged;
 
         private void Undo_ActionExecuted(object sender, ActionExecutedEventArgs e)
         {

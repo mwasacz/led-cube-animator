@@ -4,6 +4,6 @@ namespace LedCubeAnimator.ViewModel
 {
     public interface IViewModelFactory
     {
-        INotifyPropertyChanged Create(object model);
+        INotifyPropertyChanged Create(object model, params object[] args);
     }
 }

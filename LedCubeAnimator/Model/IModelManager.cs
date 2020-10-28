@@ -27,6 +27,7 @@ namespace LedCubeAnimator.Model
         void RemoveTile(Group group, Tile oldTile);
         void SetVoxel(Frame frame, Color newColor, params int[] indices);
 
+        event EventHandler AnimationChanged;
         event EventHandler<PropertiesChangedEventArgs> PropertiesChanged;
     }
 }

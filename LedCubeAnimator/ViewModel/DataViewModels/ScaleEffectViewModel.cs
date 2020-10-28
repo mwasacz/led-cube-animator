@@ -8,9 +8,10 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
     [CategoryOrder("ScaleEffect", 3)]
     public class ScaleEffectViewModel : TransformEffectViewModel
     {
-        public ScaleEffectViewModel(ScaleEffect scaleEffect, IModelManager model) : base(scaleEffect, model) { }
+        public ScaleEffectViewModel(ScaleEffect scaleEffect, IModelManager model, GroupViewModel parent) : base(scaleEffect, model, parent) { }
 
-        public ScaleEffect ScaleEffect => (ScaleEffect)TransformEffect;
+        [Browsable(false)]
+        public ScaleEffect ScaleEffect => (ScaleEffect)Tile;
 
         [Category("ScaleEffect")]
         [PropertyOrder(0)]
@@ -28,17 +29,24 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
             set => Model.SetTileProperty(ScaleEffect, nameof(ScaleEffect.Center), value);
         }
 
-        public override void ModelPropertyChanged(string propertyName)
+        public override void ModelPropertyChanged(object obj, string propertyName, out TileViewModel changedViewModel, out string changedProperty)
         {
-            base.ModelPropertyChanged(propertyName);
-            switch (propertyName)
+            base.ModelPropertyChanged(obj, propertyName, out changedViewModel, out changedProperty);
+            if (obj == ScaleEffect)
             {
-                case nameof(ScaleEffect.Axis):
-                    RaisePropertyChanged(nameof(Axis));
-                    break;
-                case nameof(ScaleEffect.Center):
-                    RaisePropertyChanged(nameof(Center));
-                    break;
+                switch (propertyName)
+                {
+                    case nameof(ScaleEffect.Axis):
+                        changedProperty = nameof(Axis);
+                        break;
+                    case nameof(ScaleEffect.Center):
+                        changedProperty = nameof(Center);
+                        break;
+                    default:
+                        return;
+                }
+                changedViewModel = this;
+                RaisePropertyChanged(changedProperty);
             }
         }
     }

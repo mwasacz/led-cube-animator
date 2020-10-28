@@ -8,8 +8,9 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
     [CategoryOrder("Effect", 1)]
     public abstract class EffectViewModel : TileViewModel
     {
-        public EffectViewModel(Effect effect, IModelManager model) : base(effect, model) { }
+        public EffectViewModel(Effect effect, IModelManager model, GroupViewModel parent) : base(effect, model, parent) { }
 
+        [Browsable(false)]
         public Effect Effect => (Effect)Tile;
 
         [Category("Effect")]
@@ -36,20 +37,27 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
             set => Model.SetTileProperty(Effect, nameof(Effect.TimeInterpolation), value);
         }
 
-        public override void ModelPropertyChanged(string propertyName)
+        public override void ModelPropertyChanged(object obj, string propertyName, out TileViewModel changedViewModel, out string changedProperty)
         {
-            base.ModelPropertyChanged(propertyName);
-            switch (propertyName)
+            base.ModelPropertyChanged(obj, propertyName, out changedViewModel, out changedProperty);
+            if (obj == Effect)
             {
-                case nameof(Effect.Reverse):
-                    RaisePropertyChanged(nameof(Reverse));
-                    break;
-                case nameof(Effect.RepeatCount):
-                    RaisePropertyChanged(nameof(RepeatCount));
-                    break;
-                case nameof(Effect.TimeInterpolation):
-                    RaisePropertyChanged(nameof(TimeInterpolation));
-                    break;
+                switch (propertyName)
+                {
+                    case nameof(Effect.Reverse):
+                        changedProperty = nameof(Reverse);
+                        break;
+                    case nameof(Effect.RepeatCount):
+                        changedProperty = nameof(RepeatCount);
+                        break;
+                    case nameof(Effect.TimeInterpolation):
+                        changedProperty = nameof(TimeInterpolation);
+                        break;
+                    default:
+                        return;
+                }
+                changedViewModel = this;
+                RaisePropertyChanged(changedProperty);
             }
         }
     }

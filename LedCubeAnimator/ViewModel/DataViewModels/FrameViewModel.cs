@@ -10,9 +10,14 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
     [CategoryOrder("Frame", 1)]
     public class FrameViewModel : TileViewModel
     {
-        public FrameViewModel(Frame frame, IModelManager model) : base(frame, model) { }
+        public FrameViewModel(Frame frame, IModelManager model, GroupViewModel parent) : base(frame, model, parent) { }
 
+        [Browsable(false)]
         public Frame Frame => (Frame)Tile;
+
+        [Category("Frame")]
+        [PropertyOrder(0)]
+        public object Voxels { get; }
 
         [Category("Frame")]
         [PropertyOrder(1)]
@@ -30,25 +35,25 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
             set => Model.SetTileProperty(Frame, nameof(Frame.Voxels), new Color[(int)value.X, (int)value.Y, (int)value.Z]);
         }
 
-        [Category("Frame")]
-        [DisplayName("Voxels")]
-        [PropertyOrder(0)]
-        public object VoxelsProperty { get; }
-
-        public Color[,,] Voxels => Frame.Voxels;
-
-        public override void ModelPropertyChanged(string propertyName)
+        public override void ModelPropertyChanged(object obj, string propertyName, out TileViewModel changedViewModel, out string changedProperty)
         {
-            base.ModelPropertyChanged(propertyName);
-            switch (propertyName)
+            base.ModelPropertyChanged(obj, propertyName, out changedViewModel, out changedProperty);
+            if (obj == Frame)
             {
-                case nameof(Frame.Offset):
-                    RaisePropertyChanged(nameof(Offset));
-                    break;
-                case nameof(Frame.Voxels):
-                    RaisePropertyChanged(nameof(Size)); // ToDo
-                    RaisePropertyChanged(nameof(Voxels));
-                    break;
+                switch (propertyName)
+                {
+                    case nameof(Frame.Offset):
+                        changedProperty = nameof(Offset);
+                        break;
+                    case nameof(Frame.Voxels):
+                        RaisePropertyChanged(nameof(Size)); // ToDo
+                        changedProperty = nameof(Voxels);
+                        break;
+                    default:
+                        return;
+                }
+                changedViewModel = this;
+                RaisePropertyChanged(changedProperty);
             }
         }
     }

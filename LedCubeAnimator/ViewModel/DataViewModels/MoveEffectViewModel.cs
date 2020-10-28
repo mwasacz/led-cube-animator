@@ -8,9 +8,10 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
     [CategoryOrder("MoveEffect", 3)]
     public class MoveEffectViewModel : TransformEffectViewModel
     {
-        public MoveEffectViewModel(MoveEffect moveEffect, IModelManager model) : base(moveEffect, model) { }
+        public MoveEffectViewModel(MoveEffect moveEffect, IModelManager model, GroupViewModel parent) : base(moveEffect, model, parent) { }
 
-        public MoveEffect MoveEffect => (MoveEffect)TransformEffect;
+        [Browsable(false)]
+        public MoveEffect MoveEffect => (MoveEffect)Tile;
 
         [Category("MoveEffect")]
         [PropertyOrder(0)]
@@ -20,14 +21,21 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
             set => Model.SetTileProperty(MoveEffect, nameof(MoveEffect.Axis), value);
         }
 
-        public override void ModelPropertyChanged(string propertyName)
+        public override void ModelPropertyChanged(object obj, string propertyName, out TileViewModel changedViewModel, out string changedProperty)
         {
-            base.ModelPropertyChanged(propertyName);
-            switch (propertyName)
+            base.ModelPropertyChanged(obj, propertyName, out changedViewModel, out changedProperty);
+            if (obj == MoveEffect)
             {
-                case nameof(MoveEffect.Axis):
-                    RaisePropertyChanged(nameof(Axis));
-                    break;
+                switch (propertyName)
+                {
+                    case nameof(MoveEffect.Axis):
+                        changedProperty = nameof(Axis);
+                        break;
+                    default:
+                        return;
+                }
+                changedViewModel = this;
+                RaisePropertyChanged(changedProperty);
             }
         }
     }

@@ -1,0 +1,94 @@
+﻿<UserControl x:Class="LedCubeAnimator.View.UserControls.PropertyControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             mc:Ignorable="d">
+    <StackPanel>
+        <xctk:PropertyGrid SelectedObject="{Binding Shared.SelectedTile}"
+                           SelectedProperty="{Binding Shared.SelectedProperty, Mode=TwoWay}"
+                           ShowSortOptions="False"
+                           ShowSearchBox="False"
+                           ShowSummary="False"
+                           NameColumnWidth="120">
+            <xctk:PropertyGrid.EditorDefinitions>
+                <xctk:EditorTemplateDefinition>
+                    <xctk:EditorTemplateDefinition.TargetProperties>
+                        <xctk:TargetPropertyType Type="{x:Type Color}" />
+                    </xctk:EditorTemplateDefinition.TargetProperties>
+                    <xctk:EditorTemplateDefinition.EditingTemplate>
+                        <DataTemplate>
+                            <xctk:ColorPicker ShowAvailableColors="False"
+                                              ShowRecentColors="False"
+                                              ShowStandardColors="False"
+                                              ShowTabHeaders="False"
+                                              ColorMode="ColorCanvas"
+                                              UsingAlphaChannel="False"
+                                              SelectedColor="{Binding Value}" />
+                        </DataTemplate>
+                    </xctk:EditorTemplateDefinition.EditingTemplate>
+                </xctk:EditorTemplateDefinition>
+                <xctk:EditorTemplateDefinition>
+                    <xctk:EditorTemplateDefinition.TargetProperties>
+                        <xctk:TargetPropertyType Type="{x:Type Point}" />
+                        <xctk:TargetPropertyType Type="{x:Type Vector}" />
+                    </xctk:EditorTemplateDefinition.TargetProperties>
+                    <xctk:EditorTemplateDefinition.EditingTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition />
+                                    <ColumnDefinition Width="1" />
+                                    <ColumnDefinition />
+                                </Grid.ColumnDefinitions>
+                                <xctk:PropertyGridEditorDoubleUpDown Grid.Column="0"
+                                                                     Value="{Binding Value.X}"
+                                                                     TextAlignment="Left" />
+                                <Rectangle Grid.Column="1"
+                                           Fill="#F0F0F0" />
+                                <xctk:PropertyGridEditorDoubleUpDown Grid.Column="2"
+                                                                     Value="{Binding Value.Y}"
+                                                                     TextAlignment="Left" />
+                            </Grid>
+                        </DataTemplate>
+                    </xctk:EditorTemplateDefinition.EditingTemplate>
+                </xctk:EditorTemplateDefinition>
+                <xctk:EditorTemplateDefinition>
+                    <xctk:EditorTemplateDefinition.TargetProperties>
+                        <xctk:TargetPropertyType Type="{x:Type Point3D}" />
+                        <xctk:TargetPropertyType Type="{x:Type Vector3D}" />
+                    </xctk:EditorTemplateDefinition.TargetProperties>
+                    <xctk:EditorTemplateDefinition.EditingTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition />
+                                    <ColumnDefinition Width="1" />
+                                    <ColumnDefinition />
+                                    <ColumnDefinition Width="1" />
+                                    <ColumnDefinition />
+                                </Grid.ColumnDefinitions>
+                                <xctk:PropertyGridEditorDoubleUpDown Grid.Column="0"
+                                                                     Value="{Binding Value.X}"
+                                                                     TextAlignment="Left" />
+                                <Rectangle Grid.Column="1"
+                                           Fill="#F0F0F0" />
+                                <xctk:PropertyGridEditorDoubleUpDown Grid.Column="2"
+                                                                     Value="{Binding Value.Y}"
+                                                                     TextAlignment="Left" />
+                                <Rectangle Grid.Column="3"
+                                           Fill="#F0F0F0" />
+                                <xctk:PropertyGridEditorDoubleUpDown Grid.Column="4"
+                                                                     Value="{Binding Value.Z}"
+                                                                     TextAlignment="Left" />
+                            </Grid>
+                        </DataTemplate>
+                    </xctk:EditorTemplateDefinition.EditingTemplate>
+                </xctk:EditorTemplateDefinition>
+            </xctk:PropertyGrid.EditorDefinitions>
+        </xctk:PropertyGrid>
+        <Button Content="Delete tile"
+                Command="{Binding RemoveTileCommand}" />
+    </StackPanel>
+</UserControl>
