@@ -29,6 +29,14 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
             set => Model.SetTileProperty(Delay, nameof(Delay.WrapAround), value);
         }
 
+        [Category("Delay")]
+        [PropertyOrder(2)]
+        public bool Static
+        {
+            get => Delay.Static;
+            set => Model.SetTileProperty(Delay, nameof(Delay.Static), value);
+        }
+
         public override void ModelPropertyChanged(object obj, string propertyName, out TileViewModel changedViewModel, out string changedProperty)
         {
             base.ModelPropertyChanged(obj, propertyName, out changedViewModel, out changedProperty);
@@ -41,6 +49,9 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
                         break;
                     case nameof(Delay.WrapAround):
                         changedProperty = nameof(WrapAround);
+                        break;
+                    case nameof(Delay.Static):
+                        changedProperty = nameof(Static);
                         break;
                     default:
                         return;
