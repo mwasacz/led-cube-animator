@@ -45,6 +45,7 @@ namespace LedCubeAnimator.ViewModel.WindowViewModels
         public ColorPickerViewModel ColorPickerViewModel { get; }
         public PropertyViewModel PropertyViewModel { get; }
 
+        private bool _unsavedChanges;
         private GroupViewModel _mainGroup;
 
         private TileViewModel _selectedTile;
@@ -185,62 +186,46 @@ namespace LedCubeAnimator.ViewModel.WindowViewModels
         private RelayCommand _newCommand;
         public ICommand NewCommand => _newCommand ?? (_newCommand = new RelayCommand(() =>
         {
-            var result = _dialogService.ShowMessageBox(this, "Save changes?", "Unsaved changes", MessageBoxButton.YesNoCancel, MessageBoxImage.Warning);
-            switch (result)
+            if (ChangesSaved())
             {
-                case MessageBoxResult.Yes:
-                    SaveCommand.Execute(null);
-                    Model.New();
-                    break;
-                case MessageBoxResult.No:
-                    Model.New();
-                    break;
+                Model.New();
+
+                _unsavedChanges = false;
             }
         }));
 
         private RelayCommand _openCommand;
         public ICommand OpenCommand => _openCommand ?? (_openCommand = new RelayCommand(() =>
         {
-            var settings = new OpenFileDialogSettings
+            if (ChangesSaved())
             {
-                Filter = "Animation files (*.json)|*.json|All files (*.*)|*.*"
-            };
-            var result = _dialogService.ShowOpenFileDialog(this, settings);
-            if (result == true && !Model.Open(settings.FileName))
-            {
-                _dialogService.ShowMessageBox(this, "Error occured when opening file", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                var settings = new OpenFileDialogSettings
+                {
+                    Filter = "Animation files (*.json)|*.json|All files (*.*)|*.*"
+                };
+                var result = _dialogService.ShowOpenFileDialog(this, settings);
+                if (result == true && !Model.Open(settings.FileName))
+                {
+                    _dialogService.ShowMessageBox(this, "Error occured when opening file", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+
+                _unsavedChanges = false;
             }
         }));
 
         private RelayCommand _saveCommand;
-        public ICommand SaveCommand => _saveCommand ?? (_saveCommand = new RelayCommand(() =>
-        {
-            if (!Model.Save())
-            {
-                SaveAsCommand.Execute(null);
-            }
-        }));
+        public ICommand SaveCommand => _saveCommand ?? (_saveCommand = new RelayCommand(() => Save()));
 
         private RelayCommand _saveAsCommand;
-        public ICommand SaveAsCommand => _saveAsCommand ?? (_saveAsCommand = new RelayCommand(() =>
-        {
-            var settings = new SaveFileDialogSettings
-            {
-                Filter = "Animation files (*.json)|*.json|All files (*.*)|*.*"
-            };
-            var result = _dialogService.ShowSaveFileDialog(this, settings);
-            if (result == true)
-            {
-                Model.SaveAs(settings.FileName);
-            }
-        }));
+        public ICommand SaveAsCommand => _saveAsCommand ?? (_saveAsCommand = new RelayCommand(() => SaveAs()));
 
         private RelayCommand _exportCommand;
         public ICommand ExportCommand => _exportCommand ?? (_exportCommand = new RelayCommand(() =>
         {
             var settings = new SaveFileDialogSettings
             {
-                Filter = "LED Cube binary files (*.3db)|*.3db|All files (*.*)|*.*"
+                Filter = "LED Cube binary files (*.3db)|*.3db|All files (*.*)|*.*",
+                OverwritePrompt = true
             };
             var result = _dialogService.ShowSaveFileDialog(this, settings);
             if (result == true)
@@ -254,7 +239,8 @@ namespace LedCubeAnimator.ViewModel.WindowViewModels
         {
             var settings = new SaveFileDialogSettings
             {
-                Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*"
+                Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*",
+                OverwritePrompt = true
             };
             var result = _dialogService.ShowSaveFileDialog(this, settings);
             if (result == true)
@@ -284,19 +270,56 @@ namespace LedCubeAnimator.ViewModel.WindowViewModels
         private RelayCommand<CancelEventArgs> _closingCommand;
         public ICommand ClosingCommand => _closingCommand ?? (_closingCommand = new RelayCommand<CancelEventArgs>(e =>
         {
-            var result = _dialogService.ShowMessageBox(this, "Save changes?", "Unsaved changes", MessageBoxButton.YesNoCancel, MessageBoxImage.Warning);
-            switch (result)
+            if (!ChangesSaved())
             {
-                case MessageBoxResult.Yes:
-                    SaveCommand.Execute(null);
-                    break;
-                case MessageBoxResult.No:
-                    break;
-                default:
-                    e.Cancel = true;
-                    break;
+                e.Cancel = true;
             }
         }));
+
+        private bool ChangesSaved()
+        {
+            if (_unsavedChanges)
+            {
+                var result = _dialogService.ShowMessageBox(this, "Save changes?", "Unsaved changes", MessageBoxButton.YesNoCancel, MessageBoxImage.Warning);
+                switch (result)
+                {
+                    case MessageBoxResult.Yes:
+                        return Save();
+                    case MessageBoxResult.No:
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+            return true;
+        }
+
+        private bool Save()
+        {
+            if (Model.Save())
+            {
+                _unsavedChanges = false;
+                return true;
+            }
+            return SaveAs();
+        }
+
+        private bool SaveAs()
+        {
+            var settings = new SaveFileDialogSettings
+            {
+                Filter = "Animation files (*.json)|*.json|All files (*.*)|*.*",
+                OverwritePrompt = true
+            };
+            var result = _dialogService.ShowSaveFileDialog(this, settings);
+            if (result == true)
+            {
+                Model.SaveAs(settings.FileName);
+                _unsavedChanges = false;
+                return true;
+            }
+            return false;
+        }
 
         private GroupViewModel GetCurrentGroup() => SelectedTileExpanded ? (GroupViewModel)SelectedTile : SelectedTile.Parent;
 
@@ -362,6 +385,8 @@ namespace LedCubeAnimator.ViewModel.WindowViewModels
 
             _undoCommand?.RaiseCanExecuteChanged(); // ToDo: raise if necessary or use CommandWpf
             _redoCommand?.RaiseCanExecuteChanged();
+
+            _unsavedChanges = true;
         }
     }
 }
