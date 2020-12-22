@@ -59,6 +59,9 @@
     <Reference Include="HelixToolkit.Wpf, Version=2.12.0.0, Culture=neutral, PublicKeyToken=52aa3500039caf0d, processorArchitecture=MSIL">
       <HintPath>..\packages\HelixToolkit.Wpf.2.12.0\lib\net45\HelixToolkit.Wpf.dll</HintPath>
     </Reference>
+    <Reference Include="Jace, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Jace.1.0.0\lib\netstandard1.6\Jace.dll</HintPath>
+    </Reference>
     <Reference Include="MvvmDialogs, Version=7.1.1.0, Culture=neutral, PublicKeyToken=3d3b9708589bc73e, processorArchitecture=MSIL">
       <HintPath>..\packages\MvvmDialogs.7.1.1\lib\net472\MvvmDialogs.dll</HintPath>
     </Reference>
@@ -89,7 +92,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Model\Animations\Data\CustomTile.cs" />
     <Compile Include="ViewModel\ColorClickedEventArgs.cs" />
+    <Compile Include="ViewModel\DataViewModels\CustomTileViewModel.cs" />
     <Compile Include="ViewModel\ISharedViewModel.cs" />
     <Compile Include="ViewModel\IViewModelFactory.cs" />
     <Compile Include="ViewModel\UserControlViewModels\ColorPickerViewModel.cs" />

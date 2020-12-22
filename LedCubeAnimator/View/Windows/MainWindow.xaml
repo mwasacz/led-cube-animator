@@ -146,6 +146,9 @@
                           Command="{Binding AddSphericalDelayCommand}" />
                 <MenuItem Header="AngularDelay"
                           Command="{Binding AddAngularDelayCommand}" />
+                <Separator />
+                <MenuItem Header="CustomTile"
+                          Command="{Binding AddCustomTileCommand}" />
             </MenuItem>
             <MenuItem Header="Options">
                 <MenuItem Header="Cube settings..."

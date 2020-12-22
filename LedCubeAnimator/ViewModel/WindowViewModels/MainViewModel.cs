@@ -180,6 +180,9 @@ namespace LedCubeAnimator.ViewModel.WindowViewModels
         private RelayCommand _addAngularDelayCommand;
         public ICommand AddAngularDelayCommand => _addAngularDelayCommand ?? (_addAngularDelayCommand = new RelayCommand(() => AddTile(new AngularDelay { Name = "AngularDelay" })));
 
+        private RelayCommand _addCustomTileCommand;
+        public ICommand AddCustomTileCommand => _addCustomTileCommand ?? (_addCustomTileCommand = new RelayCommand(() => AddTile(new CustomTile { Name = "CustomTile" })));
+
         private RelayCommand _cubeSettingsCommand;
         public ICommand CubeSettingsCommand => _cubeSettingsCommand ?? (_cubeSettingsCommand = new RelayCommand(() => _dialogService.ShowDialog(this, new CubeSettingsViewModel(Model))));
 

@@ -41,6 +41,8 @@ namespace LedCubeAnimator.ViewModel
                     return new SphericalDelayViewModel(sphericalDelay, _manager, (GroupViewModel)args[0]);
                 case AngularDelay angularDelay:
                     return new AngularDelayViewModel(angularDelay, _manager, (GroupViewModel)args[0]);
+                case CustomTile customTile:
+                    return new CustomTileViewModel(customTile, _manager, (GroupViewModel)args[0]);
                 default:
                     throw new ArgumentException("Could not find suitable viewModel for this type of model", "model");
             }
