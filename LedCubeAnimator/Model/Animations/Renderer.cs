@@ -17,7 +17,7 @@ namespace LedCubeAnimator.Model.Animations
                 {
                     for (int z = 0; z < size; z++)
                     {
-                        var color = animation.MainGroup.GetVoxel(new Point3D(x, y, z), time, (p, t) => Colors.Black);
+                        var color = animation.GetVoxel(new Point3D(x, y, z), time, (p, t) => Colors.Black);
                         if (preview && animation.ColorMode != ColorMode.RGB)
                         {
                             color = color.Multiply(animation.MonoColor);

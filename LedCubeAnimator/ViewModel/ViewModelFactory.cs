@@ -19,6 +19,8 @@ namespace LedCubeAnimator.ViewModel
         {
             switch (model)
             {
+                case Animation animation:
+                    return new AnimationViewModel(animation, _manager, this);
                 case Frame frame:
                     return new FrameViewModel(frame, _manager, (GroupViewModel)args[0]);
                 case Group group:

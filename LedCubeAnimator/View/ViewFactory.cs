@@ -15,8 +15,6 @@ namespace LedCubeAnimator.View
             {
                 case MainViewModel _:
                     return typeof(MainWindow);
-                case CubeSettingsViewModel _:
-                    return typeof(CubeSettingsDialog);
                 default:
                     throw new ArgumentException("Could not find suitable view for this type of viewModel", "viewModel");
             }

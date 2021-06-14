@@ -27,7 +27,7 @@ namespace LedCubeAnimator.ViewModel.WindowViewModels
             Model.AnimationChanged += Model_AnimationChanged;
             Model.PropertiesChanged += Model_PropertiesChanged;
 
-            UpdateMainGroupViewModel();
+            UpdateAnimationViewModel();
 
             Cube3DViewModel = new Cube3DViewModel(Model, this);
             TimelineViewModel = new TimelineViewModel(Model, this);
@@ -40,13 +40,14 @@ namespace LedCubeAnimator.ViewModel.WindowViewModels
         private readonly IViewModelFactory _viewModelFactory;
         private readonly IDialogService _dialogService;
 
+        private bool _unsavedChanges;
+
         public Cube3DViewModel Cube3DViewModel { get; }
         public TimelineViewModel TimelineViewModel { get; }
         public ColorPickerViewModel ColorPickerViewModel { get; }
         public PropertyViewModel PropertyViewModel { get; }
 
-        private bool _unsavedChanges;
-        private GroupViewModel _mainGroup;
+        public AnimationViewModel AnimationViewModel { get; private set; }
 
         private TileViewModel _selectedTile;
         public TileViewModel SelectedTile
@@ -179,9 +180,6 @@ namespace LedCubeAnimator.ViewModel.WindowViewModels
 
         private RelayCommand _addAngularDelayCommand;
         public ICommand AddAngularDelayCommand => _addAngularDelayCommand ?? (_addAngularDelayCommand = new RelayCommand(() => AddTile(new AngularDelay { Name = "AngularDelay" })));
-
-        private RelayCommand _cubeSettingsCommand;
-        public ICommand CubeSettingsCommand => _cubeSettingsCommand ?? (_cubeSettingsCommand = new RelayCommand(() => _dialogService.ShowDialog(this, new CubeSettingsViewModel(Model))));
 
         private RelayCommand _newCommand;
         public ICommand NewCommand => _newCommand ?? (_newCommand = new RelayCommand(() =>
@@ -339,10 +337,10 @@ namespace LedCubeAnimator.ViewModel.WindowViewModels
             Time = SelectedTileExpanded ? 0 : SelectedTile.Start;
         }
 
-        private void UpdateMainGroupViewModel()
+        private void UpdateAnimationViewModel()
         {
-            _mainGroup = (GroupViewModel)_viewModelFactory.Create(Model.Animation.MainGroup, (GroupViewModel)null);
-            SelectedTile = _mainGroup;
+            AnimationViewModel = (AnimationViewModel)_viewModelFactory.Create(Model.Animation, (GroupViewModel)null);
+            SelectedTile = AnimationViewModel;
 
             SelectedColor = Colors.Black;
 
@@ -352,7 +350,7 @@ namespace LedCubeAnimator.ViewModel.WindowViewModels
 
         private void Model_AnimationChanged(object sender, EventArgs e)
         {
-            UpdateMainGroupViewModel();
+            UpdateAnimationViewModel();
         }
 
         private void Model_PropertiesChanged(object sender, PropertiesChangedEventArgs e)
@@ -362,7 +360,7 @@ namespace LedCubeAnimator.ViewModel.WindowViewModels
             for (int i = 0; i < e.Changes.Count; i++)
             {
                 var change = e.Changes[i];
-                _mainGroup.ModelPropertyChanged(change.Key, change.Value, out var t, out var p);
+                AnimationViewModel.ModelPropertyChanged(change.Key, change.Value, out var t, out var p);
                 if (i == 0)
                 {
                     tile = t;

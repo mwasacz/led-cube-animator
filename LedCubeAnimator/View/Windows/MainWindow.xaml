@@ -147,10 +147,6 @@
                 <MenuItem Header="AngularDelay"
                           Command="{Binding AddAngularDelayCommand}" />
             </MenuItem>
-            <MenuItem Header="Options">
-                <MenuItem Header="Cube settings..."
-                          Command="{Binding CubeSettingsCommand}" />
-            </MenuItem>
         </Menu>
         <ToolBarTray DockPanel.Dock="Top"
                      IsLocked="True"

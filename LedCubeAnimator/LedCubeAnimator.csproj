@@ -91,6 +91,7 @@
     </ApplicationDefinition>
     <Compile Include="Model\Undo\ObjectAction.cs" />
     <Compile Include="ViewModel\ColorClickedEventArgs.cs" />
+    <Compile Include="ViewModel\DataViewModels\AnimationViewModel.cs" />
     <Compile Include="ViewModel\ISharedViewModel.cs" />
     <Compile Include="ViewModel\IViewModelFactory.cs" />
     <Compile Include="ViewModel\UserControlViewModels\ColorPickerViewModel.cs" />
@@ -117,9 +118,6 @@
       <DependentUpon>TimelineControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\ViewFactory.cs" />
-    <Compile Include="View\Windows\CubeSettingsDialog.xaml.cs">
-      <DependentUpon>CubeSettingsDialog.xaml</DependentUpon>
-    </Compile>
     <Compile Include="View\Converters\EnumToBoolConverter.cs" />
     <Compile Include="View\Converters\IntToDateTimeConverter.cs" />
     <Compile Include="View\Converters\IntToDoubleConverter.cs" />
@@ -151,7 +149,6 @@
     <Compile Include="Model\Undo\UndoManagerExtensions.cs" />
     <Compile Include="View\Converters\ValueConverterGroup.cs" />
     <Compile Include="ViewModel\DataViewModels\AngularDelayViewModel.cs" />
-    <Compile Include="ViewModel\WindowViewModels\CubeSettingsViewModel.cs" />
     <Compile Include="ViewModel\DataViewModels\DelayViewModel.cs" />
     <Compile Include="ViewModel\DataViewModels\EffectViewModel.cs" />
     <Compile Include="ViewModel\DataViewModels\FrameViewModel.cs" />
@@ -212,10 +209,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\UserControls\TimelineControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="View\Windows\CubeSettingsDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

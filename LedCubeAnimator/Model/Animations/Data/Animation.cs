@@ -2,9 +2,8 @@
 
 namespace LedCubeAnimator.Model.Animations.Data
 {
-    public class Animation
+    public class Animation : Group
     {
-        public Group MainGroup { get; set; }
         public int Size { get; set; }
         public ColorMode ColorMode { get; set; }
         public Color MonoColor { get; set; }

@@ -25,10 +25,10 @@ namespace LedCubeAnimator.Model
             {
                 WriteHeader(animation, bw);
 
-                //int repeat = animation.MainGroup.RepeatCount; // ToDo
+                //int repeat = animation.RepeatCount; // ToDo
 
-                int start = animation.MainGroup.Start;
-                int end = animation.MainGroup.End;
+                int start = animation.Start;
+                int end = animation.End;
 
                 byte[] prevBytes = null;
                 int prevT = 0;
@@ -108,11 +108,11 @@ namespace LedCubeAnimator.Model
 
             uint frameLength = (uint)(animation.FrameDuration * 1000); // ToDo: exported frameLength may be different than FrameDuration
 
-            if (animation.MainGroup.End - animation.MainGroup.Start < 0 || animation.MainGroup.End - animation.MainGroup.Start > 0xFFFFFF)
+            if (animation.End - animation.Start < 0 || animation.End - animation.Start > 0xFFFFFF)
             {
                 throw new InvalidOperationException("Animation length out of bounds");
             }
-            uint frameCount = (uint)(animation.MainGroup.End - animation.MainGroup.Start);
+            uint frameCount = (uint)(animation.End - animation.Start);
 
             ushort bitsPerColor;
             switch (animation.ColorMode)
@@ -158,11 +158,11 @@ namespace LedCubeAnimator.Model
         {
             using (var bw = new BinaryWriter(File.Open(path, FileMode.Create)))
             {
-                //int repeat = animation.MainGroup.RepeatCount; // ToDo
+                //int repeat = animation.RepeatCount; // ToDo
                 int duration = animation.FrameDuration;
 
-                int start = animation.MainGroup.Start * duration;
-                int end = animation.MainGroup.End * duration;
+                int start = animation.Start * duration;
+                int end = animation.End * duration;
 
                 const int step = 25; // ToDo
                 const int endStep = 150; // ToDo

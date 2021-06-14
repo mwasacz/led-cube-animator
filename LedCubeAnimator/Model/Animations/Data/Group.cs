@@ -29,25 +29,25 @@ namespace LedCubeAnimator.Model.Animations.Data
                 .Select(func => func(point, time))
                 .ToArray();
 
-            return (ColorBlendMode == ColorBlendMode.Average ? colors.Select(c => c.Multiply((double)1 / colors.Length)) : colors)
-                .Aggregate(MixColors);
+            return MixColors(colors);
         }
 
-        private Color MixColors(Color c1, Color c2)
+        private Color MixColors(Color[] colors)
         {
             switch (ColorBlendMode)
             {
                 case ColorBlendMode.Add:
-                case ColorBlendMode.Average:
-                    return c1.Add(c2);
+                    return colors.Aggregate((c1, c2) => c1.Add(c2));
                 case ColorBlendMode.Multiply:
-                    return c1.Multiply(c2);
+                    return colors.Aggregate((c1, c2) => c1.Multiply(c2));
                 case ColorBlendMode.Min:
-                    return c1.Min(c2);
+                    return colors.Aggregate((c1, c2) => c1.Min(c2));
                 case ColorBlendMode.Max:
-                    return c1.Max(c2);
+                    return colors.Aggregate((c1, c2) => c1.Max(c2));
+                case ColorBlendMode.Average:
+                    return colors.Aggregate(Colors.Black, (c1, c2) => c1.Add(c2.Multiply((double)1 / colors.Length)));
                 default:
-                    return c1; // ToDo: throw new InvalidOperationException("Current ColorBlendMode is invalid");
+                    return Colors.Black; // ToDo: throw new InvalidOperationException("Current ColorBlendMode is invalid");
             }
         }
     }

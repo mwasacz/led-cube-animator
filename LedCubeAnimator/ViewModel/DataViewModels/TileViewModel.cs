@@ -68,7 +68,7 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
         }
 
         [Browsable(false)]
-        public new bool IsInDesignMode { get; }
+        public new bool IsInDesignMode => base.IsInDesignMode;
 
         public virtual void ModelPropertyChanged(object obj, string propertyName, out TileViewModel changedViewModel, out string changedProperty)
         {

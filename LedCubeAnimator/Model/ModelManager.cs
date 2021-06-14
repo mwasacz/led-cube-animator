@@ -25,8 +25,7 @@ namespace LedCubeAnimator.Model
 
         public void New()
         {
-            var group = new Group { Name = "MainGroup" };
-            Animation = new Animation { MainGroup = group, Size = 4, MonoColor = Colors.White, FrameDuration = 1 };
+            Animation = new Animation { Name = "Animation", Size = 4, MonoColor = Colors.White, FrameDuration = 1 };
             _filePath = null;
             _undo.Reset();
             _changedObject = null;
@@ -96,23 +95,6 @@ namespace LedCubeAnimator.Model
             _changedProperty = null;
         }
 
-        public void SetAnimationProperties(int size, ColorMode colorMode, Color monoColor, int frameDuration)
-        {
-            _undo.Group(() =>
-            {
-                _undo.Set(Animation, nameof(Animation.Size), size);
-                _undo.Set(Animation, nameof(Animation.ColorMode), colorMode);
-                _undo.Set(Animation, nameof(Animation.MonoColor), monoColor);
-                _undo.Set(Animation, nameof(Animation.FrameDuration), frameDuration);
-                if (colorMode != ColorMode.RGB)
-                {
-                    SetGroupColorMode(Animation.MainGroup, colorMode);
-                }
-            });
-            _changedObject = Animation;
-            _changedProperty = null;
-        }
-
         public void SetTileProperty(Tile tile, string name, object newValue)
         {
             _undo.Group(() =>
@@ -122,6 +104,10 @@ namespace LedCubeAnimator.Model
                     SetFrameVoxels(frame, (Color[,,])newValue);
                 }
                 _undo.Set(tile, name, newValue);
+                if (tile == Animation && name == nameof(Animation.ColorMode) && (ColorMode)newValue != ColorMode.RGB)
+                {
+                    SetGroupColorMode(Animation, (ColorMode)newValue);
+                }
             }, _changedObject == tile && _changedProperty == name);
             _changedObject = tile;
             _changedProperty = name;
