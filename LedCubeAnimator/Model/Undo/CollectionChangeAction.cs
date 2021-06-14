@@ -2,9 +2,9 @@
 
 namespace LedCubeAnimator.Model.Undo
 {
-    public class CollectionChangeAction<T> : IAction
+    public class CollectionChangeAction<T> : ObjectAction
     {
-        public CollectionChangeAction(ICollection<T> collection, T item, bool add)
+        public CollectionChangeAction(object obj, string property, ICollection<T> collection, T item, bool add) : base(obj, property)
         {
             Collection = collection;
             Item = item;
@@ -17,9 +17,9 @@ namespace LedCubeAnimator.Model.Undo
         public bool Added { get; private set; }
         public bool Removed { get; private set; }
 
-        public bool IsEmpty => !Added && !Removed;
+        public override bool IsEmpty => !Added && !Removed;
 
-        public void Do()
+        public override void Do()
         {
             if (Removed)
             {
@@ -31,7 +31,7 @@ namespace LedCubeAnimator.Model.Undo
             }
         }
 
-        public void Undo()
+        public override void Undo()
         {
             if (Added)
             {
@@ -43,11 +43,13 @@ namespace LedCubeAnimator.Model.Undo
             }
         }
 
-        public bool TryMerge(IAction action)
+        public override bool TryMerge(IAction action)
         {
             if (action is CollectionChangeAction<T> next
+                && next.Object == Object
+                && next.Property == Property
                 && next.Collection == Collection
-                && AreEqual(next.Item, Item)
+                && Equals(next.Item, Item)
                 && !(next.Added && Added)
                 && !(next.Removed && Removed))
             {
@@ -57,7 +59,5 @@ namespace LedCubeAnimator.Model.Undo
             }
             return false;
         }
-
-        private bool AreEqual(T obj1, T obj2) => obj1 == null ? obj2 == null : obj1.Equals(obj2);
     }
 }

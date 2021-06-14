@@ -129,23 +129,24 @@ namespace LedCubeAnimator.Model
 
         public void AddTile(Group group, Tile newTile)
         {
-            _undo.Group(() => _undo.Add(group.Children, newTile));
+            _undo.Group(() => _undo.Add(group, nameof(Group.Children), group.Children, newTile));
             _changedObject = group;
-            _changedProperty = null;
+            _changedProperty = nameof(Group.Children);
         }
 
         public void RemoveTile(Group group, Tile oldTile)
         {
-            _undo.Group(() => _undo.Remove(group.Children, oldTile));
+            _undo.Group(() => _undo.Remove(group, nameof(Group.Children), group.Children, oldTile));
             _changedObject = group;
-            _changedProperty = null;
+            _changedProperty = nameof(Group.Children);
         }
 
         public void SetVoxel(Frame frame, Color newColor, params int[] indices)
         {
-            _undo.Group(() => _undo.ChangeArray(frame.Voxels, newColor, indices), _changedObject == frame && _changedProperty == null);
+            _undo.Group(() => _undo.ChangeArray(frame, nameof(Frame.Voxels), frame.Voxels, newColor, indices),
+                _changedObject == frame && _changedProperty == nameof(Frame.Voxels));
             _changedObject = frame;
-            _changedProperty = null;
+            _changedProperty = nameof(Frame.Voxels);
         }
 
         public event EventHandler<PropertiesChangedEventArgs> PropertiesChanged;
@@ -154,44 +155,9 @@ namespace LedCubeAnimator.Model
 
         private void Undo_ActionExecuted(object sender, ActionExecutedEventArgs e)
         {
-            var groups = new Dictionary<ICollection<Tile>, Group>();
-            var frames = new Dictionary<Array, Frame>();
-            MapGroupsAndFrames(Animation.MainGroup, groups, frames);
-            var changes = ((GroupAction)e.Action).Actions.Select(a => GetChange(a, groups, frames)).ToArray();
-
+            var groupAction = (GroupAction)e.Action;
+            var changes = groupAction.Actions.Cast<ObjectAction>().Select(a => new KeyValuePair<object, string>(a.Object, a.Property)).ToArray();
             PropertiesChanged?.Invoke(this, new PropertiesChangedEventArgs(changes));
-        }
-
-        private static void MapGroupsAndFrames(Group group, Dictionary<ICollection<Tile>, Group> groups, Dictionary<Array, Frame> frames)
-        {
-            groups.Add(group.Children, group);
-            foreach (var t in group.Children)
-            {
-                switch (t)
-                {
-                    case Frame f:
-                        frames.Add(f.Voxels, f);
-                        break;
-                    case Group g:
-                        MapGroupsAndFrames(g, groups, frames);
-                        break;
-                }
-            }
-        }
-
-        private static KeyValuePair<object, string> GetChange(IAction action, Dictionary<ICollection<Tile>, Group> groups, Dictionary<Array, Frame> frames)
-        {
-            switch (action)
-            {
-                case PropertyChangeAction propertyChange:
-                    return new KeyValuePair<object, string>(propertyChange.Object, propertyChange.Property);
-                case CollectionChangeAction<Tile> collectionChange:
-                    return new KeyValuePair<object, string>(groups[collectionChange.Collection], nameof(Group.Children));
-                case ArrayChangeAction<Color> arrayChange:
-                    return new KeyValuePair<object, string>(frames[arrayChange.Array], nameof(Frame.Voxels));
-                default:
-                    throw new ArgumentException("Invalid type of action", "action");
-            }
         }
 
         private void SetGroupColorMode(Group group, ColorMode colorMode)
@@ -211,10 +177,10 @@ namespace LedCubeAnimator.Model
                                     switch (colorMode)
                                     {
                                         case ColorMode.Mono:
-                                            _undo.ChangeArray(f.Voxels, oldColor.GetBrightness() > 127 ? Colors.White : Colors.Black, x, y, z);
+                                            _undo.ChangeArray(f, nameof(Frame.Voxels), f.Voxels, oldColor.GetBrightness() > 127 ? Colors.White : Colors.Black, x, y, z);
                                             break;
                                         case ColorMode.MonoBrightness:
-                                            _undo.ChangeArray(f.Voxels, Colors.White.Multiply(oldColor.GetBrightness()).Opaque(), x, y, z);
+                                            _undo.ChangeArray(f, nameof(Frame.Voxels), f.Voxels, Colors.White.Multiply(oldColor.GetBrightness()).Opaque(), x, y, z);
                                             break;
                                     }
                                 }

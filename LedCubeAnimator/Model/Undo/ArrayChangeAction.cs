@@ -3,9 +3,9 @@ using System.Linq;
 
 namespace LedCubeAnimator.Model.Undo
 {
-    public class ArrayChangeAction<T> : IAction
+    public class ArrayChangeAction<T> : ObjectAction
     {
-        public ArrayChangeAction(Array array, T newValue, params int[] indices)
+        public ArrayChangeAction(object obj, string property, Array array, T newValue, params int[] indices) : base(obj, property)
         {
             Array = array;
             NewValue = newValue;
@@ -19,31 +19,31 @@ namespace LedCubeAnimator.Model.Undo
         public T NewValue { get; private set; }
         public int[] Indices { get; }
 
-        public bool IsEmpty => AreEqual(OldValue, NewValue);
+        public override bool IsEmpty => Equals(OldValue, NewValue);
 
-        public void Do()
+        public override void Do()
         {
             Array.SetValue(NewValue, Indices);
         }
 
-        public void Undo()
+        public override void Undo()
         {
             Array.SetValue(OldValue, Indices);
         }
 
-        public bool TryMerge(IAction action)
+        public override bool TryMerge(IAction action)
         {
             if (action is ArrayChangeAction<T> next
+                && next.Object == Object
+                && next.Property == Property
                 && next.Array == Array
                 && next.Indices.SequenceEqual(Indices)
-                && AreEqual(next.OldValue, NewValue))
+                && Equals(next.OldValue, NewValue))
             {
                 NewValue = next.NewValue;
                 return true;
             }
             return false;
         }
-
-        private bool AreEqual(T obj1, T obj2) => obj1 == null ? obj2 == null : obj1.Equals(obj2);
     }
 }

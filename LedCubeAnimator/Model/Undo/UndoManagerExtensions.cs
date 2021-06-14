@@ -12,24 +12,24 @@ namespace LedCubeAnimator.Model.Undo
             undo.FinishAction(allowMerge);
         }
 
-        public static void Set(this UndoManager undo, object obj, string name, object newValue)
+        public static void Set(this UndoManager undo, object obj, string property, object newValue)
         {
-            undo.RecordAction(new PropertyChangeAction(obj, name, newValue));
+            undo.RecordAction(new PropertyChangeAction(obj, property, newValue));
         }
 
-        public static void Add<T>(this UndoManager undo, ICollection<T> collection, T item)
+        public static void Add<T>(this UndoManager undo, object obj, string property, ICollection<T> collection, T item)
         {
-            undo.RecordAction(new CollectionChangeAction<T>(collection, item, true));
+            undo.RecordAction(new CollectionChangeAction<T>(obj, property, collection, item, true));
         }
 
-        public static void Remove<T>(this UndoManager undo, ICollection<T> collection, T item)
+        public static void Remove<T>(this UndoManager undo, object obj, string property, ICollection<T> collection, T item)
         {
-            undo.RecordAction(new CollectionChangeAction<T>(collection, item, false));
+            undo.RecordAction(new CollectionChangeAction<T>(obj, property, collection, item, false));
         }
 
-        public static void ChangeArray<T>(this UndoManager undo, Array array, T newValue, params int[] indices)
+        public static void ChangeArray<T>(this UndoManager undo, object obj, string property, Array array, T newValue, params int[] indices)
         {
-            undo.RecordAction(new ArrayChangeAction<T>(array, newValue, indices));
+            undo.RecordAction(new ArrayChangeAction<T>(obj, property, array, newValue, indices));
         }
     }
 }
