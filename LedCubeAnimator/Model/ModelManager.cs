@@ -1,6 +1,7 @@
 ﻿using LedCubeAnimator.Model.Animations;
 using LedCubeAnimator.Model.Animations.Data;
 using LedCubeAnimator.Model.Undo;
+using LedCubeAnimator.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;

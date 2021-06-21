@@ -2,7 +2,7 @@
 using System.Globalization;
 using System.Windows.Data;
 using System.Windows.Media;
-using LedCubeAnimator.Model.Animations.Data;
+using LedCubeAnimator.Utils;
 
 namespace LedCubeAnimator.View.Converters
 {

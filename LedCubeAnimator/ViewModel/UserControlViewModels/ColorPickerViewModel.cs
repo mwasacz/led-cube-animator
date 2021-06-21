@@ -1,6 +1,7 @@
 ﻿using GalaSoft.MvvmLight;
 using LedCubeAnimator.Model;
 using LedCubeAnimator.Model.Animations.Data;
+using LedCubeAnimator.Utils;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

@@ -3,6 +3,7 @@ using GalaSoft.MvvmLight.Command;
 using LedCubeAnimator.Model;
 using LedCubeAnimator.Model.Animations;
 using LedCubeAnimator.Model.Animations.Data;
+using LedCubeAnimator.Utils;
 using LedCubeAnimator.ViewModel.DataViewModels;
 using System;
 using System.ComponentModel;

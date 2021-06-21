@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Media;
 
-namespace LedCubeAnimator.Model.Animations.Data
+namespace LedCubeAnimator.Utils
 {
     public static class ColorExtensions
     {
@@ -107,6 +107,11 @@ namespace LedCubeAnimator.Model.Animations.Data
         public static byte GetBrightness(this Color color)
         {
             return Math.Max(Math.Max(color.R, color.G), color.B);
+        }
+
+        public static HsvColor ToHsv(this Color color)
+        {
+            return HsvColor.FromRgb(color);
         }
     }
 }
