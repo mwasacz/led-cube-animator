@@ -1,0 +1,196 @@
+﻿<UserControl x:Class="LedCubeAnimator.View.UserControls.ColorPicker"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:effects="http://gu.se/Geometry"
+             xmlns:local="clr-namespace:LedCubeAnimator.View.UserControls"
+             mc:Ignorable="d">
+    <UserControl.Resources>
+        <xctk:ColorToSolidColorBrushConverter x:Key="ColorToSolidColorBrushConverter" />
+    </UserControl.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="48" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Ellipse x:Name="ColorWheel"
+                 Grid.Column="0"
+                 Grid.ColumnSpan="2"
+                 Grid.Row="0"
+                 Stretch="UniformToFill"
+                 Margin="6"
+                 Fill="White"
+                 SizeChanged="ColorWheel_SizeChanged"
+                 MouseLeftButtonDown="ColorWheel_MouseLeftButtonDown"
+                 MouseLeftButtonUp="ColorWheel_MouseLeftButtonUp"
+                 MouseMove="ColorWheel_MouseMove">
+            <Ellipse.Effect>
+                <effects:HsvWheelEffect CentralAngle="360" />
+            </Ellipse.Effect>
+        </Ellipse>
+        <Canvas Grid.Column="0"
+                Grid.ColumnSpan="2"
+                Grid.Row="0"
+                Width="10"
+                Height="10"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                IsHitTestVisible="False">
+            <Canvas.RenderTransform>
+                <TranslateTransform x:Name="SelectorTransform" />
+            </Canvas.RenderTransform>
+            <Ellipse Width="10"
+                     Height="10"
+                     StrokeThickness="2"
+                     Stroke="White">
+                <Ellipse.Fill>
+                    <SolidColorBrush x:Name="SelectorBrush"
+                                     Color="White" />
+                </Ellipse.Fill>
+            </Ellipse>
+            <Ellipse Width="10"
+                     Height="10"
+                     StrokeThickness="1"
+                     Stroke="Black" />
+        </Canvas>
+        <Rectangle Grid.Column="2"
+                   Grid.Row="0"
+                   Margin="12,10">
+            <Rectangle.Fill>
+                <LinearGradientBrush StartPoint="0,0"
+                                     EndPoint="0,1">
+                    <GradientStop x:Name="GradientStop"
+                                  Offset="0"
+                                  Color="White" />
+                    <GradientStop Offset="1"
+                                  Color="Black" />
+                </LinearGradientBrush>
+            </Rectangle.Fill>
+        </Rectangle>
+        <Slider Grid.Column="2"
+                Grid.Row="0"
+                HorizontalAlignment="Stretch"
+                Margin="6"
+                Orientation="Vertical"
+                Maximum="255"
+                LargeChange="10"
+                IsMoveToPointEnabled="True"
+                IsSnapToTickEnabled="True"
+                Value="{Binding V, RelativeSource={RelativeSource AncestorType=local:ColorPicker}}">
+            <Slider.Template>
+                <ControlTemplate TargetType="{x:Type Slider}">
+                    <ControlTemplate.Resources>
+                        <Style x:Key="RepeatButtonTransparent"
+                               TargetType="{x:Type RepeatButton}">
+                            <Setter Property="OverridesDefaultStyle"
+                                    Value="True" />
+                            <Setter Property="Background"
+                                    Value="Transparent" />
+                            <Setter Property="Focusable"
+                                    Value="False" />
+                            <Setter Property="IsTabStop"
+                                    Value="False" />
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="{x:Type RepeatButton}">
+                                        <Rectangle Fill="{TemplateBinding Background}"
+                                                   Height="{TemplateBinding Height}"
+                                                   Width="{TemplateBinding Width}" />
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                        <ControlTemplate x:Key="SliderThumb"
+                                         TargetType="{x:Type Thumb}">
+                            <Grid Background="Transparent">
+                                <Path Data="M0,0L6,5 0,10z"
+                                      Fill="Black"
+                                      HorizontalAlignment="Left" />
+                                <Path Data="M6,0L0,5 6,10z"
+                                      Fill="Black"
+                                      HorizontalAlignment="Right" />
+                            </Grid>
+                        </ControlTemplate>
+                    </ControlTemplate.Resources>
+                    <Grid>
+                        <Track x:Name="PART_Track">
+                            <Track.DecreaseRepeatButton>
+                                <RepeatButton Style="{StaticResource RepeatButtonTransparent}"
+                                              Command="{x:Static Slider.DecreaseLarge}" />
+                            </Track.DecreaseRepeatButton>
+                            <Track.IncreaseRepeatButton>
+                                <RepeatButton Style="{StaticResource RepeatButtonTransparent}"
+                                              Command="{x:Static Slider.IncreaseLarge}" />
+                            </Track.IncreaseRepeatButton>
+                            <Track.Thumb>
+                                <Thumb Focusable="False"
+                                       OverridesDefaultStyle="True"
+                                       Template="{StaticResource SliderThumb}" />
+                            </Track.Thumb>
+                        </Track>
+                    </Grid>
+                </ControlTemplate>
+            </Slider.Template>
+        </Slider>
+        <Label Grid.Column="0"
+               Grid.Row="1"
+               VerticalAlignment="Center"
+               Content="R" />
+        <Slider Grid.Column="1"
+                Grid.Row="1"
+                VerticalAlignment="Center"
+                Margin="6"
+                Maximum="255"
+                LargeChange="10"
+                IsMoveToPointEnabled="True"
+                IsSnapToTickEnabled="True"
+                Value="{Binding R, RelativeSource={RelativeSource AncestorType=local:ColorPicker}}" />
+        <xctk:ByteUpDown Grid.Column="2"
+                         Grid.Row="1"
+                         VerticalAlignment="Center"
+                         Value="{Binding R, RelativeSource={RelativeSource AncestorType=local:ColorPicker}}" />
+        <Label Grid.Column="0"
+               Grid.Row="2"
+               VerticalAlignment="Center"
+               Content="G" />
+        <Slider Grid.Column="1"
+                Grid.Row="2"
+                VerticalAlignment="Center"
+                Margin="6"
+                Maximum="255"
+                LargeChange="10"
+                IsMoveToPointEnabled="True"
+                IsSnapToTickEnabled="True"
+                Value="{Binding G, RelativeSource={RelativeSource AncestorType=local:ColorPicker}}" />
+        <xctk:ByteUpDown Grid.Column="2"
+                         Grid.Row="2"
+                         VerticalAlignment="Center"
+                         Value="{Binding G, RelativeSource={RelativeSource AncestorType=local:ColorPicker}}" />
+        <Label Grid.Column="0"
+               Grid.Row="3"
+               VerticalAlignment="Center"
+               Content="B" />
+        <Slider Grid.Column="1"
+                Grid.Row="3"
+                VerticalAlignment="Center"
+                Margin="6"
+                Maximum="255"
+                LargeChange="10"
+                IsMoveToPointEnabled="True"
+                IsSnapToTickEnabled="True"
+                Value="{Binding B, RelativeSource={RelativeSource AncestorType=local:ColorPicker}}" />
+        <xctk:ByteUpDown Grid.Column="2"
+                         Grid.Row="3"
+                         VerticalAlignment="Center"
+                         Value="{Binding B, RelativeSource={RelativeSource AncestorType=local:ColorPicker}}" />
+    </Grid>
+</UserControl>

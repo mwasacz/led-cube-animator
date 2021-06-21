@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:local="clr-namespace:LedCubeAnimator.View.UserControls"
              xmlns:converters="clr-namespace:LedCubeAnimator.View.Converters"
              xmlns:model="clr-namespace:LedCubeAnimator.Model.Animations.Data"
              mc:Ignorable="d">
@@ -53,9 +54,8 @@
                     Value="{Binding SelectedColor, Converter={StaticResource ColorToValueConverter}}">
             </Slider>
         </DockPanel>
-        <xctk:ColorCanvas SelectedColor="{Binding SelectedColor}"
-                          UsingAlphaChannel="False">
-            <xctk:ColorCanvas.Visibility>
+        <local:ColorPicker SelectedColor="{Binding SelectedColor}">
+            <local:ColorPicker.Visibility>
                 <Binding Path="ColorMode"
                          ConverterParameter="{x:Static model:ColorMode.RGB}">
                     <Binding.Converter>
@@ -65,8 +65,8 @@
                         </converters:ValueConverterGroup>
                     </Binding.Converter>
                 </Binding>
-            </xctk:ColorCanvas.Visibility>
-        </xctk:ColorCanvas>
+            </local:ColorPicker.Visibility>
+        </local:ColorPicker>
         <DockPanel>
             <DockPanel.Visibility>
                 <Binding Path="ColorMode"

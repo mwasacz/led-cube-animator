@@ -53,6 +53,9 @@
     <Reference Include="GalaSoft.MvvmLight.Platform, Version=5.4.1.0, Culture=neutral, PublicKeyToken=5f873c45e98af8a1, processorArchitecture=MSIL">
       <HintPath>..\packages\MvvmLightLibs.5.4.1.1\lib\net45\GalaSoft.MvvmLight.Platform.dll</HintPath>
     </Reference>
+    <Reference Include="Gu.Wpf.Geometry, Version=2.2.7.0, Culture=neutral, PublicKeyToken=0d16965443c7ed06, processorArchitecture=MSIL">
+      <HintPath>..\packages\Gu.Wpf.Geometry.2.2.7\lib\net45\Gu.Wpf.Geometry.dll</HintPath>
+    </Reference>
     <Reference Include="HelixToolkit, Version=2.16.1.0, Culture=neutral, PublicKeyToken=52aa3500039caf0d, processorArchitecture=MSIL">
       <HintPath>..\packages\HelixToolkit.2.16.1\lib\netstandard1.1\HelixToolkit.dll</HintPath>
     </Reference>
@@ -106,6 +109,9 @@
     <Compile Include="View\Converters\Vector3DToDoubleConverter.cs" />
     <Compile Include="View\Converters\VectorToDoubleConverter.cs" />
     <Compile Include="View\IViewFactory.cs" />
+    <Compile Include="View\UserControls\ColorPicker.xaml.cs">
+      <DependentUpon>ColorPicker.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\UserControls\ColorPickerControl.xaml.cs">
       <DependentUpon>ColorPickerControl.xaml</DependentUpon>
     </Compile>
@@ -194,6 +200,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="View\Icons\Undo.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\UserControls\ColorPicker.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
