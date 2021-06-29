@@ -3,10 +3,12 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:dock="https://github.com/Dirkster99/AvalonDock"
         xmlns:md="https://github.com/fantasticfiasco/mvvm-dialogs"
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:cmd="http://www.galasoft.ch/mvvmlight"
+        xmlns:behaviors="clr-namespace:LedCubeAnimator.View.Behaviors"
         xmlns:controls="clr-namespace:LedCubeAnimator.View.UserControls"
         mc:Ignorable="d"
         md:DialogServiceViews.IsRegistered="True"
@@ -28,38 +30,60 @@
                 <ResourceDictionary Source="/View/Icons/Undo.xaml" />
                 <ResourceDictionary Source="/View/Icons/UndoGray.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            <Style TargetType="xctk:ByteUpDown">
+                <Setter Property="IsUndoEnabled"
+                        Value="False" />
+            </Style>
+            <Style TargetType="xctk:IntegerUpDown">
+                <Setter Property="IsUndoEnabled"
+                        Value="False" />
+            </Style>
+            <Style TargetType="xctk:PropertyGridEditorTextBox">
+                <Setter Property="IsUndoEnabled"
+                        Value="False" />
+            </Style>
+            <Style TargetType="xctk:PropertyGridEditorIntegerUpDown">
+                <Setter Property="IsUndoEnabled"
+                        Value="False" />
+            </Style>
         </ResourceDictionary>
     </Window.Resources>
+    <i:Interaction.Behaviors>
+        <behaviors:RoutedCommandBinding RoutedCommand="ApplicationCommands.New"
+                                        Command="{Binding NewCommand}" />
+        <behaviors:RoutedCommandBinding RoutedCommand="ApplicationCommands.Open"
+                                        Command="{Binding OpenCommand}" />
+        <behaviors:RoutedCommandBinding RoutedCommand="ApplicationCommands.Save"
+                                        Command="{Binding SaveCommand}" />
+        <behaviors:RoutedCommandBinding RoutedCommand="ApplicationCommands.SaveAs"
+                                        Command="{Binding SaveAsCommand}" />
+        <behaviors:RoutedCommandBinding RoutedCommand="ApplicationCommands.Undo"
+                                        Command="{Binding UndoCommand}" />
+        <behaviors:RoutedCommandBinding RoutedCommand="ApplicationCommands.Redo"
+                                        Command="{Binding RedoCommand}" />
+    </i:Interaction.Behaviors>
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Closing">
             <cmd:EventToCommand Command="{Binding ClosingCommand}"
                                 PassEventArgsToCommand="True" />
         </i:EventTrigger>
     </i:Interaction.Triggers>
-    <Window.InputBindings>
-        <KeyBinding Command="{Binding UndoCommand}"
-                    Key="Z"
-                    Modifiers="Ctrl" />
-        <KeyBinding Command="{Binding RedoCommand}"
-                    Key="Y"
-                    Modifiers="Ctrl" />
-    </Window.InputBindings>
     <DockPanel>
         <Menu DockPanel.Dock="Top"
               IsMainMenu="True">
             <MenuItem Header="File">
                 <MenuItem Header="New"
                           Icon="{StaticResource NewIcon}"
-                          Command="{Binding NewCommand}" />
+                          Command="ApplicationCommands.New" />
                 <MenuItem Header="Open..."
                           Icon="{StaticResource OpenIcon}"
-                          Command="{Binding OpenCommand}" />
+                          Command="ApplicationCommands.Open" />
                 <MenuItem Header="Save"
                           Icon="{StaticResource SaveIcon}"
-                          Command="{Binding SaveCommand}" />
+                          Command="ApplicationCommands.Save" />
                 <MenuItem Header="Save as..."
                           Icon="{StaticResource SaveAsIcon}"
-                          Command="{Binding SaveAsCommand}" />
+                          Command="ApplicationCommands.SaveAs" />
                 <Separator />
                 <MenuItem Header="Export">
                     <MenuItem Header="Binary file (.3db)..."
@@ -73,7 +97,7 @@
             </MenuItem>
             <MenuItem Header="Edit">
                 <MenuItem Header="Undo"
-                          Command="{Binding UndoCommand}">
+                          Command="ApplicationCommands.Undo">
                     <MenuItem.Style>
                         <Style TargetType="MenuItem">
                             <Setter Property="Icon"
@@ -89,7 +113,7 @@
                     </MenuItem.Style>
                 </MenuItem>
                 <MenuItem Header="Redo"
-                          Command="{Binding RedoCommand}">
+                          Command="ApplicationCommands.Redo">
                     <MenuItem.Style>
                         <Style TargetType="MenuItem">
                             <Setter Property="Icon"
@@ -154,20 +178,20 @@
             <ToolBar>
                 <Button ToolTip="New"
                         Content="{StaticResource NewIcon}"
-                        Command="{Binding NewCommand}" />
+                        Command="ApplicationCommands.New" />
                 <Button ToolTip="Open..."
                         Content="{StaticResource OpenIcon}"
-                        Command="{Binding OpenCommand}" />
+                        Command="ApplicationCommands.Open" />
                 <Button ToolTip="Save"
                         Content="{StaticResource SaveIcon}"
-                        Command="{Binding SaveCommand}" />
+                        Command="ApplicationCommands.Save" />
                 <Button ToolTip="Save as..."
                         Content="{StaticResource SaveAsIcon}"
-                        Command="{Binding SaveAsCommand}" />
+                        Command="ApplicationCommands.SaveAs" />
             </ToolBar>
             <ToolBar>
                 <Button ToolTip="Undo"
-                        Command="{Binding UndoCommand}">
+                        Command="ApplicationCommands.Undo">
                     <Button.Style>
                         <Style TargetType="Button">
                             <Setter Property="Content"
@@ -183,7 +207,7 @@
                     </Button.Style>
                 </Button>
                 <Button ToolTip="Redo"
-                        Command="{Binding RedoCommand}">
+                        Command="ApplicationCommands.Redo">
                     <Button.Style>
                         <Style TargetType="Button">
                             <Setter Property="Content"

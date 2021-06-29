@@ -103,6 +103,7 @@
     <Compile Include="ViewModel\UserControlViewModels\PropertyViewModel.cs" />
     <Compile Include="ViewModel\UserControlViewModels\TimelineViewModel.cs" />
     <Compile Include="ViewModel\ViewModelFactory.cs" />
+    <Compile Include="View\Behaviors\RoutedCommandBinding.cs" />
     <Compile Include="View\Converters\ColorToValueConverter.cs" />
     <Compile Include="View\Converters\Point3DToDoubleConverter.cs" />
     <Compile Include="View\Converters\PointToDoubleConverter.cs" />
