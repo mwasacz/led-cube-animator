@@ -26,7 +26,7 @@ namespace LedCubeAnimator.Model.Animations.Data
             var matrix = Matrix3D.Identity;
             matrix.ScaleAt(scale, center);
 
-            return getVoxel(Transform(point, matrix), time);
+            return matrix.HasInverse ? getVoxel(Transform(point, matrix), time) : Colors.Black;
         }
     }
 }
