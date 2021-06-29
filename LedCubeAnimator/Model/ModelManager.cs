@@ -18,8 +18,6 @@ namespace LedCubeAnimator.Model
         }
 
         private readonly UndoManager _undo = new UndoManager();
-        private object _changedObject;
-        private string _changedProperty;
         private string _filePath;
 
         public Animation Animation { get; private set; }
@@ -29,8 +27,6 @@ namespace LedCubeAnimator.Model
             Animation = new Animation { Name = "Animation", Size = 4, MonoColor = Colors.White, FrameDuration = 1 };
             _filePath = null;
             _undo.Reset();
-            _changedObject = null;
-            _changedProperty = null;
             AnimationChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -42,8 +38,6 @@ namespace LedCubeAnimator.Model
                 Animation = animation;
                 _filePath = path;
                 _undo.Reset();
-                _changedObject = null;
-                _changedProperty = null;
                 AnimationChanged?.Invoke(this, EventArgs.Empty);
                 return true;
             }
@@ -66,15 +60,9 @@ namespace LedCubeAnimator.Model
             FileReaderWriter.Save(_filePath, Animation);
         }
 
-        public void Export(string path)
-        {
-            Exporter.Export(path, Animation);
-        }
+        public void Export(string path) => Exporter.Export(path, Animation);
 
-        public void ExportMW(string path)
-        {
-            Exporter.ExportMW(path, Animation);
-        }
+        public void ExportMW(string path) => Exporter.ExportMW(path, Animation);
 
         public Color[,,] Render(int time) => Renderer.Render(Animation, time, true);
 
@@ -82,106 +70,83 @@ namespace LedCubeAnimator.Model
 
         public bool CanRedo => _undo.CanRedo;
 
-        public void Undo()
-        {
-            _undo.Undo();
-            _changedObject = null;
-            _changedProperty = null;
-        }
+        public void Undo() => _undo.Undo();
 
-        public void Redo()
-        {
-            _undo.Redo();
-            _changedObject = null;
-            _changedProperty = null;
-        }
+        public void Redo() => _undo.Redo();
 
-        public void SetTileProperty(Tile tile, string name, object newValue)
+        public void SetTileProperty(Tile tile, string property, object newValue)
         {
-            _undo.Group(() =>
-            {
-                if (tile is Frame frame && name == nameof(Frame.Voxels))
-                {
-                    SetFrameVoxels(frame, (Color[,,])newValue);
-                }
-                _undo.Set(tile, name, newValue);
-                if (tile == Animation && name == nameof(Animation.ColorMode) && (ColorMode)newValue != ColorMode.RGB)
-                {
-                    SetGroupColorMode(Animation, (ColorMode)newValue);
-                }
-            }, _changedObject == tile && _changedProperty == name);
-            _changedObject = tile;
-            _changedProperty = name;
+            _undo.Group(() => _undo.Set(tile, property, CoerceValue(tile, property, newValue)));
         }
 
         public void AddTile(Group group, Tile newTile)
         {
             _undo.Group(() => _undo.Add(group, nameof(Group.Children), group.Children, newTile));
-            _changedObject = group;
-            _changedProperty = nameof(Group.Children);
         }
 
         public void RemoveTile(Group group, Tile oldTile)
         {
             _undo.Group(() => _undo.Remove(group, nameof(Group.Children), group.Children, oldTile));
-            _changedObject = group;
-            _changedProperty = nameof(Group.Children);
         }
 
         public void SetVoxel(Frame frame, Color newColor, params int[] indices)
         {
-            _undo.Group(() => _undo.ChangeArray(frame, nameof(Frame.Voxels), frame.Voxels, newColor, indices),
-                _changedObject == frame && _changedProperty == nameof(Frame.Voxels));
-            _changedObject = frame;
-            _changedProperty = nameof(Frame.Voxels);
+            _undo.Group(() => _undo.ChangeArray(frame, nameof(Frame.Voxels), frame.Voxels, newColor, indices));
         }
 
         public event EventHandler<PropertiesChangedEventArgs> PropertiesChanged;
 
         public event EventHandler AnimationChanged;
 
+        private List<KeyValuePair<object, string>> _lastChanges;
+
         private void Undo_ActionExecuted(object sender, ActionExecutedEventArgs e)
         {
-            var groupAction = (GroupAction)e.Action;
-            var changes = groupAction.Actions.Cast<ObjectAction>().Select(a => new KeyValuePair<object, string>(a.Object, a.Property)).ToArray();
-            PropertiesChanged?.Invoke(this, new PropertiesChangedEventArgs(changes));
-        }
-
-        private void SetGroupColorMode(Group group, ColorMode colorMode)
-        {
-            foreach (var t in group.Children)
+            var actions = e.Action is GroupAction g ? g.Actions.Cast<ObjectAction>() : new[] { (ObjectAction)e.Action };
+            var changes = actions.Select(a => new KeyValuePair<object, string>(a.Object, a.Property));
+            if (_lastChanges == null)
             {
-                switch (t)
-                {
-                    case Frame f:
-                        for (int x = 0; x < f.Voxels.GetLength(0); x++)
-                        {
-                            for (int y = 0; y < f.Voxels.GetLength(1); y++)
-                            {
-                                for (int z = 0; z < f.Voxels.GetLength(2); z++)
-                                {
-                                    Color oldColor = f.Voxels[x, y, z];
-                                    switch (colorMode)
-                                    {
-                                        case ColorMode.Mono:
-                                            _undo.ChangeArray(f, nameof(Frame.Voxels), f.Voxels, oldColor.GetBrightness() > 127 ? Colors.White : Colors.Black, x, y, z);
-                                            break;
-                                        case ColorMode.MonoBrightness:
-                                            _undo.ChangeArray(f, nameof(Frame.Voxels), f.Voxels, Colors.White.Multiply(oldColor.GetBrightness()).Opaque(), x, y, z);
-                                            break;
-                                    }
-                                }
-                            }
-                        }
-                        break;
-                    case Group g:
-                        SetGroupColorMode(g, colorMode);
-                        break;
-                }
+                var list = changes.ToList();
+                _lastChanges = list;
+                CorrectData(list);
+                _lastChanges = null;
+                PropertiesChanged?.Invoke(this, new PropertiesChangedEventArgs(list));
+            }
+            else
+            {
+                _lastChanges.AddRange(changes);
             }
         }
 
-        private static void SetFrameVoxels(Frame frame, Color[,,] voxels)
+        private static object CoerceValue(Tile tile, string property, object newValue)
+        {
+            if ((property == nameof(Tile.Start) || property == nameof(Tile.End) || property == nameof(Tile.Channel) || property == nameof(Tile.Hierarchy))
+                && (int)newValue < 0)
+            {
+                newValue = 0;
+            }
+            else if (tile is Frame frame
+                && property == nameof(Frame.Voxels))
+            {
+                CopyFrameVoxels(frame, (Color[,,])newValue);
+            }
+            else if (tile is Effect
+                && property == nameof(Effect.RepeatCount)
+                && (int)newValue < 1)
+            {
+                newValue = 1;
+            }
+            else if (tile is Animation
+                && (property == nameof(Animations.Data.Animation.Size) || property == nameof(Animations.Data.Animation.FrameDuration))
+                && (int)newValue < 1)
+            {
+                newValue = 1;
+            }
+
+            return newValue;
+        }
+
+        private static void CopyFrameVoxels(Frame frame, Color[,,] voxels)
         {
             for (int x = 0; x < voxels.GetLength(0); x++)
             {
@@ -197,6 +162,131 @@ namespace LedCubeAnimator.Model
                     }
                 }
             }
+        }
+
+        private void CorrectData(List<KeyValuePair<object, string>> changes)
+        {
+            var movedTiles = new HashSet<Tile>();
+            int changeCount = changes.Count;
+            for (int i = 0; i < changeCount; i++)
+            {
+                var tile = (Tile)changes[i].Key;
+                string property = changes[i].Value;
+                if (property == nameof(Tile.Start) || property == nameof(Tile.End) || property == nameof(Tile.Channel) || property == nameof(Tile.Hierarchy))
+                {
+                    movedTiles.Add(tile);
+                }
+                else if (tile == Animation && property == nameof(Animations.Data.Animation.ColorMode) && Animation.ColorMode != ColorMode.RGB)
+                {
+                    CorrectFrameVoxels(Animation);
+                }
+            }
+            if (movedTiles.Count > 0)
+            {
+                CorrectGroupChildren(Animation, movedTiles);
+            }
+        }
+
+        private void CorrectGroupChildren(Group group, HashSet<Tile> movedTiles)
+        {
+            bool moved = false;
+            foreach (var c in group.Children)
+            {
+                if (c is Group g)
+                {
+                    CorrectGroupChildren(g, movedTiles);
+                }
+                if (movedTiles.Contains(c))
+                {
+                    moved = true;
+                }
+            }
+            if (moved)
+            {
+                foreach (var channel in group.Children.GroupBy(c => c.Channel))
+                {
+                    int maxHierarchy = channel.Max(c => c.Hierarchy);
+                    var levels = Enumerable.Range(0, maxHierarchy + 1)
+                        .Select(h => channel.Where(c => c.Hierarchy == h).OrderBy(t => movedTiles.Contains(t)).ToList())
+                        .ToList();
+                    for (int i = 0; i < levels.Count; i++)
+                    {
+                        for (int x = 0; x < levels[i].Count; x++)
+                        {
+                            var tile = levels[i][x];
+                            int j = i;
+                            if (levels[j].All(t => t == tile || movedTiles.Contains(t) || t.End < tile.Start || t.Start > tile.End))
+                            {
+                                while (j > 0 && levels[j - 1].All(t => t == tile || t.End < tile.Start || t.Start > tile.End))
+                                {
+                                    j--;
+                                }
+                                if (j == i && !levels[j].All(t => t == tile || t.End < tile.Start || t.Start > tile.End))
+                                {
+                                    j++;
+                                }
+                            }
+                            else
+                            {
+                                j++;
+                            }
+                            if (j != i)
+                            {
+                                levels[i].RemoveAt(x);
+                                x--;
+                                if (j == levels.Count)
+                                {
+                                    levels.Add(new List<Tile>());
+                                }
+                                int y = levels[j].Count;
+                                while (y > 0 && movedTiles.Contains(levels[j][y - 1]))
+                                {
+                                    y--;
+                                }
+                                levels[j].Insert(y, tile);
+                                _undo.Group(() => _undo.Set(tile, nameof(Tile.Hierarchy), j), true);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private void CorrectFrameVoxels(Group group)
+        {
+            _undo.Group(() =>
+            {
+                foreach (var t in group.Children)
+                {
+                    switch (t)
+                    {
+                        case Frame f:
+                            for (int x = 0; x < f.Voxels.GetLength(0); x++)
+                            {
+                                for (int y = 0; y < f.Voxels.GetLength(1); y++)
+                                {
+                                    for (int z = 0; z < f.Voxels.GetLength(2); z++)
+                                    {
+                                        var oldColor = f.Voxels[x, y, z];
+                                        switch (Animation.ColorMode)
+                                        {
+                                            case ColorMode.Mono:
+                                                _undo.ChangeArray(f, nameof(Frame.Voxels), f.Voxels, oldColor.GetBrightness() > 127 ? Colors.White : Colors.Black, x, y, z);
+                                                break;
+                                            case ColorMode.MonoBrightness:
+                                                _undo.ChangeArray(f, nameof(Frame.Voxels), f.Voxels, Colors.White.Multiply(oldColor.GetBrightness()).Opaque(), x, y, z);
+                                                break;
+                                        }
+                                    }
+                                }
+                            }
+                            break;
+                        case Group g:
+                            CorrectFrameVoxels(g);
+                            break;
+                    }
+                }
+            }, true);
         }
     }
 }

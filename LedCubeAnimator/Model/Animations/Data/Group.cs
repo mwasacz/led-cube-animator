@@ -9,7 +9,7 @@ namespace LedCubeAnimator.Model.Animations.Data
 {
     public class Group : Effect
     {
-        public List<Tile> Children { get; set; } = new List<Tile>();
+        public List<Tile> Children { get; } = new List<Tile>();
         public ColorBlendMode ColorBlendMode { get; set; }
 
         public override Color GetVoxel(Point3D point, double time, Func<Point3D, double, Color> getVoxel)
