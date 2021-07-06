@@ -91,19 +91,24 @@ namespace LedCubeAnimator.ViewModel.WindowViewModels
             get => _selectedProperty;
             set
             {
-                if (Set(ref _selectedProperty, value) && SelectedTile is GroupViewModel group && group.Parent != null)
+                if (Set(ref _selectedProperty, value))
                 {
-                    if (_selectedProperty == nameof(GroupViewModel.Children))
+                    if (SelectedTile is GroupViewModel group && group.Parent != null)
                     {
-                        SelectedTileExpanded = true;
+                        if (_selectedProperty == nameof(GroupViewModel.Children))
+                        {
+                            SelectedTileExpanded = true;
+                        }
+                        else if (_selectedProperty == nameof(GroupViewModel.Start)
+                            || _selectedProperty == nameof(GroupViewModel.End)
+                            || _selectedProperty == nameof(GroupViewModel.Channel)
+                            || _selectedProperty == nameof(GroupViewModel.Hierarchy))
+                        {
+                            SelectedTileExpanded = false;
+                        }
                     }
-                    else if (_selectedProperty == nameof(GroupViewModel.Start)
-                        || _selectedProperty == nameof(GroupViewModel.End)
-                        || _selectedProperty == nameof(GroupViewModel.Channel)
-                        || _selectedProperty == nameof(GroupViewModel.Hierarchy))
-                    {
-                        SelectedTileExpanded = false;
-                    }
+                    Model.MergeAllowed = false;
+                    Model.MergeAllowed = true;
                 }
             }
         }

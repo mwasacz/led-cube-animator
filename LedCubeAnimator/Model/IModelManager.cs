@@ -22,6 +22,8 @@ namespace LedCubeAnimator.Model
         void Undo();
         void Redo();
 
+        bool MergeAllowed { get; set; }
+        void Group(Action action);
         void SetTileProperty(Tile tile, string name, object newValue);
         void AddTile(Group group, Tile newTile);
         void RemoveTile(Group group, Tile oldTile);

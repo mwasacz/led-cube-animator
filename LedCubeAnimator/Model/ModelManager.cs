@@ -19,6 +19,9 @@ namespace LedCubeAnimator.Model
 
         private readonly UndoManager _undo = new UndoManager();
         private string _filePath;
+        private bool _mergeAllowed = true;
+        private bool _canMergeNext;
+        private bool _groupAction;
 
         public Animation Animation { get; private set; }
 
@@ -27,6 +30,7 @@ namespace LedCubeAnimator.Model
             Animation = new Animation { Name = "Animation", Size = 4, MonoColor = Colors.White, FrameDuration = 1 };
             _filePath = null;
             _undo.Reset();
+            _canMergeNext = false;
             AnimationChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -38,6 +42,7 @@ namespace LedCubeAnimator.Model
                 Animation = animation;
                 _filePath = path;
                 _undo.Reset();
+                _canMergeNext = false;
                 AnimationChanged?.Invoke(this, EventArgs.Empty);
                 return true;
             }
@@ -70,29 +75,56 @@ namespace LedCubeAnimator.Model
 
         public bool CanRedo => _undo.CanRedo;
 
-        public void Undo() => _undo.Undo();
-
-        public void Redo() => _undo.Redo();
-
-        public void SetTileProperty(Tile tile, string property, object newValue)
+        public void Undo()
         {
-            _undo.Group(() => _undo.Set(tile, property, CoerceValue(tile, property, newValue)));
+            _undo.Undo();
+            _canMergeNext = false;
         }
 
-        public void AddTile(Group group, Tile newTile)
+        public void Redo()
         {
-            _undo.Group(() => _undo.Add(group, nameof(Group.Children), group.Children, newTile));
+            _undo.Redo();
+            _canMergeNext = false;
         }
 
-        public void RemoveTile(Group group, Tile oldTile)
+        public bool MergeAllowed
         {
-            _undo.Group(() => _undo.Remove(group, nameof(Group.Children), group.Children, oldTile));
+            get => _mergeAllowed;
+            set
+            {
+                _mergeAllowed = value;
+                if (!_mergeAllowed)
+                {
+                    _canMergeNext = false;
+                }
+            }
         }
 
-        public void SetVoxel(Frame frame, Color newColor, params int[] indices)
+        public void Group(Action action)
         {
-            _undo.Group(() => _undo.ChangeArray(frame, nameof(Frame.Voxels), frame.Voxels, newColor, indices));
+            if (_groupAction)
+            {
+                action();
+            }
+            else
+            {
+                _groupAction = true;
+                _undo.Group(action, _canMergeNext);
+                _groupAction = false;
+                if (_mergeAllowed)
+                {
+                    _canMergeNext = true;
+                }
+            }
         }
+
+        public void SetTileProperty(Tile tile, string property, object newValue) => Group(() => _undo.Set(tile, property, CoerceValue(tile, property, newValue)));
+
+        public void AddTile(Group group, Tile newTile) => Group(() => _undo.Add(group, nameof(Animations.Data.Group.Children), group.Children, newTile));
+
+        public void RemoveTile(Group group, Tile oldTile) => Group(() => _undo.Remove(group, nameof(Animations.Data.Group.Children), group.Children, oldTile));
+
+        public void SetVoxel(Frame frame, Color newColor, params int[] indices) => Group(() => _undo.ChangeArray(frame, nameof(Frame.Voxels), frame.Voxels, newColor, indices));
 
         public event EventHandler<PropertiesChangedEventArgs> PropertiesChanged;
 
@@ -102,8 +134,8 @@ namespace LedCubeAnimator.Model
 
         private void Undo_ActionExecuted(object sender, ActionExecutedEventArgs e)
         {
-            var actions = e.Action is GroupAction g ? g.Actions.Cast<ObjectAction>() : new[] { (ObjectAction)e.Action };
-            var changes = actions.Select(a => new KeyValuePair<object, string>(a.Object, a.Property));
+            var actions = ((GroupAction)e.Action).Actions.Cast<ObjectAction>();
+            var changes = actions.Select(a => new KeyValuePair<object, string>(a.Object, a.Property)); // ToDo: perform correction before finishing group
             if (_lastChanges == null)
             {
                 var list = changes.ToList();
