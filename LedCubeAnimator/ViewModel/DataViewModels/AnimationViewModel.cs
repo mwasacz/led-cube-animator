@@ -1,6 +1,7 @@
 ﻿using LedCubeAnimator.Model;
 using LedCubeAnimator.Model.Animations.Data;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Windows.Media;
 using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 
@@ -13,6 +14,7 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
 
         [Category("Animation")]
         [PropertyOrder(0)]
+        [Range(1, int.MaxValue)]
         public int Size
         {
             get => Animation.Size;
@@ -37,6 +39,7 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
 
         [Category("Animation")]
         [PropertyOrder(3)]
+        [Range(1, int.MaxValue)]
         public int FrameDuration
         {
             get => Animation.FrameDuration;

@@ -1,6 +1,7 @@
 ﻿using LedCubeAnimator.Model;
 using LedCubeAnimator.Model.Animations.Data;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 
 namespace LedCubeAnimator.ViewModel.DataViewModels
@@ -23,6 +24,7 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
 
         [Category("Effect")]
         [PropertyOrder(1)]
+        [Range(1, int.MaxValue)]
         public int RepeatCount
         {
             get => Effect.RepeatCount;

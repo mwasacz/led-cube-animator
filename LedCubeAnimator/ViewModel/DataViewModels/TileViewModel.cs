@@ -2,6 +2,7 @@
 using LedCubeAnimator.Model;
 using LedCubeAnimator.Model.Animations.Data;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Windows;
 using System.Windows.Media.Media3D;
 using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
@@ -37,6 +38,7 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
 
         [Category("Tile")]
         [PropertyOrder(1)]
+        [Range(0, int.MaxValue)]
         public int Start
         {
             get => Tile.Start;
@@ -45,6 +47,7 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
 
         [Category("Tile")]
         [PropertyOrder(2)]
+        [Range(0, int.MaxValue)]
         public int End
         {
             get => Tile.End;
@@ -53,6 +56,7 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
 
         [Category("Tile")]
         [PropertyOrder(3)]
+        [Range(0, int.MaxValue)]
         public int Channel
         {
             get => Tile.Channel;
@@ -61,6 +65,7 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
 
         [Category("Tile")]
         [PropertyOrder(4)]
+        [Range(0, int.MaxValue)]
         public int Hierarchy
         {
             get => Tile.Hierarchy;
