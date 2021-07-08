@@ -4,70 +4,212 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-             xmlns:converters="clr-namespace:LedCubeAnimator.View.Converters"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             xmlns:converters="clr-namespace:LedCubeAnimator.View.Converters"
+             xmlns:view="clr-namespace:LedCubeAnimator.View"
+             xmlns:local="clr-namespace:LedCubeAnimator.View.UserControls"
              mc:Ignorable="d">
     <UserControl.Resources>
-        <converters:IntToDateTimeConverter x:Key="IntToDateTimeConverter" />
-        <converters:IntToDoubleConverter x:Key="IntToDoubleConverter" />
-        <sys:Int32 x:Key="StartDateCorrection">0</sys:Int32>
-        <sys:Int32 x:Key="EndDateCorrection">1</sys:Int32>
-        <sys:Double x:Key="StartSliderCorrection">-0.5</sys:Double>
-        <sys:Double x:Key="EndSliderCorrection">0.5</sys:Double>
+        <converters:OffsetConverter x:Key="OffsetConverter" />
+        <converters:MultiplyConverter x:Key="MultiplyConverter" />
+        <sys:Double x:Key="SliderTickOffset">-0.5</sys:Double>
+        <sys:Double x:Key="MaxIndexOffset">-1</sys:Double>
+        <sys:Double x:Key="ResizeHandleWidth">10</sys:Double>
     </UserControl.Resources>
-    <StackPanel>
-        <DockPanel>
-            <xctk:IntegerUpDown DockPanel.Dock="Right"
-                                Width="50"
-                                VerticalAlignment="Bottom"
-                                HorizontalAlignment="Center"
-                                Value="{Binding Shared.Time}"
-                                Minimum="{Binding StartDate}"
-                                Maximum="{Binding EndDate}" />
-            <ListBox ItemsSource="{Binding Groups}"
-                     DisplayMemberPath="Name"
-                     SelectedItem="{Binding SelectedGroup}">
-                <ListBox.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <StackPanel Margin="4,0,4,0"
-                                    Orientation="Horizontal" />
-                    </ItemsPanelTemplate>
-                </ListBox.ItemsPanel>
-                <ListBox.ItemContainerStyle>
-                    <Style>
-                        <Setter Property="Panel.Background"
-                                Value="LightGray" />
-                    </Style>
-                </ListBox.ItemContainerStyle>
-            </ListBox>
-        </DockPanel>
-        <ListBox Height="100"
-                 ItemsSource="{Binding Tiles}"
+    <DockPanel>
+        <ListBox DockPanel.Dock="Top"
+                 ItemsSource="{Binding Groups}"
                  DisplayMemberPath="Name"
-                 SelectedItem="{Binding SelectedTile}">
+                 SelectedItem="{Binding SelectedGroup}">
             <ListBox.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <xctk:TimelinePanel  Margin="4,0,4,0"
-                                         VerticalAlignment="Top"
-                                         BeginDate="{Binding StartDate, Converter={StaticResource IntToDateTimeConverter}, ConverterParameter={StaticResource StartDateCorrection}}"
-                                         EndDate="{Binding EndDate, Converter={StaticResource IntToDateTimeConverter}, ConverterParameter={StaticResource EndDateCorrection}}"
-                                         KeepOriginalOrderForOverlap="True" />
+                    <VirtualizingStackPanel Margin="4,0,4,0"
+                                            Orientation="Horizontal" />
                 </ItemsPanelTemplate>
             </ListBox.ItemsPanel>
             <ListBox.ItemContainerStyle>
-                <Style>
-                    <Setter Property="Panel.Background"
+                <Style TargetType="ListBoxItem">
+                    <Setter Property="Background"
                             Value="LightGray" />
-                    <Setter Property="xctk:TimelinePanel.Date"
-                            Value="{Binding Start, Converter={StaticResource IntToDateTimeConverter}, ConverterParameter={StaticResource StartDateCorrection}}" />
-                    <Setter Property="xctk:TimelinePanel.DateEnd"
-                            Value="{Binding End, Converter={StaticResource IntToDateTimeConverter}, ConverterParameter={StaticResource EndDateCorrection}}" />
                 </Style>
             </ListBox.ItemContainerStyle>
         </ListBox>
-        <Slider TickPlacement="TopLeft"
-                Value="{Binding Shared.Time}"
-                Minimum="{Binding StartDate, Converter={StaticResource IntToDoubleConverter}, ConverterParameter={StaticResource StartSliderCorrection}}"
-                Maximum="{Binding EndDate, Converter={StaticResource IntToDoubleConverter}, ConverterParameter={StaticResource EndSliderCorrection}}" />
-    </StackPanel>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="80" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <xctk:IntegerUpDown Grid.Column="0"
+                                Grid.Row="0"
+                                VerticalAlignment="Center"
+                                Value="{Binding Shared.Time}"
+                                Minimum="0"
+                                Maximum="{Binding CurrentGroup.Columns, Converter={StaticResource OffsetConverter}, ConverterParameter={StaticResource MaxIndexOffset}}" />
+            <Border Grid.Column="1"
+                    Grid.Row="0"
+                    Padding="1">
+                <ScrollViewer HorizontalScrollBarVisibility="Hidden"
+                              VerticalScrollBarVisibility="Disabled"
+                              view:ScrollSynchronizer.HorizontalScrollGroup="{Binding RelativeSource={RelativeSource AncestorType=local:TimelineControl}}">
+                    <ScrollViewer.Margin>
+                        <Thickness Right="{x:Static SystemParameters.VerticalScrollBarWidth}" />
+                    </ScrollViewer.Margin>
+                    <Border HorizontalAlignment="Left">
+                        <Border.Width>
+                            <MultiBinding Converter="{StaticResource MultiplyConverter}">
+                                <Binding Path="CurrentGroup.Columns" />
+                                <Binding Path="CellWidth"
+                                         RelativeSource="{RelativeSource AncestorType=local:TimelineControl}" />
+                            </MultiBinding>
+                        </Border.Width>
+                        <Slider Margin="-5,0"
+                                IsMoveToPointEnabled="True"
+                                TickPlacement="BottomRight"
+                                Value="{Binding Shared.Time}"
+                                Minimum="{StaticResource SliderTickOffset}"
+                                Maximum="{Binding CurrentGroup.Columns, Converter={StaticResource OffsetConverter}, ConverterParameter={StaticResource SliderTickOffset}}">
+                        </Slider>
+                    </Border>
+                </ScrollViewer>
+            </Border>
+            <ItemsControl Grid.Column="0"
+                          Grid.Row="1"
+                          Grid.ColumnSpan="2"
+                          AlternationCount="{x:Static sys:Int32.MaxValue}"
+                          ItemsSource="{Binding CurrentGroup.RowHeights}">
+                <ItemsControl.Template>
+                    <ControlTemplate TargetType="ItemsControl">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                SnapsToDevicePixels="True"
+                                Padding="1">
+                            <ScrollViewer Padding="{TemplateBinding Padding}"
+                                          Focusable="False"
+                                          HorizontalScrollBarVisibility="Disabled"
+                                          VerticalScrollBarVisibility="Hidden"
+                                          view:ScrollSynchronizer.VerticalScrollGroup="{Binding RelativeSource={RelativeSource AncestorType=local:TimelineControl}}">
+                                <ScrollViewer.Margin>
+                                    <Thickness Bottom="{x:Static SystemParameters.HorizontalScrollBarHeight}" />
+                                </ScrollViewer.Margin>
+                                <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                            </ScrollViewer>
+                        </Border>
+                    </ControlTemplate>
+                </ItemsControl.Template>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <DockPanel>
+                            <DockPanel.Height>
+                                <MultiBinding Converter="{StaticResource MultiplyConverter}">
+                                    <Binding />
+                                    <Binding Path="CellHeight"
+                                             RelativeSource="{RelativeSource AncestorType=local:TimelineControl}" />
+                                </MultiBinding>
+                            </DockPanel.Height>
+                            <Separator DockPanel.Dock="Bottom"
+                                       VerticalAlignment="Center"
+                                       Height="{Binding CellHeight, RelativeSource={RelativeSource AncestorType=local:TimelineControl}}" />
+                            <TextBlock HorizontalAlignment="Left"
+                                       VerticalAlignment="Center"
+                                       TextAlignment="Center"
+                                       Width="80"
+                                       Text="{Binding (ItemsControl.AlternationIndex), StringFormat=Channel {0}, RelativeSource={RelativeSource TemplatedParent}}" />
+                        </DockPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <ListBox Grid.Column="1"
+                     Grid.Row="1"
+                     Background="Transparent"
+                     BorderThickness="0"
+                     ItemsSource="{Binding CurrentGroup.ChildViewModels}"
+                     DisplayMemberPath="Name"
+                     SelectedItem="{Binding SelectedTile}"
+                     MouseDown="ListBox_MouseDown">
+                <ListBox.Resources>
+                    <Style TargetType="ScrollViewer">
+                        <Setter Property="HorizontalScrollBarVisibility"
+                                Value="Visible" />
+                        <Setter Property="VerticalScrollBarVisibility"
+                                Value="Visible" />
+                        <Setter Property="view:ScrollSynchronizer.HorizontalScrollGroup"
+                                Value="{Binding RelativeSource={RelativeSource AncestorType=local:TimelineControl}}" />
+                        <Setter Property="view:ScrollSynchronizer.VerticalScrollGroup"
+                                Value="{Binding RelativeSource={RelativeSource AncestorType=local:TimelineControl}}" />
+                    </Style>
+                </ListBox.Resources>
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <Canvas HorizontalAlignment="Left"
+                                VerticalAlignment="Top">
+                            <Canvas.Width>
+                                <MultiBinding Converter="{StaticResource MultiplyConverter}">
+                                    <Binding Path="CurrentGroup.Columns" />
+                                    <Binding Path="CellWidth"
+                                             RelativeSource="{RelativeSource AncestorType=local:TimelineControl}" />
+                                </MultiBinding>
+                            </Canvas.Width>
+                            <Canvas.Height>
+                                <MultiBinding Converter="{StaticResource MultiplyConverter}">
+                                    <Binding Path="CurrentGroup.Rows" />
+                                    <Binding Path="CellHeight"
+                                             RelativeSource="{RelativeSource AncestorType=local:TimelineControl}" />
+                                </MultiBinding>
+                            </Canvas.Height>
+                        </Canvas>
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem">
+                        <Setter Property="Canvas.Left">
+                            <Setter.Value>
+                                <MultiBinding Converter="{StaticResource MultiplyConverter}">
+                                    <Binding Path="Start" />
+                                    <Binding Path="CellWidth"
+                                             RelativeSource="{RelativeSource AncestorType=local:TimelineControl}" />
+                                </MultiBinding>
+                            </Setter.Value>
+                        </Setter>
+                        <Setter Property="Canvas.Top">
+                            <Setter.Value>
+                                <MultiBinding Converter="{StaticResource MultiplyConverter}">
+                                    <Binding Path="Row" />
+                                    <Binding Path="CellHeight"
+                                             RelativeSource="{RelativeSource AncestorType=local:TimelineControl}" />
+                                </MultiBinding>
+                            </Setter.Value>
+                        </Setter>
+                        <Setter Property="Width">
+                            <Setter.Value>
+                                <MultiBinding Converter="{StaticResource MultiplyConverter}">
+                                    <Binding Path="Length" />
+                                    <Binding Path="CellWidth"
+                                             RelativeSource="{RelativeSource AncestorType=local:TimelineControl}" />
+                                </MultiBinding>
+                            </Setter.Value>
+                        </Setter>
+                        <Setter Property="Height"
+                                Value="{Binding CellHeight, RelativeSource={RelativeSource AncestorType=local:TimelineControl}}" />
+                        <Setter Property="Background"
+                                Value="LightGray" />
+                        <EventSetter Event="PreviewMouseLeftButtonDown"
+                                     Handler="ListBoxItem_PreviewMouseLeftButtonDown" />
+                        <EventSetter Event="PreviewMouseMove"
+                                     Handler="ListBoxItem_PreviewMouseMove" />
+                        <EventSetter Event="PreviewMouseLeftButtonUp"
+                                     Handler="ListBoxItem_PreviewMouseLeftButtonUp" />
+                        <EventSetter Event="LostMouseCapture"
+                                     Handler="ListBoxItem_LostMouseCapture" />
+                        <EventSetter Event="MouseDown"
+                                     Handler="ListBoxItem_MouseDown" />
+                    </Style>
+                </ListBox.ItemContainerStyle>
+            </ListBox>
+        </Grid>
+    </DockPanel>
 </UserControl>

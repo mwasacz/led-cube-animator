@@ -1,8 +1,12 @@
 ﻿using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.Command;
 using LedCubeAnimator.Model;
+using LedCubeAnimator.Utils;
 using LedCubeAnimator.ViewModel.DataViewModels;
+using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Windows.Input;
 
 namespace LedCubeAnimator.ViewModel.UserControlViewModels
 {
@@ -21,15 +25,17 @@ namespace LedCubeAnimator.ViewModel.UserControlViewModels
         public IModelManager Model { get; }
         public ISharedViewModel Shared { get; }
 
-        public int StartDate => 0;
-
-        public int EndDate => Shared.Length - 1;
-
-        private ObservableCollection<TileViewModel> _tiles;
-        public ObservableCollection<TileViewModel> Tiles
+        private GroupViewModel _currentGroup;
+        public GroupViewModel CurrentGroup
         {
-            get => _tiles;
-            private set => Set(ref _tiles, value);
+            get => _currentGroup;
+            private set
+            {
+                if (Set(ref _currentGroup, value))
+                {
+                    UpdateGroups();
+                }
+            }
         }
 
         public ObservableCollection<GroupViewModel> Groups { get; } = new ObservableCollection<GroupViewModel>();
@@ -40,9 +46,16 @@ namespace LedCubeAnimator.ViewModel.UserControlViewModels
             get => _selectedTile;
             set
             {
-                if (Set(ref _selectedTile, value) && _selectedTile != null)
+                if (Set(ref _selectedTile, value))
                 {
-                    Shared.SelectedTile = value;
+                    if (_selectedTile != null)
+                    {
+                        Shared.SelectedTile = _selectedTile;
+                    }
+                    else
+                    {
+                        SelectedGroup = CurrentGroup;
+                    }
                 }
             }
         }
@@ -55,10 +68,44 @@ namespace LedCubeAnimator.ViewModel.UserControlViewModels
             {
                 if (Set(ref _selectedGroup, value) && _selectedGroup != null)
                 {
-                    Shared.SelectedTile = value;
+                    Shared.SelectedTile = _selectedGroup;
                 }
             }
         }
+
+        private RelayCommand<ItemDraggedEventArgs> _itemDraggedCommand;
+        public ICommand ItemDraggedCommand => _itemDraggedCommand ?? (_itemDraggedCommand = new RelayCommand<ItemDraggedEventArgs>(e =>
+        {
+            var tile = SelectedTile;
+            switch (e.DragMode)
+            {
+                case DragMode.Left:
+                    tile.Start = e.PositionX;
+                    break;
+                case DragMode.Right:
+                    tile.End = e.PositionX;
+                    break;
+                case DragMode.Move:
+                    Model.Group(() =>
+                    {
+                        var start = Math.Max(e.PositionX - e.HandleOffset, 0);
+                        var length = tile.Length;
+                        tile.Start = start;
+                        tile.End = start + length - 1;
+
+                        int row = e.PositionY;
+                        int channel = 0;
+                        while (channel < tile.Parent?.RowHeights?.Count && row >= tile.Parent.RowHeights[channel])
+                        {
+                            row -= tile.Parent.RowHeights[channel];
+                            channel++;
+                        }
+                        tile.Channel = channel;
+                        tile.Hierarchy = row;
+                    });
+                    break;
+            }
+        }));
 
         private void Shared_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
@@ -66,21 +113,27 @@ namespace LedCubeAnimator.ViewModel.UserControlViewModels
             {
                 UpdateSelection();
             }
-            else if (e.PropertyName == nameof(ISharedViewModel.Length))
-            {
-                RaisePropertyChanged(nameof(EndDate));
-            }
         }
 
         private void UpdateSelection()
         {
-            SelectedTile = Shared.SelectedTileExpanded ? null : Shared.SelectedTile;
-            SelectedGroup = Shared.SelectedTileExpanded ? (GroupViewModel)Shared.SelectedTile : null;
+            if (Shared.SelectedTileExpanded)
+            {
+                CurrentGroup = (GroupViewModel)Shared.SelectedTile;
+                SelectedGroup = (GroupViewModel)Shared.SelectedTile;
+                SelectedTile = null;
+            }
+            else
+            {
+                CurrentGroup = Shared.SelectedTile.Parent;
+                SelectedGroup = null;
+                SelectedTile = Shared.SelectedTile;
+            }
+        }
 
-            var group = SelectedGroup ?? SelectedTile.Parent;
-            Tiles = group.ChildViewModels;
-
-            int cnt = UpdateGroup(group);
+        private void UpdateGroups()
+        {
+            int cnt = UpdateGroup(_currentGroup);
             while (Groups.Count > cnt)
             {
                 Groups.RemoveAt(Groups.Count - 1);

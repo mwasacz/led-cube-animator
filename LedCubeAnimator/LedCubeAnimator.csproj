@@ -107,9 +107,12 @@
     <Compile Include="View\Converters\ColorToValueConverter.cs" />
     <Compile Include="View\Converters\Point3DToDoubleConverter.cs" />
     <Compile Include="View\Converters\PointToDoubleConverter.cs" />
+    <Compile Include="View\Converters\MultiplyConverter.cs" />
     <Compile Include="View\Converters\Vector3DToDoubleConverter.cs" />
     <Compile Include="View\Converters\VectorToDoubleConverter.cs" />
+    <Compile Include="Utils\ItemDraggedEventArgs.cs" />
     <Compile Include="View\IViewFactory.cs" />
+    <Compile Include="View\ScrollSynchronizer.cs" />
     <Compile Include="View\UserControls\ColorPicker.xaml.cs">
       <DependentUpon>ColorPicker.xaml</DependentUpon>
     </Compile>
@@ -127,8 +130,7 @@
     </Compile>
     <Compile Include="View\ViewFactory.cs" />
     <Compile Include="View\Converters\EnumToBoolConverter.cs" />
-    <Compile Include="View\Converters\IntToDateTimeConverter.cs" />
-    <Compile Include="View\Converters\IntToDoubleConverter.cs" />
+    <Compile Include="View\Converters\OffsetConverter.cs" />
     <Compile Include="View\Converters\InverseBoolConverter.cs" />
     <Compile Include="Model\Animations\Data\AngularDelay.cs" />
     <Compile Include="Model\Animations\Data\Animation.cs" />

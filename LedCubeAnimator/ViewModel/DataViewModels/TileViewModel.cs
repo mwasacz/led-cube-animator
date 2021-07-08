@@ -17,6 +17,7 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
             Tile = tile;
             Model = model;
             Parent = parent;
+            UpdateLength();
         }
 
         [Browsable(false)]
@@ -75,6 +76,24 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
         [Browsable(false)]
         public new bool IsInDesignMode => base.IsInDesignMode;
 
+        private int _length;
+
+        [Browsable(false)]
+        public int Length
+        {
+            get => _length;
+            private set => Set(ref _length, value);
+        }
+
+        private int _row;
+
+        [Browsable(false)]
+        public int Row
+        {
+            get => _row;
+            set => Set(ref _row, value);
+        }
+
         public virtual void ModelPropertyChanged(object obj, string propertyName, out TileViewModel changedViewModel, out string changedProperty)
         {
             changedProperty = null;
@@ -103,7 +122,16 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
                 }
                 changedViewModel = this;
                 RaisePropertyChanged(changedProperty);
+                if (propertyName == nameof(Tile.Start) || propertyName == nameof(Tile.End))
+                {
+                    UpdateLength();
+                }
             }
+        }
+
+        private void UpdateLength()
+        {
+            Length = End - Start + 1;
         }
 
         protected Point GetNewValue(Point newValue, Point oldValue)
