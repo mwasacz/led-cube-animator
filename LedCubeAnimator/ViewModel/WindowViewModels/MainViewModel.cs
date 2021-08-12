@@ -1,5 +1,6 @@
 ﻿using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
+using GalaSoft.MvvmLight.Messaging;
 using LedCubeAnimator.Model;
 using LedCubeAnimator.Model.Animations.Data;
 using LedCubeAnimator.ViewModel.DataViewModels;
@@ -8,6 +9,7 @@ using MvvmDialogs;
 using MvvmDialogs.FrameworkDialogs.OpenFile;
 using MvvmDialogs.FrameworkDialogs.SaveFile;
 using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
@@ -18,7 +20,7 @@ namespace LedCubeAnimator.ViewModel.WindowViewModels
 {
     public class MainViewModel : ViewModelBase, ISharedViewModel
     {
-        public MainViewModel(IModelManager model, IViewModelFactory viewModelFactory, IDialogService dialogService)
+        public MainViewModel(IModelManager model, IMessenger messenger, IViewModelFactory viewModelFactory, IDialogService dialogService) : base(messenger)
         {
             Model = model;
             _viewModelFactory = viewModelFactory;
@@ -26,6 +28,8 @@ namespace LedCubeAnimator.ViewModel.WindowViewModels
 
             Model.AnimationChanged += Model_AnimationChanged;
             Model.PropertiesChanged += Model_PropertiesChanged;
+
+            MessengerInstance.Register<PropertyChangedMessage<bool>>(this, HandlePropertyChangedMessage);
 
             UpdateAnimationViewModel();
 
@@ -49,38 +53,62 @@ namespace LedCubeAnimator.ViewModel.WindowViewModels
 
         public AnimationViewModel AnimationViewModel { get; private set; }
 
-        private TileViewModel _selectedTile;
-        public TileViewModel SelectedTile
+        private GroupViewModel _currentGroup;
+        public GroupViewModel CurrentGroup
         {
-            get => _selectedTile;
-            set
+            get => _currentGroup;
+            private set => Set(ref _currentGroup, value);
+        }
+
+        public ObservableCollection<TileViewModel> SelectedTiles { get; } = new ObservableCollection<TileViewModel>();
+
+        private void HandlePropertyChangedMessage(PropertyChangedMessage<bool> message)
+        {
+            if (message.Sender is TileViewModel tile)
             {
-                if (_selectedTile != value)
+                if (message.PropertyName == nameof(TileViewModel.Selected))
                 {
-                    bool expanded = value is GroupViewModel group && (group.Parent == null || IsAncestor(group, _selectedTile));
-                    _selectedTile = value;
-                    if (SelectedTileExpanded != expanded)
+                    if (tile.Selected)
                     {
-                        SelectedTileExpanded = expanded;
+                        foreach (var t in SelectedTiles.Where(t => t.Parent != tile.Parent).ToArray())
+                        {
+                            t.Selected = false;
+                        }
+                        SelectedTiles.Add(tile);
                     }
                     else
                     {
-                        UpdateTime();
+                        SelectedTiles.Remove(tile);
                     }
-                    RaisePropertyChanged();
+                    Application.Current.Dispatcher.BeginInvoke((Action)(() => UpdateCurrentGroup())); // ToDo
+                }
+                else if (tile is GroupViewModel group && message.PropertyName == nameof(GroupViewModel.Expanded))
+                {
+                    UpdateCurrentGroup();
                 }
             }
         }
 
-        private bool _selectedTileExpanded;
-        public bool SelectedTileExpanded
+        private void UpdateCurrentGroup()
         {
-            get => _selectedTileExpanded;
+            CurrentGroup = SelectedTiles.Count == 1 && SelectedTiles[0] is GroupViewModel group && group.Expanded
+                ? group
+                : SelectedTiles.FirstOrDefault()?.Parent ?? AnimationViewModel;
+            Time = SelectedTiles.FirstOrDefault() == CurrentGroup
+                ? 0
+                : SelectedTiles.FirstOrDefault()?.Start ?? 0;
+        }
+
+        private object _selectedToolWindow;
+        public object SelectedToolWindow
+        {
+            get => _selectedToolWindow;
             set
             {
-                if (Set(ref _selectedTileExpanded, value))
+                if (Set(ref _selectedToolWindow, value))
                 {
-                    UpdateTime();
+                    Model.MergeAllowed = false;
+                    Model.MergeAllowed = true;
                 }
             }
         }
@@ -93,18 +121,18 @@ namespace LedCubeAnimator.ViewModel.WindowViewModels
             {
                 if (Set(ref _selectedProperty, value))
                 {
-                    if (SelectedTile is GroupViewModel group && group.Parent != null)
+                    if (SelectedTiles.Count == 1 && SelectedTiles[0] is GroupViewModel group)
                     {
                         if (_selectedProperty == nameof(GroupViewModel.Children))
                         {
-                            SelectedTileExpanded = true;
+                            group.Expanded = true;
                         }
-                        else if (_selectedProperty == nameof(GroupViewModel.Start)
+                        else if (group != AnimationViewModel && (_selectedProperty == nameof(GroupViewModel.Start)
                             || _selectedProperty == nameof(GroupViewModel.End)
                             || _selectedProperty == nameof(GroupViewModel.Channel)
-                            || _selectedProperty == nameof(GroupViewModel.Hierarchy))
+                            || _selectedProperty == nameof(GroupViewModel.Hierarchy)))
                         {
-                            SelectedTileExpanded = false;
+                            group.Expanded = false;
                         }
                     }
                     Model.MergeAllowed = false;
@@ -128,14 +156,7 @@ namespace LedCubeAnimator.ViewModel.WindowViewModels
         public int Time
         {
             get => _time;
-            set => Set(ref _time, Math.Max(0, Math.Min(value, Length - 1)));
-        }
-
-        private int _length;
-        public int Length
-        {
-            get => _length;
-            private set => Set(ref _length, value);
+            set => Set(ref _time, Math.Max(0, Math.Min(value, CurrentGroup.Columns - 1)));
         }
 
         private RelayCommand _addFrameCommand;
@@ -324,28 +345,20 @@ namespace LedCubeAnimator.ViewModel.WindowViewModels
             return false;
         }
 
-        private GroupViewModel GetCurrentGroup() => SelectedTileExpanded ? (GroupViewModel)SelectedTile : SelectedTile.Parent;
-
-        private void AddTile(Tile tile) => Model.AddTile(GetCurrentGroup().Group, tile);
-
-        private static bool IsAncestor(GroupViewModel group, TileViewModel tile)
+        private void AddTile(Tile tile)
         {
-            return tile.Parent != null && (tile.Parent == group || IsAncestor(group, tile.Parent));
-        }
-
-        private void UpdateTime()
-        {
-            var group = GetCurrentGroup();
-            int end = (group.End - group.Start + 1) / group.RepeatCount;
-            Length = group.Reverse ? end / 2 : end;
-
-            Time = SelectedTileExpanded ? 0 : SelectedTile.Start;
+            Model.AddTile(CurrentGroup.Group, tile);
+            Model.MergeAllowed = false;
+            Model.MergeAllowed = true;
         }
 
         private void UpdateAnimationViewModel()
         {
+            AnimationViewModel?.Cleanup();
+
             AnimationViewModel = (AnimationViewModel)_viewModelFactory.Create(Model.Animation, (GroupViewModel)null);
-            SelectedTile = AnimationViewModel;
+            AnimationViewModel.Selected = true;
+            UpdateCurrentGroup();
 
             SelectedColor = Colors.Black;
 
@@ -360,27 +373,6 @@ namespace LedCubeAnimator.ViewModel.WindowViewModels
 
         private void Model_PropertiesChanged(object sender, PropertiesChangedEventArgs e)
         {
-            TileViewModel tile = null;
-            string property = null;
-            for (int i = 0; i < e.Changes.Count; i++)
-            {
-                var change = e.Changes[i];
-                AnimationViewModel.ModelPropertyChanged(change.Key, change.Value, out var t, out var p);
-                if (i == 0)
-                {
-                    tile = t;
-                    property = p;
-                }
-            }
-
-            if (tile != null)
-            {
-                SelectedTile = tile;
-                SelectedProperty = property;
-            }
-
-            UpdateTime();
-
             if (e.Changes.Any(c => c.Key is Animation && (c.Value == nameof(Animation.ColorMode) || c.Value == nameof(Animation.MonoColor))))
             {
                 SelectedColor = Colors.Black;

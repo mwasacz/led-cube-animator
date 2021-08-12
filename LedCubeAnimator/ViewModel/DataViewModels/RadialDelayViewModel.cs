@@ -1,7 +1,8 @@
-﻿using System.ComponentModel;
-using System.Windows;
+﻿using GalaSoft.MvvmLight.Messaging;
 using LedCubeAnimator.Model;
 using LedCubeAnimator.Model.Animations.Data;
+using System.ComponentModel;
+using System.Windows;
 using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 
 namespace LedCubeAnimator.ViewModel.DataViewModels
@@ -9,7 +10,7 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
     [CategoryOrder("RadialDelay", 2)]
     public class RadialDelayViewModel : DelayViewModel
     {
-        public RadialDelayViewModel(RadialDelay radialDelay, IModelManager model, GroupViewModel parent) : base(radialDelay, model, parent) { }
+        public RadialDelayViewModel(RadialDelay radialDelay, IModelManager model, IMessenger messenger, GroupViewModel parent) : base(radialDelay, model, messenger, parent) { }
 
         [Browsable(false)]
         public RadialDelay RadialDelay => (RadialDelay)Tile;
@@ -30,24 +31,17 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
             set => Model.SetTileProperty(RadialDelay, nameof(RadialDelay.Center), GetNewValue(value, RadialDelay.Center));
         }
 
-        public override void ModelPropertyChanged(object obj, string propertyName, out TileViewModel changedViewModel, out string changedProperty)
+        protected override void ModelPropertyChanged(string propertyName)
         {
-            base.ModelPropertyChanged(obj, propertyName, out changedViewModel, out changedProperty);
-            if (obj == RadialDelay)
+            base.ModelPropertyChanged(propertyName);
+            switch (propertyName)
             {
-                switch (propertyName)
-                {
-                    case nameof(RadialDelay.Axis):
-                        changedProperty = nameof(Axis);
-                        break;
-                    case nameof(RadialDelay.Center):
-                        changedProperty = nameof(Center);
-                        break;
-                    default:
-                        return;
-                }
-                changedViewModel = this;
-                RaisePropertyChanged(changedProperty);
+                case nameof(RadialDelay.Axis):
+                    RaisePropertyChanged(nameof(Axis));
+                    break;
+                case nameof(RadialDelay.Center):
+                    RaisePropertyChanged(nameof(Center));
+                    break;
             }
         }
     }

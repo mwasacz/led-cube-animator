@@ -1,4 +1,5 @@
-﻿using LedCubeAnimator.Model;
+﻿using GalaSoft.MvvmLight.Messaging;
+using LedCubeAnimator.Model;
 using LedCubeAnimator.Model.Animations.Data;
 using System.ComponentModel;
 using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
@@ -8,7 +9,7 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
     [CategoryOrder("ScaleEffect", 3)]
     public class ScaleEffectViewModel : TransformEffectViewModel
     {
-        public ScaleEffectViewModel(ScaleEffect scaleEffect, IModelManager model, GroupViewModel parent) : base(scaleEffect, model, parent) { }
+        public ScaleEffectViewModel(ScaleEffect scaleEffect, IModelManager model, IMessenger messenger, GroupViewModel parent) : base(scaleEffect, model, messenger, parent) { }
 
         [Browsable(false)]
         public ScaleEffect ScaleEffect => (ScaleEffect)Tile;
@@ -29,24 +30,17 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
             set => Model.SetTileProperty(ScaleEffect, nameof(ScaleEffect.Center), value);
         }
 
-        public override void ModelPropertyChanged(object obj, string propertyName, out TileViewModel changedViewModel, out string changedProperty)
+        protected override void ModelPropertyChanged(string propertyName)
         {
-            base.ModelPropertyChanged(obj, propertyName, out changedViewModel, out changedProperty);
-            if (obj == ScaleEffect)
+            base.ModelPropertyChanged(propertyName);
+            switch (propertyName)
             {
-                switch (propertyName)
-                {
-                    case nameof(ScaleEffect.Axis):
-                        changedProperty = nameof(Axis);
-                        break;
-                    case nameof(ScaleEffect.Center):
-                        changedProperty = nameof(Center);
-                        break;
-                    default:
-                        return;
-                }
-                changedViewModel = this;
-                RaisePropertyChanged(changedProperty);
+                case nameof(ScaleEffect.Axis):
+                    RaisePropertyChanged(nameof(Axis));
+                    break;
+                case nameof(ScaleEffect.Center):
+                    RaisePropertyChanged(nameof(Center));
+                    break;
             }
         }
     }

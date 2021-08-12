@@ -4,6 +4,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:behaviors="clr-namespace:LedCubeAnimator.View.Behaviors"
              xmlns:converters="clr-namespace:LedCubeAnimator.View.Converters"
              mc:Ignorable="d">
     <UserControl.Resources>
@@ -13,12 +15,14 @@
         <converters:Vector3DToDoubleConverter x:Key="Vector3DToDoubleConverter" />
     </UserControl.Resources>
     <StackPanel>
-        <xctk:PropertyGrid SelectedObject="{Binding Shared.SelectedTile}"
-                           SelectedProperty="{Binding Shared.SelectedProperty, Mode=TwoWay}"
+        <xctk:PropertyGrid SelectedProperty="{Binding Shared.SelectedProperty, Mode=TwoWay}"
                            ShowSortOptions="False"
                            ShowSearchBox="False"
                            ShowSummary="False"
                            NameColumnWidth="120">
+            <i:Interaction.Behaviors>
+                <behaviors:MultiObjectEditor SelectedObjects="{Binding Shared.SelectedTiles}"/>
+            </i:Interaction.Behaviors>
             <xctk:PropertyGrid.EditorDefinitions>
                 <xctk:EditorTemplateDefinition>
                     <xctk:EditorTemplateDefinition.TargetProperties>

@@ -1,7 +1,8 @@
-﻿using System.ComponentModel;
-using System.Windows;
+﻿using GalaSoft.MvvmLight.Messaging;
 using LedCubeAnimator.Model;
 using LedCubeAnimator.Model.Animations.Data;
+using System.ComponentModel;
+using System.Windows;
 using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 
 namespace LedCubeAnimator.ViewModel.DataViewModels
@@ -9,7 +10,7 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
     [CategoryOrder("AngularDelay", 2)]
     public class AngularDelayViewModel : DelayViewModel
     {
-        public AngularDelayViewModel(AngularDelay angularDelay, IModelManager model, GroupViewModel parent) : base(angularDelay, model, parent) { }
+        public AngularDelayViewModel(AngularDelay angularDelay, IModelManager model, IMessenger messenger, GroupViewModel parent) : base(angularDelay, model, messenger, parent) { }
 
         [Browsable(false)]
         public AngularDelay AngularDelay => (AngularDelay)Tile;
@@ -38,27 +39,20 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
             set => Model.SetTileProperty(AngularDelay, nameof(AngularDelay.StartAngle), value);
         }
 
-        public override void ModelPropertyChanged(object obj, string propertyName, out TileViewModel changedViewModel, out string changedProperty)
+        protected override void ModelPropertyChanged(string propertyName)
         {
-            base.ModelPropertyChanged(obj, propertyName, out changedViewModel, out changedProperty);
-            if (obj == AngularDelay)
+            base.ModelPropertyChanged(propertyName);
+            switch (propertyName)
             {
-                switch (propertyName)
-                {
-                    case nameof(AngularDelay.Axis):
-                        changedProperty = nameof(Axis);
-                        break;
-                    case nameof(AngularDelay.Center):
-                        changedProperty = nameof(Center);
-                        break;
-                    case nameof(AngularDelay.StartAngle):
-                        changedProperty = nameof(StartAngle);
-                        break;
-                    default:
-                        return;
-                }
-                changedViewModel = this;
-                RaisePropertyChanged(changedProperty);
+                case nameof(AngularDelay.Axis):
+                    RaisePropertyChanged(nameof(Axis));
+                    break;
+                case nameof(AngularDelay.Center):
+                    RaisePropertyChanged(nameof(Center));
+                    break;
+                case nameof(AngularDelay.StartAngle):
+                    RaisePropertyChanged(nameof(StartAngle));
+                    break;
             }
         }
     }

@@ -1,4 +1,5 @@
-﻿using LedCubeAnimator.Model;
+﻿using GalaSoft.MvvmLight.Messaging;
+using LedCubeAnimator.Model;
 using LedCubeAnimator.View;
 using LedCubeAnimator.ViewModel;
 using LedCubeAnimator.ViewModel.WindowViewModels;
@@ -17,11 +18,12 @@ namespace LedCubeAnimator
             base.OnStartup(e);
 
             var modelManager = new ModelManager();
-            var viewModelFactory = new ViewModelFactory(modelManager);
+            var messenger = new Messenger();
+            var viewModelFactory = new ViewModelFactory(modelManager, messenger);
             var viewFactory = new ViewFactory();
             var dialogService = new DialogService(dialogTypeLocator: viewFactory);
 
-            var mainViewModel = new MainViewModel(modelManager, viewModelFactory, dialogService);
+            var mainViewModel = new MainViewModel(modelManager, messenger, viewModelFactory, dialogService);
             var mainWindow = viewFactory.Create(mainViewModel);
             mainWindow.Show();
         }

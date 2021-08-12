@@ -1,4 +1,5 @@
-﻿using LedCubeAnimator.Model;
+﻿using GalaSoft.MvvmLight.Messaging;
+using LedCubeAnimator.Model;
 using LedCubeAnimator.Model.Animations.Data;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -10,18 +11,24 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
     [CategoryOrder("Group", 2)]
     public class GroupViewModel : EffectViewModel
     {
-        public GroupViewModel(Group group, IModelManager model, GroupViewModel parent, IViewModelFactory viewModelFactory) : base(group, model, parent)
+        public GroupViewModel(Group group, IModelManager model, IMessenger messenger, GroupViewModel parent, IViewModelFactory viewModelFactory) : base(group, model, messenger, parent)
         {
             _viewModelFactory = viewModelFactory;
+
+            Model.PropertiesChanged += Model_PropertiesChanged;
+
             UpdateColumns();
             UpdateChildren();
             UpdateRows();
         }
 
+        private readonly IViewModelFactory _viewModelFactory;
+        private int _columns;
+        private int _rows;
+        private bool _expanded;
+
         [Browsable(false)]
         public Group Group => (Group)Tile;
-
-        private readonly IViewModelFactory _viewModelFactory;
 
         [Category("Group")]
         [PropertyOrder(0)]
@@ -38,16 +45,12 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
         [Browsable(false)]
         public ObservableCollection<TileViewModel> ChildViewModels { get; } = new ObservableCollection<TileViewModel>();
 
-        private int _columns;
-
         [Browsable(false)]
         public int Columns
         {
             get => _columns;
             private set => Set(ref _columns, value);
         }
-
-        private int _rows;
 
         [Browsable(false)]
         public int Rows
@@ -59,62 +62,69 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
         [Browsable(false)]
         public ObservableCollection<int> RowHeights { get; } = new ObservableCollection<int>();
 
-        public override void ModelPropertyChanged(object obj, string propertyName, out TileViewModel changedViewModel, out string changedProperty)
+        [Browsable(false)]
+        public bool Expanded
         {
-            changedViewModel = null;
-            changedProperty = null;
-
-            foreach (var tile in ChildViewModels)
+            get => _expanded;
+            set
             {
-                tile.ModelPropertyChanged(obj, propertyName, out var childViewModel, out var childProperty);
-                if (childViewModel != null)
+                if (Set(ref _expanded, value, true) && !_expanded)
                 {
-                    changedViewModel = childViewModel;
-                    changedProperty = childProperty;
+                    foreach (var group in ChildViewModels.OfType<GroupViewModel>())
+                    {
+                        group.Expanded = false;
+                    }
                 }
             }
+        }
 
-            base.ModelPropertyChanged(obj, propertyName, out var baseViewModel, out var baseProperty);
-            if (baseViewModel != null)
+        public override void Cleanup()
+        {
+            Model.PropertiesChanged -= Model_PropertiesChanged;
+            foreach (var c in ChildViewModels)
             {
-                changedViewModel = baseViewModel;
-                changedProperty = baseProperty;
+                c.Cleanup();
             }
+            base.Cleanup();
+        }
 
-            if (obj == Group)
+        protected override void ModelPropertyChanged(string propertyName)
+        {
+            base.ModelPropertyChanged(propertyName);
+            switch (propertyName)
             {
-                switch (propertyName)
-                {
-                    case nameof(Group.Children):
-                        changedProperty = nameof(Children);
-                        break;
-                    case nameof(Group.ColorBlendMode):
-                        changedProperty = nameof(ColorBlendMode);
-                        break;
-                    case nameof(Group.Start):
-                    case nameof(Group.End):
-                    case nameof(Group.RepeatCount):
-                    case nameof(Group.Reverse):
-                        UpdateColumns();
-                        return;
-                    default:
-                        return;
-                }
-                changedViewModel = this;
-                RaisePropertyChanged(changedProperty);
-                if (propertyName == nameof(Group.Children))
-                {
+                case nameof(Group.Children):
+                    RaisePropertyChanged(nameof(Children));
                     UpdateChildren();
                     UpdateRows();
-                }
+                    break;
+                case nameof(Group.ColorBlendMode):
+                    RaisePropertyChanged(nameof(ColorBlendMode));
+                    break;
+                case nameof(Group.Start):
+                case nameof(Group.End):
+                case nameof(Group.RepeatCount):
+                case nameof(Group.Reverse):
+                    UpdateColumns();
+                    break;
             }
-            else if (Group.Children.Contains(obj) && (propertyName == nameof(Tile.Start)
-                || propertyName == nameof(Tile.End)
-                || propertyName == nameof(Tile.Hierarchy)
-                || propertyName == nameof(Tile.Channel)))
+        }
+
+        private void Model_PropertiesChanged(object sender, PropertiesChangedEventArgs e)
+        {
+            if (e.Changes.Any(c => Group.Children.Contains(c.Key)
+                && (c.Value == nameof(Tile.Start)
+                    || c.Value == nameof(Tile.End)
+                    || c.Value == nameof(Tile.Hierarchy)
+                    || c.Value == nameof(Tile.Channel))))
             {
                 UpdateRows();
             }
+        }
+
+        private void UpdateColumns()
+        {
+            Columns = Reverse ? Length / RepeatCount / 2 : Length / RepeatCount;
         }
 
         private void UpdateChildren()
@@ -123,21 +133,19 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
             {
                 if (!ChildViewModels.Any(c => c.Tile == tile))
                 {
-                    ChildViewModels.Add((TileViewModel)_viewModelFactory.Create(tile, this));
+                    var viewModel = (TileViewModel)_viewModelFactory.Create(tile, this);
+                    ChildViewModels.Add(viewModel);
                 }
             }
             for (int i = ChildViewModels.Count - 1; i >= 0; i--)
             {
-                if (!Group.Children.Contains(ChildViewModels[i].Tile))
+                var viewModel = ChildViewModels[i];
+                if (!Group.Children.Contains(viewModel.Tile))
                 {
                     ChildViewModels.RemoveAt(i);
+                    viewModel.Cleanup();
                 }
             }
-        }
-
-        private void UpdateColumns()
-        {
-            Columns = Reverse ? Length / RepeatCount / 2 : Length / RepeatCount;
         }
 
         private void UpdateRows()
@@ -161,7 +169,7 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
             }
             while (i < RowHeights.Count)
             {
-                RowHeights.RemoveAt(i - 1);
+                RowHeights.RemoveAt(RowHeights.Count - 1);
             }
 
             int sum = 0;

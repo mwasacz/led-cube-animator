@@ -68,6 +68,12 @@
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="PropertyTools, Version=3.1.0.0, Culture=neutral, PublicKeyToken=ea0c9f2b460934d0, processorArchitecture=MSIL">
+      <HintPath>..\packages\PropertyTools.3.1.0\lib\net45\PropertyTools.dll</HintPath>
+    </Reference>
+    <Reference Include="PropertyTools.Wpf, Version=3.1.0.0, Culture=neutral, PublicKeyToken=ea0c9f2b460934d0, processorArchitecture=MSIL">
+      <HintPath>..\packages\PropertyTools.Wpf.3.1.0\lib\net45\PropertyTools.Wpf.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data" />
@@ -103,7 +109,10 @@
     <Compile Include="ViewModel\UserControlViewModels\PropertyViewModel.cs" />
     <Compile Include="ViewModel\UserControlViewModels\TimelineViewModel.cs" />
     <Compile Include="ViewModel\ViewModelFactory.cs" />
+    <Compile Include="View\Behaviors\MultiObjectEditor.cs" />
     <Compile Include="View\Behaviors\RoutedCommandBinding.cs" />
+    <Compile Include="View\Controls\MultiSelectListBox.cs" />
+    <Compile Include="View\Controls\MultiSelectListBoxItem.cs" />
     <Compile Include="View\Converters\ColorToValueConverter.cs" />
     <Compile Include="View\Converters\Point3DToDoubleConverter.cs" />
     <Compile Include="View\Converters\PointToDoubleConverter.cs" />

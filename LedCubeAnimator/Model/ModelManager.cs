@@ -208,6 +208,13 @@ namespace LedCubeAnimator.Model
                 {
                     movedTiles.Add(tile);
                 }
+                else if (tile is Group group && property == nameof(Animations.Data.Group.Children))
+                {
+                    foreach (var t in group.Children)
+                    {
+                        movedTiles.Add(t);
+                    }
+                }
                 else if (tile == Animation && property == nameof(Animations.Data.Animation.ColorMode) && Animation.ColorMode != ColorMode.RGB)
                 {
                     CorrectFrameVoxels(Animation);

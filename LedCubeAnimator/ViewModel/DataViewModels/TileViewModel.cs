@@ -1,4 +1,5 @@
 ﻿using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.Messaging;
 using LedCubeAnimator.Model;
 using LedCubeAnimator.Model.Animations.Data;
 using System.ComponentModel;
@@ -12,13 +13,20 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
     [CategoryOrder("Tile", 0)]
     public abstract class TileViewModel : ViewModelBase
     {
-        public TileViewModel(Tile tile, IModelManager model, GroupViewModel parent)
+        public TileViewModel(Tile tile, IModelManager model, IMessenger messenger, GroupViewModel parent) : base(messenger)
         {
             Tile = tile;
             Model = model;
             Parent = parent;
+
+            Model.PropertiesChanged += Model_PropertiesChanged;
+
             UpdateLength();
         }
+
+        private int _length;
+        private int _row;
+        private bool _selected;
 
         [Browsable(false)]
         public Tile Tile { get; }
@@ -74,18 +82,11 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
         }
 
         [Browsable(false)]
-        public new bool IsInDesignMode => base.IsInDesignMode;
-
-        private int _length;
-
-        [Browsable(false)]
         public int Length
         {
             get => _length;
             private set => Set(ref _length, value);
         }
-
-        private int _row;
 
         [Browsable(false)]
         public int Row
@@ -94,38 +95,55 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
             set => Set(ref _row, value);
         }
 
-        public virtual void ModelPropertyChanged(object obj, string propertyName, out TileViewModel changedViewModel, out string changedProperty)
+        [Browsable(false)]
+        public bool Selected
         {
-            changedProperty = null;
-            changedViewModel = null;
-            if (obj == Tile)
+            get => _selected;
+            set => Set(ref _selected, value, true);
+        }
+
+        [Browsable(false)]
+        public new bool IsInDesignMode => base.IsInDesignMode;
+
+        public override void Cleanup()
+        {
+            Selected = false;
+            Model.PropertiesChanged -= Model_PropertiesChanged;
+            base.Cleanup();
+        }
+
+        private void Model_PropertiesChanged(object sender, PropertiesChangedEventArgs e)
+        {
+            foreach (var change in e.Changes)
             {
-                switch (propertyName)
+                if (change.Key == Tile)
                 {
-                    case nameof(Tile.Name):
-                        changedProperty = nameof(Name);
-                        break;
-                    case nameof(Tile.Start):
-                        changedProperty = nameof(Start);
-                        break;
-                    case nameof(Tile.End):
-                        changedProperty = nameof(End);
-                        break;
-                    case nameof(Tile.Channel):
-                        changedProperty = nameof(Channel);
-                        break;
-                    case nameof(Tile.Hierarchy):
-                        changedProperty = nameof(Hierarchy);
-                        break;
-                    default:
-                        return;
+                    ModelPropertyChanged(change.Value);
                 }
-                changedViewModel = this;
-                RaisePropertyChanged(changedProperty);
-                if (propertyName == nameof(Tile.Start) || propertyName == nameof(Tile.End))
-                {
+            }
+        }
+
+        protected virtual void ModelPropertyChanged(string propertyName)
+        {
+            switch (propertyName)
+            {
+                case nameof(Tile.Name):
+                    RaisePropertyChanged(nameof(Name));
+                    break;
+                case nameof(Tile.Start):
+                    RaisePropertyChanged(nameof(Start));
                     UpdateLength();
-                }
+                    break;
+                case nameof(Tile.End):
+                    RaisePropertyChanged(nameof(End));
+                    UpdateLength();
+                    break;
+                case nameof(Tile.Channel):
+                    RaisePropertyChanged(nameof(Channel));
+                    break;
+                case nameof(Tile.Hierarchy):
+                    RaisePropertyChanged(nameof(Hierarchy));
+                    break;
             }
         }
 

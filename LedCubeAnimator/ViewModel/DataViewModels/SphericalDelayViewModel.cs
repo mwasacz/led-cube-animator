@@ -1,7 +1,8 @@
-﻿using System.ComponentModel;
-using System.Windows.Media.Media3D;
+﻿using GalaSoft.MvvmLight.Messaging;
 using LedCubeAnimator.Model;
 using LedCubeAnimator.Model.Animations.Data;
+using System.ComponentModel;
+using System.Windows.Media.Media3D;
 using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 
 namespace LedCubeAnimator.ViewModel.DataViewModels
@@ -9,7 +10,7 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
     [CategoryOrder("SphericalDelay", 2)]
     public class SphericalDelayViewModel : DelayViewModel
     {
-        public SphericalDelayViewModel(SphericalDelay sphericalDelay, IModelManager model, GroupViewModel parent) : base(sphericalDelay, model, parent) { }
+        public SphericalDelayViewModel(SphericalDelay sphericalDelay, IModelManager model, IMessenger messenger, GroupViewModel parent) : base(sphericalDelay, model, messenger, parent) { }
 
         [Browsable(false)]
         public SphericalDelay SphericalDelay => (SphericalDelay)Tile;
@@ -22,21 +23,14 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
             set => Model.SetTileProperty(SphericalDelay, nameof(SphericalDelay.Center), GetNewValue(value, SphericalDelay.Center));
         }
 
-        public override void ModelPropertyChanged(object obj, string propertyName, out TileViewModel changedViewModel, out string changedProperty)
+        protected override void ModelPropertyChanged(string propertyName)
         {
-            base.ModelPropertyChanged(obj, propertyName, out changedViewModel, out changedProperty);
-            if (obj == SphericalDelay)
+            base.ModelPropertyChanged(propertyName);
+            switch (propertyName)
             {
-                switch (propertyName)
-                {
-                    case nameof(SphericalDelay.Center):
-                        changedProperty = nameof(Center);
-                        break;
-                    default:
-                        return;
-                }
-                changedViewModel = this;
-                RaisePropertyChanged(changedProperty);
+                case nameof(SphericalDelay.Center):
+                    RaisePropertyChanged(nameof(Center));
+                    break;
             }
         }
     }

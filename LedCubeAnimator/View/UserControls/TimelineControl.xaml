@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             xmlns:controls="clr-namespace:LedCubeAnimator.View.Controls"
              xmlns:converters="clr-namespace:LedCubeAnimator.View.Converters"
              xmlns:view="clr-namespace:LedCubeAnimator.View"
              xmlns:local="clr-namespace:LedCubeAnimator.View.UserControls"
@@ -19,8 +20,7 @@
     <DockPanel>
         <ListBox DockPanel.Dock="Top"
                  ItemsSource="{Binding Groups}"
-                 DisplayMemberPath="Name"
-                 SelectedItem="{Binding SelectedGroup}">
+                 DisplayMemberPath="Name">
             <ListBox.ItemsPanel>
                 <ItemsPanelTemplate>
                     <VirtualizingStackPanel Margin="4,0,4,0"
@@ -29,6 +29,8 @@
             </ListBox.ItemsPanel>
             <ListBox.ItemContainerStyle>
                 <Style TargetType="ListBoxItem">
+                    <Setter Property="IsSelected"
+                            Value="{Binding Selected}" />
                     <Setter Property="Background"
                             Value="LightGray" />
                 </Style>
@@ -48,7 +50,7 @@
                                 VerticalAlignment="Center"
                                 Value="{Binding Shared.Time}"
                                 Minimum="0"
-                                Maximum="{Binding CurrentGroup.Columns, Converter={StaticResource OffsetConverter}, ConverterParameter={StaticResource MaxIndexOffset}}" />
+                                Maximum="{Binding Shared.CurrentGroup.Columns, Converter={StaticResource OffsetConverter}, ConverterParameter={StaticResource MaxIndexOffset}}" />
             <Border Grid.Column="1"
                     Grid.Row="0"
                     Padding="1">
@@ -61,7 +63,7 @@
                     <Border HorizontalAlignment="Left">
                         <Border.Width>
                             <MultiBinding Converter="{StaticResource MultiplyConverter}">
-                                <Binding Path="CurrentGroup.Columns" />
+                                <Binding Path="Shared.CurrentGroup.Columns" />
                                 <Binding Path="CellWidth"
                                          RelativeSource="{RelativeSource AncestorType=local:TimelineControl}" />
                             </MultiBinding>
@@ -71,8 +73,7 @@
                                 TickPlacement="BottomRight"
                                 Value="{Binding Shared.Time}"
                                 Minimum="{StaticResource SliderTickOffset}"
-                                Maximum="{Binding CurrentGroup.Columns, Converter={StaticResource OffsetConverter}, ConverterParameter={StaticResource SliderTickOffset}}">
-                        </Slider>
+                                Maximum="{Binding Shared.CurrentGroup.Columns, Converter={StaticResource OffsetConverter}, ConverterParameter={StaticResource SliderTickOffset}}"></Slider>
                     </Border>
                 </ScrollViewer>
             </Border>
@@ -80,7 +81,7 @@
                           Grid.Row="1"
                           Grid.ColumnSpan="2"
                           AlternationCount="{x:Static sys:Int32.MaxValue}"
-                          ItemsSource="{Binding CurrentGroup.RowHeights}">
+                          ItemsSource="{Binding Shared.CurrentGroup.RowHeights}">
                 <ItemsControl.Template>
                     <ControlTemplate TargetType="ItemsControl">
                         <Border Background="{TemplateBinding Background}"
@@ -123,14 +124,13 @@
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
-            <ListBox Grid.Column="1"
-                     Grid.Row="1"
-                     Background="Transparent"
-                     BorderThickness="0"
-                     ItemsSource="{Binding CurrentGroup.ChildViewModels}"
-                     DisplayMemberPath="Name"
-                     SelectedItem="{Binding SelectedTile}"
-                     MouseDown="ListBox_MouseDown">
+            <controls:MultiSelectListBox Grid.Column="1"
+                                         Grid.Row="1"
+                                         Background="Transparent"
+                                         BorderThickness="0"
+                                         ItemsSource="{Binding Shared.CurrentGroup.ChildViewModels}"
+                                         DisplayMemberPath="Name"
+                                         MouseDown="ListBox_MouseDown">
                 <ListBox.Resources>
                     <Style TargetType="ScrollViewer">
                         <Setter Property="HorizontalScrollBarVisibility"
@@ -149,14 +149,14 @@
                                 VerticalAlignment="Top">
                             <Canvas.Width>
                                 <MultiBinding Converter="{StaticResource MultiplyConverter}">
-                                    <Binding Path="CurrentGroup.Columns" />
+                                    <Binding Path="Shared.CurrentGroup.Columns" />
                                     <Binding Path="CellWidth"
                                              RelativeSource="{RelativeSource AncestorType=local:TimelineControl}" />
                                 </MultiBinding>
                             </Canvas.Width>
                             <Canvas.Height>
                                 <MultiBinding Converter="{StaticResource MultiplyConverter}">
-                                    <Binding Path="CurrentGroup.Rows" />
+                                    <Binding Path="Shared.CurrentGroup.Rows" />
                                     <Binding Path="CellHeight"
                                              RelativeSource="{RelativeSource AncestorType=local:TimelineControl}" />
                                 </MultiBinding>
@@ -166,6 +166,8 @@
                 </ListBox.ItemsPanel>
                 <ListBox.ItemContainerStyle>
                     <Style TargetType="ListBoxItem">
+                        <Setter Property="IsSelected"
+                                Value="{Binding Selected}" />
                         <Setter Property="Canvas.Left">
                             <Setter.Value>
                                 <MultiBinding Converter="{StaticResource MultiplyConverter}">
@@ -209,7 +211,7 @@
                                      Handler="ListBoxItem_MouseDown" />
                     </Style>
                 </ListBox.ItemContainerStyle>
-            </ListBox>
+            </controls:MultiSelectListBox>
         </Grid>
     </DockPanel>
 </UserControl>

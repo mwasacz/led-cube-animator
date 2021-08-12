@@ -1,4 +1,5 @@
-﻿using LedCubeAnimator.Model;
+﻿using GalaSoft.MvvmLight.Messaging;
+using LedCubeAnimator.Model;
 using LedCubeAnimator.Model.Animations.Data;
 using System.ComponentModel;
 using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
@@ -8,7 +9,7 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
     [CategoryOrder("TransformEffect", 2)]
     public abstract class TransformEffectViewModel : EffectViewModel
     {
-        public TransformEffectViewModel(TransformEffect transformEffect, IModelManager model, GroupViewModel parent) : base(transformEffect, model, parent) { }
+        public TransformEffectViewModel(TransformEffect transformEffect, IModelManager model, IMessenger messenger, GroupViewModel parent) : base(transformEffect, model, messenger, parent) { }
 
         [Browsable(false)]
         public TransformEffect TransformEffect => (TransformEffect)Tile;
@@ -37,27 +38,20 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
             set => Model.SetTileProperty(TransformEffect, nameof(TransformEffect.Round), value);
         }
 
-        public override void ModelPropertyChanged(object obj, string propertyName, out TileViewModel changedViewModel, out string changedProperty)
+        protected override void ModelPropertyChanged(string propertyName)
         {
-            base.ModelPropertyChanged(obj, propertyName, out changedViewModel, out changedProperty);
-            if (obj == TransformEffect)
+            base.ModelPropertyChanged(propertyName);
+            switch (propertyName)
             {
-                switch (propertyName)
-                {
-                    case nameof(TransformEffect.From):
-                        changedProperty = nameof(From);
-                        break;
-                    case nameof(TransformEffect.To):
-                        changedProperty = nameof(To);
-                        break;
-                    case nameof(TransformEffect.Round):
-                        changedProperty = nameof(Round);
-                        break;
-                    default:
-                        return;
-                }
-                changedViewModel = this;
-                RaisePropertyChanged(changedProperty);
+                case nameof(TransformEffect.From):
+                    RaisePropertyChanged(nameof(From));
+                    break;
+                case nameof(TransformEffect.To):
+                    RaisePropertyChanged(nameof(To));
+                    break;
+                case nameof(TransformEffect.Round):
+                    RaisePropertyChanged(nameof(Round));
+                    break;
             }
         }
     }

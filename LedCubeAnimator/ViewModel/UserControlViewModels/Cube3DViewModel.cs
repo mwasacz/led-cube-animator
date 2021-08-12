@@ -41,7 +41,7 @@ namespace LedCubeAnimator.ViewModel.UserControlViewModels
         private RelayCommand<Point3D> _voxelClickCommand;
         public ICommand VoxelClickCommand => _voxelClickCommand ?? (_voxelClickCommand = new RelayCommand<Point3D>(p =>
         {
-            if (Shared.SelectedTile is FrameViewModel frame)
+            if (Shared.SelectedTiles.Count == 1 && Shared.SelectedTiles[0] is FrameViewModel frame)
             {
                 int x = (int)p.X - (int)frame.Offset.X;
                 int y = (int)p.Y - (int)frame.Offset.Y;

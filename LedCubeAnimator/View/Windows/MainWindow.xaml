@@ -225,7 +225,8 @@
             </ToolBar>
         </ToolBarTray>
         <dock:DockingManager Margin="4,0,4,2"
-                             AllowMixedOrientation="True">
+                             AllowMixedOrientation="True"
+                             ActiveContent="{Binding SelectedToolWindow}">
             <dock:LayoutRoot>
                 <dock:LayoutPanel>
                     <dock:LayoutAnchorablePaneGroup Orientation="Vertical"

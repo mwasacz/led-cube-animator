@@ -1,6 +1,7 @@
-﻿using System.ComponentModel;
+﻿using GalaSoft.MvvmLight.Messaging;
 using LedCubeAnimator.Model;
 using LedCubeAnimator.Model.Animations.Data;
+using System.ComponentModel;
 using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 
 namespace LedCubeAnimator.ViewModel.DataViewModels
@@ -8,7 +9,7 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
     [CategoryOrder("LinearDelay", 2)]
     public class LinearDelayViewModel : DelayViewModel
     {
-        public LinearDelayViewModel(LinearDelay linearDelay, IModelManager model, GroupViewModel parent) : base(linearDelay, model, parent) { }
+        public LinearDelayViewModel(LinearDelay linearDelay, IModelManager model, IMessenger messenger, GroupViewModel parent) : base(linearDelay, model, messenger, parent) { }
 
         [Browsable(false)]
         public LinearDelay LinearDelay => (LinearDelay)Tile;
@@ -29,24 +30,17 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
             set => Model.SetTileProperty(LinearDelay, nameof(LinearDelay.Center), value);
         }
 
-        public override void ModelPropertyChanged(object obj, string propertyName, out TileViewModel changedViewModel, out string changedProperty)
+        protected override void ModelPropertyChanged(string propertyName)
         {
-            base.ModelPropertyChanged(obj, propertyName, out changedViewModel, out changedProperty);
-            if (obj == LinearDelay)
+            base.ModelPropertyChanged(propertyName);
+            switch (propertyName)
             {
-                switch (propertyName)
-                {
-                    case nameof(LinearDelay.Axis):
-                        changedProperty = nameof(Axis);
-                        break;
-                    case nameof(LinearDelay.Center):
-                        changedProperty = nameof(Center);
-                        break;
-                    default:
-                        return;
-                }
-                changedViewModel = this;
-                RaisePropertyChanged(changedProperty);
+                case nameof(LinearDelay.Axis):
+                    RaisePropertyChanged(nameof(Axis));
+                    break;
+                case nameof(LinearDelay.Center):
+                    RaisePropertyChanged(nameof(Center));
+                    break;
             }
         }
     }

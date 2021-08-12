@@ -1,4 +1,5 @@
-﻿using LedCubeAnimator.Model;
+﻿using GalaSoft.MvvmLight.Messaging;
+using LedCubeAnimator.Model;
 using LedCubeAnimator.Model.Animations.Data;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -10,7 +11,10 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
     [CategoryOrder("Animation", 3)]
     public class AnimationViewModel : GroupViewModel
     {
-        public AnimationViewModel(Animation animation, IModelManager model, IViewModelFactory viewModelFactory) : base(animation, model, null, viewModelFactory) { }
+        public AnimationViewModel(Animation animation, IModelManager model, IMessenger messenger, IViewModelFactory viewModelFactory) : base(animation, model, messenger, null, viewModelFactory) { }
+
+        [Browsable(false)]
+        public Animation Animation => (Animation)Group;
 
         [Category("Animation")]
         [PropertyOrder(0)]
@@ -47,9 +51,6 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
         }
 
         [Browsable(false)]
-        public Animation Animation => (Animation)Group;
-
-        [Browsable(false)]
         public new int Start => base.Start;
 
         [Browsable(false)]
@@ -67,30 +68,23 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
         [Browsable(false)]
         public new TimeInterpolation TimeInterpolation => base.TimeInterpolation;
 
-        public override void ModelPropertyChanged(object obj, string propertyName, out TileViewModel changedViewModel, out string changedProperty)
+        protected override void ModelPropertyChanged(string propertyName)
         {
-            base.ModelPropertyChanged(obj, propertyName, out changedViewModel, out changedProperty);
-            if (obj == Animation)
+            base.ModelPropertyChanged(propertyName);
+            switch (propertyName)
             {
-                switch (propertyName)
-                {
-                    case nameof(Animation.Size):
-                        changedProperty = nameof(Size);
-                        break;
-                    case nameof(Animation.ColorMode):
-                        changedProperty = nameof(ColorMode);
-                        break;
-                    case nameof(Animation.MonoColor):
-                        changedProperty = nameof(MonoColor);
-                        break;
-                    case nameof(Animation.FrameDuration):
-                        changedProperty = nameof(FrameDuration);
-                        break;
-                    default:
-                        return;
-                }
-                changedViewModel = this;
-                RaisePropertyChanged(changedProperty);
+                case nameof(Animation.Size):
+                    RaisePropertyChanged(nameof(Size));
+                    break;
+                case nameof(Animation.ColorMode):
+                    RaisePropertyChanged(nameof(ColorMode));
+                    break;
+                case nameof(Animation.MonoColor):
+                    RaisePropertyChanged(nameof(MonoColor));
+                    break;
+                case nameof(Animation.FrameDuration):
+                    RaisePropertyChanged(nameof(FrameDuration));
+                    break;
             }
         }
     }

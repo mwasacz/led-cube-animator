@@ -1,14 +1,15 @@
-﻿using System.ComponentModel;
+﻿using GalaSoft.MvvmLight.Messaging;
 using LedCubeAnimator.Model;
 using LedCubeAnimator.Model.Animations.Data;
+using System.ComponentModel;
 using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 
 namespace LedCubeAnimator.ViewModel.DataViewModels
 {
     [CategoryOrder("Delay", 1)]
-    public class DelayViewModel : TileViewModel
+    public abstract class DelayViewModel : TileViewModel
     {
-        public DelayViewModel(Delay delay, IModelManager model, GroupViewModel parent) : base(delay, model, parent) { }
+        public DelayViewModel(Delay delay, IModelManager model, IMessenger messenger, GroupViewModel parent) : base(delay, model, messenger, parent) { }
 
         [Browsable(false)]
         public Delay Delay => (Delay)Tile;
@@ -37,27 +38,20 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
             set => Model.SetTileProperty(Delay, nameof(Delay.Static), value);
         }
 
-        public override void ModelPropertyChanged(object obj, string propertyName, out TileViewModel changedViewModel, out string changedProperty)
+        protected override void ModelPropertyChanged(string propertyName)
         {
-            base.ModelPropertyChanged(obj, propertyName, out changedViewModel, out changedProperty);
-            if (obj == Delay)
+            base.ModelPropertyChanged(propertyName);
+            switch (propertyName)
             {
-                switch (propertyName)
-                {
-                    case nameof(Delay.Value):
-                        changedProperty = nameof(Value);
-                        break;
-                    case nameof(Delay.WrapAround):
-                        changedProperty = nameof(WrapAround);
-                        break;
-                    case nameof(Delay.Static):
-                        changedProperty = nameof(Static);
-                        break;
-                    default:
-                        return;
-                }
-                changedViewModel = this;
-                RaisePropertyChanged(changedProperty);
+                case nameof(Delay.Value):
+                    RaisePropertyChanged(nameof(Value));
+                    break;
+                case nameof(Delay.WrapAround):
+                    RaisePropertyChanged(nameof(WrapAround));
+                    break;
+                case nameof(Delay.Static):
+                    RaisePropertyChanged(nameof(Static));
+                    break;
             }
         }
     }

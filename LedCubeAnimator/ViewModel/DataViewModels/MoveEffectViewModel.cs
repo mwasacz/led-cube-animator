@@ -1,4 +1,5 @@
-﻿using LedCubeAnimator.Model;
+﻿using GalaSoft.MvvmLight.Messaging;
+using LedCubeAnimator.Model;
 using LedCubeAnimator.Model.Animations.Data;
 using System.ComponentModel;
 using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
@@ -8,7 +9,7 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
     [CategoryOrder("MoveEffect", 3)]
     public class MoveEffectViewModel : TransformEffectViewModel
     {
-        public MoveEffectViewModel(MoveEffect moveEffect, IModelManager model, GroupViewModel parent) : base(moveEffect, model, parent) { }
+        public MoveEffectViewModel(MoveEffect moveEffect, IModelManager model, IMessenger messenger, GroupViewModel parent) : base(moveEffect, model, messenger, parent) { }
 
         [Browsable(false)]
         public MoveEffect MoveEffect => (MoveEffect)Tile;
@@ -21,21 +22,14 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
             set => Model.SetTileProperty(MoveEffect, nameof(MoveEffect.Axis), value);
         }
 
-        public override void ModelPropertyChanged(object obj, string propertyName, out TileViewModel changedViewModel, out string changedProperty)
+        protected override void ModelPropertyChanged(string propertyName)
         {
-            base.ModelPropertyChanged(obj, propertyName, out changedViewModel, out changedProperty);
-            if (obj == MoveEffect)
+            base.ModelPropertyChanged(propertyName);
+            switch (propertyName)
             {
-                switch (propertyName)
-                {
-                    case nameof(MoveEffect.Axis):
-                        changedProperty = nameof(Axis);
-                        break;
-                    default:
-                        return;
-                }
-                changedViewModel = this;
-                RaisePropertyChanged(changedProperty);
+                case nameof(MoveEffect.Axis):
+                    RaisePropertyChanged(nameof(Axis));
+                    break;
             }
         }
     }

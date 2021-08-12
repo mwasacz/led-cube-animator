@@ -1,6 +1,7 @@
 ﻿using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using LedCubeAnimator.Model;
+using System.Linq;
 using System.Windows.Input;
 
 namespace LedCubeAnimator.ViewModel.UserControlViewModels
@@ -19,10 +20,16 @@ namespace LedCubeAnimator.ViewModel.UserControlViewModels
         private RelayCommand _removeTileCommand;
         public ICommand RemoveTileCommand => _removeTileCommand ?? (_removeTileCommand = new RelayCommand(() =>
         {
-            if (Shared.SelectedTile.Parent != null)
+            Model.Group(() =>
             {
-                Model.RemoveTile(Shared.SelectedTile.Parent.Group, Shared.SelectedTile.Tile);
-            }
+                foreach (var tile in Shared.SelectedTiles.ToArray())
+                {
+                    if (tile.Parent != null)
+                    {
+                        Model.RemoveTile(tile.Parent.Group, tile.Tile);
+                    }
+                }
+            });
         }));
     }
 }

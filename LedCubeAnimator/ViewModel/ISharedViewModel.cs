@@ -1,5 +1,6 @@
 ﻿using LedCubeAnimator.ViewModel.DataViewModels;
 using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Media;
 
@@ -7,8 +8,8 @@ namespace LedCubeAnimator.ViewModel
 {
     public interface ISharedViewModel : INotifyPropertyChanged
     {
-        TileViewModel SelectedTile { get; set; }
-        bool SelectedTileExpanded { get; set; }
+        GroupViewModel CurrentGroup { get; }
+        ObservableCollection<TileViewModel> SelectedTiles { get; }
         string SelectedProperty { get; set; }
 
         Color? SelectedColor { get; set; }
@@ -16,6 +17,5 @@ namespace LedCubeAnimator.ViewModel
         event EventHandler<ColorClickedEventArgs> ColorClicked;
 
         int Time { get; set; }
-        int Length { get; }
     }
 }

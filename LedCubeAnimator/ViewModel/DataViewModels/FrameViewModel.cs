@@ -1,4 +1,5 @@
-﻿using LedCubeAnimator.Model;
+﻿using GalaSoft.MvvmLight.Messaging;
+using LedCubeAnimator.Model;
 using LedCubeAnimator.Model.Animations.Data;
 using System.ComponentModel;
 using System.Windows.Media;
@@ -10,7 +11,7 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
     [CategoryOrder("Frame", 1)]
     public class FrameViewModel : TileViewModel
     {
-        public FrameViewModel(Frame frame, IModelManager model, GroupViewModel parent) : base(frame, model, parent) { }
+        public FrameViewModel(Frame frame, IModelManager model, IMessenger messenger, GroupViewModel parent) : base(frame, model, messenger, parent) { }
 
         [Browsable(false)]
         public Frame Frame => (Frame)Tile;
@@ -39,25 +40,18 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
             }
         }
 
-        public override void ModelPropertyChanged(object obj, string propertyName, out TileViewModel changedViewModel, out string changedProperty)
+        protected override void ModelPropertyChanged(string propertyName)
         {
-            base.ModelPropertyChanged(obj, propertyName, out changedViewModel, out changedProperty);
-            if (obj == Frame)
+            base.ModelPropertyChanged(propertyName);
+            switch (propertyName)
             {
-                switch (propertyName)
-                {
-                    case nameof(Frame.Offset):
-                        changedProperty = nameof(Offset);
-                        break;
-                    case nameof(Frame.Voxels):
-                        RaisePropertyChanged(nameof(Size)); // ToDo
-                        changedProperty = nameof(Voxels);
-                        break;
-                    default:
-                        return;
-                }
-                changedViewModel = this;
-                RaisePropertyChanged(changedProperty);
+                case nameof(Frame.Offset):
+                    RaisePropertyChanged(nameof(Offset));
+                    break;
+                case nameof(Frame.Voxels):
+                    RaisePropertyChanged(nameof(Size)); // ToDo
+                    RaisePropertyChanged(nameof(Voxels));
+                    break;
             }
         }
     }

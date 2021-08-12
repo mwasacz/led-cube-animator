@@ -1,4 +1,5 @@
-﻿using LedCubeAnimator.Model;
+﻿using GalaSoft.MvvmLight.Messaging;
+using LedCubeAnimator.Model;
 using LedCubeAnimator.Model.Animations.Data;
 using System.ComponentModel;
 using System.Windows.Media;
@@ -9,7 +10,7 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
     [CategoryOrder("GradientEffect", 2)]
     public class GradientEffectViewModel : EffectViewModel
     {
-        public GradientEffectViewModel(GradientEffect gradientEffect, IModelManager model, GroupViewModel parent) : base(gradientEffect, model, parent) { }
+        public GradientEffectViewModel(GradientEffect gradientEffect, IModelManager model, IMessenger messenger, GroupViewModel parent) : base(gradientEffect, model, messenger, parent) { }
 
         [Browsable(false)]
         public GradientEffect GradientEffect => (GradientEffect)Tile;
@@ -38,27 +39,20 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
             set => Model.SetTileProperty(GradientEffect, nameof(GradientEffect.ColorInterpolation), value);
         }
 
-        public override void ModelPropertyChanged(object obj, string propertyName, out TileViewModel changedViewModel, out string changedProperty)
+        protected override void ModelPropertyChanged(string propertyName)
         {
-            base.ModelPropertyChanged(obj, propertyName, out changedViewModel, out changedProperty);
-            if (obj == GradientEffect)
+            base.ModelPropertyChanged(propertyName);
+            switch (propertyName)
             {
-                switch (propertyName)
-                {
-                    case nameof(GradientEffect.From):
-                        changedProperty = nameof(From);
-                        break;
-                    case nameof(GradientEffect.To):
-                        changedProperty = nameof(To);
-                        break;
-                    case nameof(GradientEffect.ColorInterpolation):
-                        changedProperty = nameof(ColorInterpolation);
-                        break;
-                    default:
-                        return;
-                }
-                changedViewModel = this;
-                RaisePropertyChanged(changedProperty);
+                case nameof(GradientEffect.From):
+                    RaisePropertyChanged(nameof(From));
+                    break;
+                case nameof(GradientEffect.To):
+                    RaisePropertyChanged(nameof(To));
+                    break;
+                case nameof(GradientEffect.ColorInterpolation):
+                    RaisePropertyChanged(nameof(ColorInterpolation));
+                    break;
             }
         }
     }
