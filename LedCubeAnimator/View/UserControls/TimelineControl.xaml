@@ -31,6 +31,20 @@
                 <Style TargetType="ListBoxItem">
                     <Setter Property="IsSelected"
                             Value="{Binding Selected}" />
+                    <Setter Property="ContextMenu">
+                        <Setter.Value>
+                            <ContextMenu>
+                                <MenuItem Header="Cut"
+                                          Command="ApplicationCommands.Cut" />
+                                <MenuItem Header="Copy"
+                                          Command="ApplicationCommands.Copy" />
+                                <MenuItem Header="Paste"
+                                          Command="ApplicationCommands.Paste" />
+                                <MenuItem Header="Delete"
+                                          Command="ApplicationCommands.Delete" />
+                            </ContextMenu>
+                        </Setter.Value>
+                    </Setter>
                     <Setter Property="Background"
                             Value="LightGray" />
                 </Style>
@@ -168,6 +182,20 @@
                     <Style TargetType="ListBoxItem">
                         <Setter Property="IsSelected"
                                 Value="{Binding Selected}" />
+                        <Setter Property="ContextMenu">
+                            <Setter.Value>
+                                <ContextMenu>
+                                    <MenuItem Header="Cut"
+                                              Command="ApplicationCommands.Cut" />
+                                    <MenuItem Header="Copy"
+                                              Command="ApplicationCommands.Copy" />
+                                    <MenuItem Header="Paste"
+                                              Command="ApplicationCommands.Paste" />
+                                    <MenuItem Header="Delete"
+                                              Command="ApplicationCommands.Delete" />
+                                </ContextMenu>
+                            </Setter.Value>
+                        </Setter>
                         <Setter Property="Canvas.Left">
                             <Setter.Value>
                                 <MultiBinding Converter="{StaticResource MultiplyConverter}">

@@ -65,6 +65,25 @@ namespace LedCubeAnimator.Model
             FileReaderWriter.Save(_filePath, Animation);
         }
 
+        public string Copy(ICollection<Tile> tiles) => FileReaderWriter.Serialize(tiles);
+
+        public bool Paste(Group group, string str)
+        {
+            var tiles = FileReaderWriter.Deserialize(str)?.Where(t => !(t is Animation))?.ToArray();
+            if (tiles?.Length > 0)
+            {
+                Group(() =>
+                {
+                    foreach (var tile in tiles)
+                    {
+                        AddTile(group, tile);
+                    }
+                });
+                return true;
+            }
+            return false;
+        }
+
         public void Export(string path) => Exporter.Export(path, Animation);
 
         public void ExportMW(string path) => Exporter.ExportMW(path, Animation);

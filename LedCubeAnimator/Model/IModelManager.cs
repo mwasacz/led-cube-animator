@@ -1,5 +1,6 @@
 ﻿using LedCubeAnimator.Model.Animations.Data;
 using System;
+using System.Collections.Generic;
 using System.Windows.Media;
 
 namespace LedCubeAnimator.Model
@@ -12,6 +13,8 @@ namespace LedCubeAnimator.Model
         bool Open(string path);
         bool Save();
         void SaveAs(string path);
+        string Copy(ICollection<Tile> tiles);
+        bool Paste(Group group, string str);
         void Export(string path);
         void ExportMW(string path);
 

@@ -57,6 +57,14 @@
                                         Command="{Binding SaveCommand}" />
         <behaviors:RoutedCommandBinding RoutedCommand="ApplicationCommands.SaveAs"
                                         Command="{Binding SaveAsCommand}" />
+        <behaviors:RoutedCommandBinding RoutedCommand="ApplicationCommands.Cut"
+                                        Command="{Binding CutCommand}" />
+        <behaviors:RoutedCommandBinding RoutedCommand="ApplicationCommands.Copy"
+                                        Command="{Binding CopyCommand}" />
+        <behaviors:RoutedCommandBinding RoutedCommand="ApplicationCommands.Paste"
+                                        Command="{Binding PasteCommand}" />
+        <behaviors:RoutedCommandBinding RoutedCommand="ApplicationCommands.Delete"
+                                        Command="{Binding DeleteCommand}" />
         <behaviors:RoutedCommandBinding RoutedCommand="ApplicationCommands.Undo"
                                         Command="{Binding UndoCommand}" />
         <behaviors:RoutedCommandBinding RoutedCommand="ApplicationCommands.Redo"
@@ -128,6 +136,15 @@
                         </Style>
                     </MenuItem.Style>
                 </MenuItem>
+                <Separator />
+                <MenuItem Header="Cut"
+                          Command="ApplicationCommands.Cut" />
+                <MenuItem Header="Copy"
+                          Command="ApplicationCommands.Copy" />
+                <MenuItem Header="Paste"
+                          Command="ApplicationCommands.Paste" />
+                <MenuItem Header="Delete"
+                          Command="ApplicationCommands.Delete" />
             </MenuItem>
             <MenuItem Header="View">
                 <MenuItem Header="3D View"
@@ -264,7 +281,7 @@
                                                    Title="Properties"
                                                    CanDockAsTabbedDocument="False"
                                                    AutoHideWidth="300">
-                                <controls:PropertyControl DataContext="{Binding PropertyViewModel}" />
+                                <controls:PropertyControl />
                             </dock:LayoutAnchorable>
                         </dock:LayoutAnchorablePane>
                     </dock:LayoutAnchorablePaneGroup>

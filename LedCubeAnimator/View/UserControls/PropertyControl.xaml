@@ -15,13 +15,13 @@
         <converters:Vector3DToDoubleConverter x:Key="Vector3DToDoubleConverter" />
     </UserControl.Resources>
     <StackPanel>
-        <xctk:PropertyGrid SelectedProperty="{Binding Shared.SelectedProperty, Mode=TwoWay}"
+        <xctk:PropertyGrid SelectedProperty="{Binding SelectedProperty, Mode=TwoWay}"
                            ShowSortOptions="False"
                            ShowSearchBox="False"
                            ShowSummary="False"
                            NameColumnWidth="120">
             <i:Interaction.Behaviors>
-                <behaviors:MultiObjectEditor SelectedObjects="{Binding Shared.SelectedTiles}"/>
+                <behaviors:MultiObjectEditor SelectedObjects="{Binding SelectedTiles}"/>
             </i:Interaction.Behaviors>
             <xctk:PropertyGrid.EditorDefinitions>
                 <xctk:EditorTemplateDefinition>
@@ -153,6 +153,6 @@
             </xctk:PropertyGrid.EditorDefinitions>
         </xctk:PropertyGrid>
         <Button Content="Delete tile"
-                Command="{Binding RemoveTileCommand}" />
+                Command="ApplicationCommands.Delete" />
     </StackPanel>
 </UserControl>

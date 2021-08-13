@@ -1,5 +1,5 @@
 ﻿using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Command;
+using GalaSoft.MvvmLight.CommandWpf;
 using GalaSoft.MvvmLight.Messaging;
 using LedCubeAnimator.Model;
 using LedCubeAnimator.Model.Animations.Data;
@@ -9,6 +9,7 @@ using MvvmDialogs;
 using MvvmDialogs.FrameworkDialogs.OpenFile;
 using MvvmDialogs.FrameworkDialogs.SaveFile;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
@@ -36,10 +37,11 @@ namespace LedCubeAnimator.ViewModel.WindowViewModels
             Cube3DViewModel = new Cube3DViewModel(Model, this);
             TimelineViewModel = new TimelineViewModel(Model, this);
             ColorPickerViewModel = new ColorPickerViewModel(Model, this);
-            PropertyViewModel = new PropertyViewModel(Model, this);
         }
 
         public IModelManager Model { get; }
+
+        private const string _dataFormat = nameof(LedCubeAnimator);
 
         private readonly IViewModelFactory _viewModelFactory;
         private readonly IDialogService _dialogService;
@@ -49,7 +51,6 @@ namespace LedCubeAnimator.ViewModel.WindowViewModels
         public Cube3DViewModel Cube3DViewModel { get; }
         public TimelineViewModel TimelineViewModel { get; }
         public ColorPickerViewModel ColorPickerViewModel { get; }
-        public PropertyViewModel PropertyViewModel { get; }
 
         public AnimationViewModel AnimationViewModel { get; private set; }
 
@@ -243,6 +244,46 @@ namespace LedCubeAnimator.ViewModel.WindowViewModels
         private RelayCommand _saveAsCommand;
         public ICommand SaveAsCommand => _saveAsCommand ?? (_saveAsCommand = new RelayCommand(() => SaveAs()));
 
+        private RelayCommand _cutCommand;
+        public ICommand CutCommand => _cutCommand ?? (_cutCommand = new RelayCommand(() =>
+        {
+            if (CanCopyTiles())
+            {
+                string data = Model.Copy(GetTilesToCopy().Select(t => t.Tile).ToArray());
+                Clipboard.SetData(_dataFormat, data);
+                DeleteTiles(GetTilesToCopy().ToArray());
+            }
+        }, CanCopyTiles));
+
+        private RelayCommand _copyCommand;
+        public ICommand CopyCommand => _copyCommand ?? (_copyCommand = new RelayCommand(() =>
+        {
+            if (CanCopyTiles())
+            {
+                string data = Model.Copy(GetTilesToCopy().Select(t => t.Tile).ToArray());
+                Clipboard.SetData(_dataFormat, data);
+            }
+        }, CanCopyTiles));
+
+        private RelayCommand _pasteCommand;
+        public ICommand PasteCommand => _pasteCommand ?? (_pasteCommand = new RelayCommand(() =>
+        {
+            if (Clipboard.GetData(_dataFormat) is string data && Model.Paste(CurrentGroup.Group, data))
+            {
+                Model.MergeAllowed = false;
+                Model.MergeAllowed = true;
+            }
+        }, () => Clipboard.ContainsData(_dataFormat)));
+
+        private RelayCommand _deleteCommand;
+        public ICommand DeleteCommand => _deleteCommand ?? (_deleteCommand = new RelayCommand(() =>
+        {
+            if (CanCopyTiles())
+            {
+                DeleteTiles(GetTilesToCopy().ToArray());
+            }
+        }, CanCopyTiles));
+
         private RelayCommand _exportCommand;
         public ICommand ExportCommand => _exportCommand ?? (_exportCommand = new RelayCommand(() =>
         {
@@ -352,6 +393,23 @@ namespace LedCubeAnimator.ViewModel.WindowViewModels
             Model.MergeAllowed = true;
         }
 
+        private void DeleteTiles(ICollection<TileViewModel> tiles)
+        {
+            Model.Group(() =>
+            {
+                foreach (var tile in tiles)
+                {
+                    Model.RemoveTile(tile.Parent.Group, tile.Tile);
+                }
+            });
+            Model.MergeAllowed = false;
+            Model.MergeAllowed = true;
+        }
+
+        private IEnumerable<TileViewModel> GetTilesToCopy() => SelectedTiles.Where(t => t != AnimationViewModel);
+
+        private bool CanCopyTiles() => GetTilesToCopy().Any();
+
         private void UpdateAnimationViewModel()
         {
             AnimationViewModel?.Cleanup();
@@ -361,9 +419,6 @@ namespace LedCubeAnimator.ViewModel.WindowViewModels
             UpdateCurrentGroup();
 
             SelectedColor = Colors.Black;
-
-            _undoCommand?.RaiseCanExecuteChanged(); // ToDo: raise if necessary or use CommandWpf
-            _redoCommand?.RaiseCanExecuteChanged();
         }
 
         private void Model_AnimationChanged(object sender, EventArgs e)
@@ -377,9 +432,6 @@ namespace LedCubeAnimator.ViewModel.WindowViewModels
             {
                 SelectedColor = Colors.Black;
             }
-
-            _undoCommand?.RaiseCanExecuteChanged(); // ToDo: raise if necessary or use CommandWpf
-            _redoCommand?.RaiseCanExecuteChanged();
 
             _unsavedChanges = true;
         }

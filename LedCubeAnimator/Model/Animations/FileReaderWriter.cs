@@ -1,5 +1,6 @@
 ﻿using LedCubeAnimator.Model.Animations.Data;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 using System.IO;
 
 namespace LedCubeAnimator.Model.Animations
@@ -10,7 +11,7 @@ namespace LedCubeAnimator.Model.Animations
         {
             using (var sw = new StreamWriter(path))
             {
-                sw.Write(JsonConvert.SerializeObject(animation, Formatting.Indented, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Objects }));
+                sw.Write(SerializeJson(animation));
             }
         }
 
@@ -20,12 +21,33 @@ namespace LedCubeAnimator.Model.Animations
             {
                 using (var sr = new StreamReader(path))
                 {
-                    return JsonConvert.DeserializeObject<Animation>(sr.ReadToEnd(), new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Objects });
+                    return DeserializeJson<Animation>(sr.ReadToEnd());
                 }
             }
             catch
             {
                 return null;
+            }
+        }
+
+        public static string Serialize(ICollection<Tile> tiles) => SerializeJson(tiles);
+
+        public static ICollection<Tile> Deserialize(string str) => DeserializeJson<ICollection<Tile>>(str);
+
+        private static string SerializeJson<T>(T obj)
+        {
+            return JsonConvert.SerializeObject(obj, Formatting.Indented, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Objects });
+        }
+
+        private static T DeserializeJson<T>(string str)
+        {
+            try
+            {
+                return JsonConvert.DeserializeObject<T>(str, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Objects });
+            }
+            catch
+            {
+                return default;
             }
         }
     }
