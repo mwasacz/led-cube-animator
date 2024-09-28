@@ -18,7 +18,7 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
 
         [Category("Frame")]
         [PropertyOrder(0)]
-        public object Voxels { get; }
+        public string Voxels => "Edit in 3D View";
 
         [Category("Frame")]
         [PropertyOrder(1)]

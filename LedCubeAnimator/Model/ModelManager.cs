@@ -149,19 +149,19 @@ namespace LedCubeAnimator.Model
 
         public event EventHandler AnimationChanged;
 
-        private List<KeyValuePair<object, string>> _lastChanges;
+        private List<ObjectAction> _lastChanges;
 
         private void Undo_ActionExecuted(object sender, ActionExecutedEventArgs e)
         {
-            var actions = ((GroupAction)e.Action).Actions.Cast<ObjectAction>();
-            var changes = actions.Select(a => new KeyValuePair<object, string>(a.Object, a.Property)); // ToDo: perform correction before finishing group
+            var changes = ((GroupAction)e.Action).Actions.Cast<ObjectAction>(); // ToDo: perform correction before finishing group
             if (_lastChanges == null)
             {
                 var list = changes.ToList();
                 _lastChanges = list;
                 CorrectData(list);
                 _lastChanges = null;
-                PropertiesChanged?.Invoke(this, new PropertiesChangedEventArgs(list));
+                var args = new PropertiesChangedEventArgs(list.Select(a => new KeyValuePair<object, string>(a.Object, a.Property)).ToArray());
+                PropertiesChanged?.Invoke(this, args);
             }
             else
             {
@@ -215,28 +215,37 @@ namespace LedCubeAnimator.Model
             }
         }
 
-        private void CorrectData(List<KeyValuePair<object, string>> changes)
+        private void CorrectData(List<ObjectAction> changes)
         {
             var movedTiles = new HashSet<Tile>();
-            int changeCount = changes.Count;
-            for (int i = 0; i < changeCount; i++)
+            foreach (var change in changes)
             {
-                var tile = (Tile)changes[i].Key;
-                string property = changes[i].Value;
-                if (property == nameof(Tile.Start) || property == nameof(Tile.End) || property == nameof(Tile.Channel) || property == nameof(Tile.Hierarchy))
+                var tile = (Tile)change.Object;
+                string prop = change.Property;
+                if (change is PropertyChangeAction)
                 {
-                    movedTiles.Add(tile);
-                }
-                else if (tile is Group group && property == nameof(Animations.Data.Group.Children))
-                {
-                    foreach (var t in group.Children)
+                    if (prop == nameof(Tile.Start) || prop == nameof(Tile.End) || prop == nameof(Tile.Channel) || prop == nameof(Tile.Hierarchy))
                     {
-                        movedTiles.Add(t);
+                        movedTiles.Add(tile);
+                    }
+                    else if (tile == Animation && prop == nameof(Animations.Data.Animation.ColorMode) && Animation.ColorMode != ColorMode.RGB)
+                    {
+                        CorrectFrameVoxels(Animation);
                     }
                 }
-                else if (tile == Animation && property == nameof(Animations.Data.Animation.ColorMode) && Animation.ColorMode != ColorMode.RGB)
+                else if (change is CollectionChangeAction<Tile> collectionChange && tile is Group group && prop == nameof(Animations.Data.Group.Children))
                 {
-                    CorrectFrameVoxels(Animation);
+                    if (collectionChange.Added)
+                    {
+                        movedTiles.Add(collectionChange.Item);
+                    }
+                    else
+                    {
+                        foreach (var t in group.Children)
+                        {
+                            movedTiles.Add(t);
+                        }
+                    }
                 }
             }
             if (movedTiles.Count > 0)

@@ -32,7 +32,7 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
 
         [Category("Group")]
         [PropertyOrder(0)]
-        public object Children { get; }
+        public string Children => Expanded ? "Edit on Timeline" : "Click to edit";
 
         [Category("Group")]
         [PropertyOrder(1)]
@@ -68,11 +68,15 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
             get => _expanded;
             set
             {
-                if (Set(ref _expanded, value, true) && !_expanded)
+                if (Set(ref _expanded, value, true))
                 {
-                    foreach (var group in ChildViewModels.OfType<GroupViewModel>())
+                    RaisePropertyChanged(nameof(Children));
+                    if (!_expanded)
                     {
-                        group.Expanded = false;
+                        foreach (var group in ChildViewModels.OfType<GroupViewModel>())
+                        {
+                            group.Expanded = false;
+                        }
                     }
                 }
             }
@@ -80,11 +84,13 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
 
         public override void Cleanup()
         {
-            Model.PropertiesChanged -= Model_PropertiesChanged;
             foreach (var c in ChildViewModels)
             {
                 c.Cleanup();
             }
+            Selected = false;
+            Expanded = false;
+            Model.PropertiesChanged -= Model_PropertiesChanged;
             base.Cleanup();
         }
 

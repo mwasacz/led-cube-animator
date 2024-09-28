@@ -76,12 +76,19 @@ namespace LedCubeAnimator.ViewModel.WindowViewModels
                             t.Selected = false;
                         }
                         SelectedTiles.Add(tile);
+                        if (tile is GroupViewModel group)
+                        {
+                            foreach (var g in group.ChildViewModels.OfType<GroupViewModel>())
+                            {
+                                g.Expanded = false;
+                            }
+                        }
                     }
                     else
                     {
                         SelectedTiles.Remove(tile);
                     }
-                    Application.Current.Dispatcher.BeginInvoke((Action)(() => UpdateCurrentGroup())); // ToDo
+                    UpdateCurrentGroup();
                 }
                 else if (tile is GroupViewModel group && message.PropertyName == nameof(GroupViewModel.Expanded))
                 {
@@ -92,9 +99,17 @@ namespace LedCubeAnimator.ViewModel.WindowViewModels
 
         private void UpdateCurrentGroup()
         {
-            CurrentGroup = SelectedTiles.Count == 1 && SelectedTiles[0] is GroupViewModel group && group.Expanded
+            var currentGroup = SelectedTiles.Count == 1 && SelectedTiles[0] is GroupViewModel group && group.Expanded
                 ? group
-                : SelectedTiles.FirstOrDefault()?.Parent ?? AnimationViewModel;
+                : SelectedTiles.FirstOrDefault()?.Parent ?? CurrentGroup;
+            for (var g = currentGroup; g.Parent != null; g = g.Parent)
+            {
+                if (!g.Parent.ChildViewModels.Contains(g))
+                {
+                    currentGroup = g.Parent;
+                }
+            }
+            CurrentGroup = currentGroup;
             Time = SelectedTiles.FirstOrDefault() == CurrentGroup
                 ? 0
                 : SelectedTiles.FirstOrDefault()?.Start ?? 0;
@@ -415,8 +430,9 @@ namespace LedCubeAnimator.ViewModel.WindowViewModels
             AnimationViewModel?.Cleanup();
 
             AnimationViewModel = (AnimationViewModel)_viewModelFactory.Create(Model.Animation, (GroupViewModel)null);
+            CurrentGroup = AnimationViewModel;
             AnimationViewModel.Selected = true;
-            UpdateCurrentGroup();
+            AnimationViewModel.Expanded = true;
 
             SelectedColor = Colors.Black;
         }
