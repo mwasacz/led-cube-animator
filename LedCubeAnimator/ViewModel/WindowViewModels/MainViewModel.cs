@@ -241,7 +241,7 @@ namespace LedCubeAnimator.ViewModel.WindowViewModels
             {
                 var settings = new OpenFileDialogSettings
                 {
-                    Filter = "Animation files (*.json)|*.json|All files (*.*)|*.*"
+                    Filter = "Animation files (*.3da)|*.3da|All files (*.*)|*.*"
                 };
                 var result = _dialogService.ShowOpenFileDialog(this, settings);
                 if (result == true && !Model.Open(settings.FileName))
@@ -388,7 +388,7 @@ namespace LedCubeAnimator.ViewModel.WindowViewModels
         {
             var settings = new SaveFileDialogSettings
             {
-                Filter = "Animation files (*.json)|*.json|All files (*.*)|*.*",
+                Filter = "Animation files (*.3da)|*.3da|All files (*.*)|*.*",
                 OverwritePrompt = true
             };
             var result = _dialogService.ShowSaveFileDialog(this, settings);
