@@ -69,7 +69,7 @@ namespace LedCubeAnimator.ViewModel.UserControlViewModels
 
         private void RenderFrame()
         {
-            Frame = Renderer.Render(Model.Animation, Shared.Time, true);
+            Frame = Renderer.Render(Model.Animation, Shared.CurrentGroup.Group, Shared.Time, true);
         }
 
         private void Model_AnimationChanged(object sender, EventArgs e)

@@ -7,9 +7,9 @@ namespace LedCubeAnimator.Model.Animations
 {
     public static class Renderer
     {
-        public static Color[,,] Render(Animation animation, int frame, bool preview)
+        public static Color[,,] Render(Animation animation, Tile tile, int frame, bool preview)
         {
-            double time = frame + 0.5;
+            double time = tile.Start + frame + 0.5;
             int size = animation.Size;
             var voxels = new Color[size, size, size];
             for (int x = 0; x < size; x++)
@@ -18,7 +18,7 @@ namespace LedCubeAnimator.Model.Animations
                 {
                     for (int z = 0; z < size; z++)
                     {
-                        var color = animation.GetVoxel(new Point3D(x, y, z), time, (p, t) => Colors.Black);
+                        var color = tile.GetVoxel(new Point3D(x, y, z), time, (p, t) => Colors.Black);
                         if (preview && animation.ColorMode != ColorMode.RGB)
                         {
                             color = color.Multiply(animation.MonoColor);
@@ -29,5 +29,7 @@ namespace LedCubeAnimator.Model.Animations
             }
             return voxels;
         }
+
+        public static Color[,,] Render(Animation animation, int frame, bool preview) => Render(animation, animation, frame, preview);
     }
 }
