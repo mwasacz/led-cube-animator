@@ -15,7 +15,7 @@
         <converters:MultiplyConverter x:Key="MultiplyConverter" />
         <sys:Double x:Key="SliderTickOffset">-0.5</sys:Double>
         <sys:Double x:Key="MaxIndexOffset">-1</sys:Double>
-        <sys:Double x:Key="ResizeHandleWidth">10</sys:Double>
+        <sys:Double x:Key="ResizeHandleWidth">8</sys:Double>
     </UserControl.Resources>
     <DockPanel>
         <ListBox DockPanel.Dock="Top"
@@ -237,6 +237,8 @@
                                      Handler="ListBoxItem_LostMouseCapture" />
                         <EventSetter Event="MouseDown"
                                      Handler="ListBoxItem_MouseDown" />
+                        <EventSetter Event="RequestBringIntoView"
+                                     Handler="ListBoxItem_RequestBringIntoView" />
                     </Style>
                 </ListBox.ItemContainerStyle>
             </controls:MultiSelectListBox>

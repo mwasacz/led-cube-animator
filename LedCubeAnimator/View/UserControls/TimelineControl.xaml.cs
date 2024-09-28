@@ -26,7 +26,7 @@ namespace LedCubeAnimator.View.UserControls
         }
 
         public static readonly DependencyProperty CellWidthProperty = DependencyProperty.Register("CellWidth",
-            typeof(double), typeof(TimelineControl), new PropertyMetadata((double)80));
+            typeof(double), typeof(TimelineControl), new PropertyMetadata((double)20));
 
 
 
@@ -130,6 +130,11 @@ namespace LedCubeAnimator.View.UserControls
         }
 
         private void ListBoxItem_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            e.Handled = true;
+        }
+
+        private void ListBoxItem_RequestBringIntoView(object sender, RequestBringIntoViewEventArgs e)
         {
             e.Handled = true;
         }
