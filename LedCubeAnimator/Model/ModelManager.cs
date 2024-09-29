@@ -321,39 +321,36 @@ namespace LedCubeAnimator.Model
 
         private void CorrectFrameVoxels(Group group)
         {
-            _undo.Group(() =>
+            foreach (var t in group.Children)
             {
-                foreach (var t in group.Children)
+                switch (t)
                 {
-                    switch (t)
-                    {
-                        case Frame f:
-                            for (int x = 0; x < f.Voxels.GetLength(0); x++)
+                    case Frame f:
+                        for (int x = 0; x < f.Voxels.GetLength(0); x++)
+                        {
+                            for (int y = 0; y < f.Voxels.GetLength(1); y++)
                             {
-                                for (int y = 0; y < f.Voxels.GetLength(1); y++)
+                                for (int z = 0; z < f.Voxels.GetLength(2); z++)
                                 {
-                                    for (int z = 0; z < f.Voxels.GetLength(2); z++)
+                                    var oldColor = f.Voxels[x, y, z];
+                                    switch (Animation.ColorMode)
                                     {
-                                        var oldColor = f.Voxels[x, y, z];
-                                        switch (Animation.ColorMode)
-                                        {
-                                            case ColorMode.Mono:
-                                                _undo.ChangeArray(f, nameof(Frame.Voxels), f.Voxels, oldColor.GetBrightness() > 127 ? Colors.White : Colors.Black, x, y, z);
-                                                break;
-                                            case ColorMode.MonoBrightness:
-                                                _undo.ChangeArray(f, nameof(Frame.Voxels), f.Voxels, Colors.White.Multiply(oldColor.GetBrightness()).Opaque(), x, y, z);
-                                                break;
-                                        }
+                                        case ColorMode.Mono:
+                                            _undo.Group(() => _undo.ChangeArray(f, nameof(Frame.Voxels), f.Voxels, oldColor.GetBrightness() > 127 ? Colors.White : Colors.Black, x, y, z), true);
+                                            break;
+                                        case ColorMode.MonoBrightness:
+                                            _undo.Group(() => _undo.ChangeArray(f, nameof(Frame.Voxels), f.Voxels, Colors.White.Multiply(oldColor.GetBrightness()).Opaque(), x, y, z), true);
+                                            break;
                                     }
                                 }
                             }
-                            break;
-                        case Group g:
-                            CorrectFrameVoxels(g);
-                            break;
-                    }
+                        }
+                        break;
+                    case Group g:
+                        CorrectFrameVoxels(g);
+                        break;
                 }
-            }, true);
+            }
         }
     }
 }
