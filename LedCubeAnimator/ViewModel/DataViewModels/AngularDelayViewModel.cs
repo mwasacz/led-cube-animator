@@ -7,7 +7,6 @@ using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 
 namespace LedCubeAnimator.ViewModel.DataViewModels
 {
-    [CategoryOrder("AngularDelay", 2)]
     public class AngularDelayViewModel : DelayViewModel
     {
         public AngularDelayViewModel(AngularDelay angularDelay, IModelManager model, IMessenger messenger, GroupViewModel parent) : base(angularDelay, model, messenger, parent) { }
@@ -16,7 +15,7 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
         public AngularDelay AngularDelay => (AngularDelay)Tile;
 
         [Category("AngularDelay")]
-        [PropertyOrder(0)]
+        [PropertyOrder(20)]
         public Axis Axis
         {
             get => AngularDelay.Axis;
@@ -24,7 +23,7 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
         }
 
         [Category("AngularDelay")]
-        [PropertyOrder(1)]
+        [PropertyOrder(21)]
         public Point Center
         {
             get => AngularDelay.Center;
@@ -32,7 +31,7 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
         }
 
         [Category("AngularDelay")]
-        [PropertyOrder(2)]
+        [PropertyOrder(22)]
         public double StartAngle
         {
             get => AngularDelay.StartAngle;

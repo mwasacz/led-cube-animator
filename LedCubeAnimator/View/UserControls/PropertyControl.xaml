@@ -22,6 +22,7 @@
                            NameColumnWidth="120">
             <i:Interaction.Behaviors>
                 <behaviors:MultiObjectEditor SelectedObjects="{Binding SelectedTiles}"/>
+                <behaviors:PropertyOrderOverride />
             </i:Interaction.Behaviors>
             <xctk:PropertyGrid.EditorDefinitions>
                 <xctk:EditorTemplateDefinition>

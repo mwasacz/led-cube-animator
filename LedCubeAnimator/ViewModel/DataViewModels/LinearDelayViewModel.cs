@@ -6,7 +6,6 @@ using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 
 namespace LedCubeAnimator.ViewModel.DataViewModels
 {
-    [CategoryOrder("LinearDelay", 2)]
     public class LinearDelayViewModel : DelayViewModel
     {
         public LinearDelayViewModel(LinearDelay linearDelay, IModelManager model, IMessenger messenger, GroupViewModel parent) : base(linearDelay, model, messenger, parent) { }
@@ -15,7 +14,7 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
         public LinearDelay LinearDelay => (LinearDelay)Tile;
 
         [Category("LinearDelay")]
-        [PropertyOrder(0)]
+        [PropertyOrder(20)]
         public Axis Axis
         {
             get => LinearDelay.Axis;
@@ -23,7 +22,7 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
         }
 
         [Category("LinearDelay")]
-        [PropertyOrder(1)]
+        [PropertyOrder(21)]
         public double Center
         {
             get => LinearDelay.Center;

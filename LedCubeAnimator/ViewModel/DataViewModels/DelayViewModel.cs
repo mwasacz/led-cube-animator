@@ -6,7 +6,6 @@ using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 
 namespace LedCubeAnimator.ViewModel.DataViewModels
 {
-    [CategoryOrder("Delay", 1)]
     public abstract class DelayViewModel : TileViewModel
     {
         public DelayViewModel(Delay delay, IModelManager model, IMessenger messenger, GroupViewModel parent) : base(delay, model, messenger, parent) { }
@@ -15,7 +14,7 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
         public Delay Delay => (Delay)Tile;
 
         [Category("Delay")]
-        [PropertyOrder(0)]
+        [PropertyOrder(10)]
         public double Value
         {
             get => Delay.Value;
@@ -23,7 +22,7 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
         }
 
         [Category("Delay")]
-        [PropertyOrder(1)]
+        [PropertyOrder(11)]
         public bool WrapAround
         {
             get => Delay.WrapAround;
@@ -31,7 +30,7 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
         }
 
         [Category("Delay")]
-        [PropertyOrder(2)]
+        [PropertyOrder(12)]
         public bool Static
         {
             get => Delay.Static;

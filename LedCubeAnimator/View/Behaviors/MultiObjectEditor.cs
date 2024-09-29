@@ -47,28 +47,26 @@ namespace LedCubeAnimator.View.Behaviors
         {
             var oldItemsBag = AssociatedObject.SelectedObject as ItemsBag;
 
-            if (enumerable != null)
+            var objects = enumerable?.Cast<object>().ToArray();
+            switch (objects?.Length)
             {
-                var objects = enumerable.Cast<object>().ToArray();
-                switch (objects.Length)
-                {
-                    case 0:
-                        AssociatedObject.SelectedObject = null;
-                        AssociatedObject.SelectedObjectTypeName = null;
-                        AssociatedObject.SelectedObjectName = null;
-                        break;
-                    case 1:
-                        AssociatedObject.SelectedObject = objects[0];
-                        AssociatedObject.SelectedObjectTypeName = objects[0].GetType().Name;
-                        AssociatedObject.SelectedObjectName = null;
-                        break;
-                    default:
-                        var itemsBag = new ItemsBag(objects);
-                        AssociatedObject.SelectedObject = new CustomItemsBagTypeDescriptor(itemsBag);
-                        AssociatedObject.SelectedObjectTypeName = itemsBag.BiggestType.Name;
-                        AssociatedObject.SelectedObjectName = $"{objects.Length} tiles selected";
-                        break;
-                }
+                case null:
+                case 0:
+                    AssociatedObject.SelectedObject = null;
+                    AssociatedObject.SelectedObjectTypeName = null;
+                    AssociatedObject.SelectedObjectName = null;
+                    break;
+                case 1:
+                    AssociatedObject.SelectedObject = objects[0];
+                    AssociatedObject.SelectedObjectTypeName = objects[0].GetType().Name;
+                    AssociatedObject.SelectedObjectName = null;
+                    break;
+                default:
+                    var itemsBag = new ItemsBag(objects);
+                    AssociatedObject.SelectedObject = new CustomItemsBagTypeDescriptor(itemsBag);
+                    AssociatedObject.SelectedObjectTypeName = itemsBag.BiggestType.Name;
+                    AssociatedObject.SelectedObjectName = $"{objects.Length} tiles selected";
+                    break;
             }
 
             oldItemsBag?.Dispose();

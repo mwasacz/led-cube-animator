@@ -7,7 +7,6 @@ using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 
 namespace LedCubeAnimator.ViewModel.DataViewModels
 {
-    [CategoryOrder("Effect", 1)]
     public abstract class EffectViewModel : TileViewModel
     {
         public EffectViewModel(Effect effect, IModelManager model, IMessenger messenger, GroupViewModel parent) : base(effect, model, messenger, parent) { }
@@ -16,7 +15,7 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
         public Effect Effect => (Effect)Tile;
 
         [Category("Effect")]
-        [PropertyOrder(2)]
+        [PropertyOrder(12)]
         public bool Reverse
         {
             get => Effect.Reverse;
@@ -24,7 +23,7 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
         }
 
         [Category("Effect")]
-        [PropertyOrder(1)]
+        [PropertyOrder(11)]
         [Range(1, int.MaxValue)]
         public int RepeatCount
         {
@@ -33,7 +32,7 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
         }
 
         [Category("Effect")]
-        [PropertyOrder(0)]
+        [PropertyOrder(10)]
         public TimeInterpolation TimeInterpolation
         {
             get => Effect.TimeInterpolation;

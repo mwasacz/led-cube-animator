@@ -110,6 +110,7 @@
     <Compile Include="ViewModel\UserControlViewModels\TimelineViewModel.cs" />
     <Compile Include="ViewModel\ViewModelFactory.cs" />
     <Compile Include="View\Behaviors\MultiObjectEditor.cs" />
+    <Compile Include="View\Behaviors\PropertyOrderOverride.cs" />
     <Compile Include="View\Behaviors\RoutedCommandBinding.cs" />
     <Compile Include="View\Controls\MultiSelectListBox.cs" />
     <Compile Include="View\Controls\MultiSelectListBoxItem.cs" />

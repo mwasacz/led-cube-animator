@@ -6,7 +6,6 @@ using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 
 namespace LedCubeAnimator.ViewModel.DataViewModels
 {
-    [CategoryOrder("ScaleEffect", 3)]
     public class ScaleEffectViewModel : TransformEffectViewModel
     {
         public ScaleEffectViewModel(ScaleEffect scaleEffect, IModelManager model, IMessenger messenger, GroupViewModel parent) : base(scaleEffect, model, messenger, parent) { }
@@ -15,7 +14,7 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
         public ScaleEffect ScaleEffect => (ScaleEffect)Tile;
 
         [Category("ScaleEffect")]
-        [PropertyOrder(0)]
+        [PropertyOrder(30)]
         public Axis Axis
         {
             get => ScaleEffect.Axis;
@@ -23,7 +22,7 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
         }
 
         [Category("ScaleEffect")]
-        [PropertyOrder(1)]
+        [PropertyOrder(31)]
         public double Center
         {
             get => ScaleEffect.Center;

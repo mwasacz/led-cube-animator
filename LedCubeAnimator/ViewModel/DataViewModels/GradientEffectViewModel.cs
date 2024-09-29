@@ -7,7 +7,6 @@ using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 
 namespace LedCubeAnimator.ViewModel.DataViewModels
 {
-    [CategoryOrder("GradientEffect", 2)]
     public class GradientEffectViewModel : EffectViewModel
     {
         public GradientEffectViewModel(GradientEffect gradientEffect, IModelManager model, IMessenger messenger, GroupViewModel parent) : base(gradientEffect, model, messenger, parent) { }
@@ -16,7 +15,7 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
         public GradientEffect GradientEffect => (GradientEffect)Tile;
 
         [Category("GradientEffect")]
-        [PropertyOrder(0)]
+        [PropertyOrder(20)]
         public Color From
         {
             get => GradientEffect.From;
@@ -24,7 +23,7 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
         }
 
         [Category("GradientEffect")]
-        [PropertyOrder(1)]
+        [PropertyOrder(21)]
         public Color To
         {
             get => GradientEffect.To;
@@ -32,7 +31,7 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
         }
 
         [Category("GradientEffect")]
-        [PropertyOrder(2)]
+        [PropertyOrder(22)]
         public ColorInterpolation ColorInterpolation
         {
             get => GradientEffect.ColorInterpolation;

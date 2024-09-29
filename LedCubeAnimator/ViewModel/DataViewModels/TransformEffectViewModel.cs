@@ -6,7 +6,6 @@ using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 
 namespace LedCubeAnimator.ViewModel.DataViewModels
 {
-    [CategoryOrder("TransformEffect", 2)]
     public abstract class TransformEffectViewModel : EffectViewModel
     {
         public TransformEffectViewModel(TransformEffect transformEffect, IModelManager model, IMessenger messenger, GroupViewModel parent) : base(transformEffect, model, messenger, parent) { }
@@ -15,7 +14,7 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
         public TransformEffect TransformEffect => (TransformEffect)Tile;
 
         [Category("TransformEffect")]
-        [PropertyOrder(0)]
+        [PropertyOrder(20)]
         public double From
         {
             get => TransformEffect.From;
@@ -23,7 +22,7 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
         }
 
         [Category("TransformEffect")]
-        [PropertyOrder(1)]
+        [PropertyOrder(21)]
         public double To
         {
             get => TransformEffect.To;
@@ -31,7 +30,7 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
         }
 
         [Category("TransformEffect")]
-        [PropertyOrder(2)]
+        [PropertyOrder(22)]
         public bool Round
         {
             get => TransformEffect.Round;

@@ -6,7 +6,6 @@ using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 
 namespace LedCubeAnimator.ViewModel.DataViewModels
 {
-    [CategoryOrder("MoveEffect", 3)]
     public class MoveEffectViewModel : TransformEffectViewModel
     {
         public MoveEffectViewModel(MoveEffect moveEffect, IModelManager model, IMessenger messenger, GroupViewModel parent) : base(moveEffect, model, messenger, parent) { }
@@ -15,7 +14,7 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
         public MoveEffect MoveEffect => (MoveEffect)Tile;
 
         [Category("MoveEffect")]
-        [PropertyOrder(0)]
+        [PropertyOrder(30)]
         public Axis Axis
         {
             get => MoveEffect.Axis;

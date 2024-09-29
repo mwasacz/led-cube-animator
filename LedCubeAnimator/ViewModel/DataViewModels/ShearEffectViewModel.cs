@@ -6,7 +6,6 @@ using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 
 namespace LedCubeAnimator.ViewModel.DataViewModels
 {
-    [CategoryOrder("ShearEffect", 3)]
     public class ShearEffectViewModel : TransformEffectViewModel
     {
         public ShearEffectViewModel(ShearEffect shearEffect, IModelManager model, IMessenger messenger, GroupViewModel parent) : base(shearEffect, model, messenger, parent) { }
@@ -15,7 +14,7 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
         public ShearEffect ShearEffect => (ShearEffect)Tile;
 
         [Category("ShearEffect")]
-        [PropertyOrder(0)]
+        [PropertyOrder(30)]
         public Plane Plane
         {
             get => ShearEffect.Plane;
@@ -23,7 +22,7 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
         }
 
         [Category("ShearEffect")]
-        [PropertyOrder(1)]
+        [PropertyOrder(31)]
         public double Center
         {
             get => ShearEffect.Center;

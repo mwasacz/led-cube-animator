@@ -7,7 +7,6 @@ using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 
 namespace LedCubeAnimator.ViewModel.DataViewModels
 {
-    [CategoryOrder("RotateEffect", 3)]
     public class RotateEffectViewModel : TransformEffectViewModel
     {
         public RotateEffectViewModel(RotateEffect rotateEffect, IModelManager model, IMessenger messenger, GroupViewModel parent) : base(rotateEffect, model, messenger, parent) { }
@@ -16,7 +15,7 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
         public RotateEffect RotateEffect => (RotateEffect)Tile;
 
         [Category("RotateEffect")]
-        [PropertyOrder(0)]
+        [PropertyOrder(30)]
         public Axis Axis
         {
             get => RotateEffect.Axis;
@@ -24,7 +23,7 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
         }
 
         [Category("RotateEffect")]
-        [PropertyOrder(1)]
+        [PropertyOrder(31)]
         public Point Center
         {
             get => RotateEffect.Center;

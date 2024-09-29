@@ -10,7 +10,6 @@ using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 
 namespace LedCubeAnimator.ViewModel.DataViewModels
 {
-    [CategoryOrder("Tile", 0)]
     public abstract class TileViewModel : ViewModelBase
     {
         public TileViewModel(Tile tile, IModelManager model, IMessenger messenger, GroupViewModel parent) : base(messenger)

@@ -8,7 +8,6 @@ using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 
 namespace LedCubeAnimator.ViewModel.DataViewModels
 {
-    [CategoryOrder("Animation", 3)]
     public class AnimationViewModel : GroupViewModel
     {
         public AnimationViewModel(Animation animation, IModelManager model, IMessenger messenger, IViewModelFactory viewModelFactory) : base(animation, model, messenger, null, viewModelFactory) { }
@@ -17,7 +16,7 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
         public Animation Animation => (Animation)Group;
 
         [Category("Animation")]
-        [PropertyOrder(0)]
+        [PropertyOrder(30)]
         [Range(1, int.MaxValue)]
         public int Size
         {
@@ -26,7 +25,7 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
         }
 
         [Category("Animation")]
-        [PropertyOrder(1)]
+        [PropertyOrder(31)]
         public ColorMode ColorMode
         {
             get => Animation.ColorMode;
@@ -34,7 +33,7 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
         }
 
         [Category("Animation")]
-        [PropertyOrder(2)]
+        [PropertyOrder(32)]
         public Color MonoColor
         {
             get => Animation.MonoColor;
@@ -42,7 +41,7 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
         }
 
         [Category("Animation")]
-        [PropertyOrder(3)]
+        [PropertyOrder(33)]
         [Range(1, int.MaxValue)]
         public int FrameDuration
         {

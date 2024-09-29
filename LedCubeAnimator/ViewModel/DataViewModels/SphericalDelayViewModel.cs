@@ -7,7 +7,6 @@ using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 
 namespace LedCubeAnimator.ViewModel.DataViewModels
 {
-    [CategoryOrder("SphericalDelay", 2)]
     public class SphericalDelayViewModel : DelayViewModel
     {
         public SphericalDelayViewModel(SphericalDelay sphericalDelay, IModelManager model, IMessenger messenger, GroupViewModel parent) : base(sphericalDelay, model, messenger, parent) { }
@@ -16,7 +15,7 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
         public SphericalDelay SphericalDelay => (SphericalDelay)Tile;
 
         [Category("SphericalDelay")]
-        [PropertyOrder(0)]
+        [PropertyOrder(20)]
         public Point3D Center
         {
             get => SphericalDelay.Center;

@@ -8,7 +8,6 @@ using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 
 namespace LedCubeAnimator.ViewModel.DataViewModels
 {
-    [CategoryOrder("Group", 2)]
     public class GroupViewModel : EffectViewModel
     {
         public GroupViewModel(Group group, IModelManager model, IMessenger messenger, GroupViewModel parent, IViewModelFactory viewModelFactory) : base(group, model, messenger, parent)
@@ -31,11 +30,11 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
         public Group Group => (Group)Tile;
 
         [Category("Group")]
-        [PropertyOrder(0)]
+        [PropertyOrder(20)]
         public string Children => Expanded ? "Edit on Timeline" : "Click to edit";
 
         [Category("Group")]
-        [PropertyOrder(1)]
+        [PropertyOrder(21)]
         public ColorBlendMode ColorBlendMode
         {
             get => Group.ColorBlendMode;

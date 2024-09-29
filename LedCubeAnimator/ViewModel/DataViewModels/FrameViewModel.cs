@@ -8,7 +8,6 @@ using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 
 namespace LedCubeAnimator.ViewModel.DataViewModels
 {
-    [CategoryOrder("Frame", 1)]
     public class FrameViewModel : TileViewModel
     {
         public FrameViewModel(Frame frame, IModelManager model, IMessenger messenger, GroupViewModel parent) : base(frame, model, messenger, parent) { }
@@ -17,11 +16,11 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
         public Frame Frame => (Frame)Tile;
 
         [Category("Frame")]
-        [PropertyOrder(0)]
+        [PropertyOrder(10)]
         public string Voxels => "Edit in 3D View";
 
         [Category("Frame")]
-        [PropertyOrder(1)]
+        [PropertyOrder(11)]
         public Point3D Offset
         {
             get => Frame.Offset;
@@ -29,7 +28,7 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
         }
 
         [Category("Frame")]
-        [PropertyOrder(2)]
+        [PropertyOrder(12)]
         public Vector3D Size
         {
             get => new Vector3D(Frame.Voxels.GetLength(0), Frame.Voxels.GetLength(1), Frame.Voxels.GetLength(2));
