@@ -50,7 +50,7 @@ namespace LedCubeAnimator.ViewModel.UserControlViewModels
 
                             int row = e.PositionY;
                             int channel = 0;
-                            while (channel < tile.Parent?.RowHeights?.Count && row >= tile.Parent.RowHeights[channel])
+                            while (channel < tile.Parent?.RowHeights.Count && row >= tile.Parent.RowHeights[channel])
                             {
                                 row -= tile.Parent.RowHeights[channel];
                                 channel++;

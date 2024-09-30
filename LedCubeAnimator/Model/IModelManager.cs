@@ -14,7 +14,7 @@ namespace LedCubeAnimator.Model
         bool Save();
         void SaveAs(string path);
         string Copy(ICollection<Tile> tiles);
-        bool Paste(Group group, string str);
+        bool Paste(Group group, string str, bool mergeAllowed);
         void Export(string path);
         void ExportMW(string path);
 

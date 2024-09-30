@@ -67,11 +67,13 @@ namespace LedCubeAnimator.Model
 
         public string Copy(ICollection<Tile> tiles) => FileReaderWriter.Serialize(tiles);
 
-        public bool Paste(Group group, string str)
+        public bool Paste(Group group, string str, bool mergeAllowed)
         {
-            var tiles = FileReaderWriter.Deserialize(str)?.Where(t => !(t is Animation))?.ToArray();
+            var tiles = FileReaderWriter.Deserialize(str)?.Where(t => !(t is Animation)).ToArray();
             if (tiles?.Length > 0)
             {
+                var prevMergeAllowed = MergeAllowed;
+                MergeAllowed = mergeAllowed;
                 Group(() =>
                 {
                     foreach (var tile in tiles)
@@ -79,6 +81,7 @@ namespace LedCubeAnimator.Model
                         AddTile(group, tile);
                     }
                 });
+                MergeAllowed = prevMergeAllowed;
                 return true;
             }
             return false;
@@ -130,7 +133,7 @@ namespace LedCubeAnimator.Model
                 _groupAction = true;
                 _undo.Group(action, _canMergeNext);
                 _groupAction = false;
-                if (_mergeAllowed)
+                if (MergeAllowed)
                 {
                     _canMergeNext = true;
                 }

@@ -283,10 +283,9 @@ namespace LedCubeAnimator.ViewModel.WindowViewModels
         private RelayCommand _pasteCommand;
         public ICommand PasteCommand => _pasteCommand ?? (_pasteCommand = new RelayCommand(() =>
         {
-            if (Clipboard.GetData(_dataFormat) is string data && Model.Paste(CurrentGroup.Group, data))
+            if (Clipboard.GetData(_dataFormat) is string data)
             {
-                Model.MergeAllowed = false;
-                Model.MergeAllowed = true;
+                Model.Paste(CurrentGroup.Group, data, false);
             }
         }, () => Clipboard.ContainsData(_dataFormat)));
 
@@ -403,13 +402,14 @@ namespace LedCubeAnimator.ViewModel.WindowViewModels
 
         private void AddTile(Tile tile)
         {
-            Model.AddTile(CurrentGroup.Group, tile);
             Model.MergeAllowed = false;
+            Model.AddTile(CurrentGroup.Group, tile);
             Model.MergeAllowed = true;
         }
 
         private void DeleteTiles(ICollection<TileViewModel> tiles)
         {
+            Model.MergeAllowed = false;
             Model.Group(() =>
             {
                 foreach (var tile in tiles)
@@ -417,7 +417,6 @@ namespace LedCubeAnimator.ViewModel.WindowViewModels
                     Model.RemoveTile(tile.Parent.Group, tile.Tile);
                 }
             });
-            Model.MergeAllowed = false;
             Model.MergeAllowed = true;
         }
 
