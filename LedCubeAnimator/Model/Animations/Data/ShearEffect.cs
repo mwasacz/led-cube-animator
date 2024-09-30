@@ -14,26 +14,27 @@ namespace LedCubeAnimator.Model.Animations.Data
             double value = Value(time);
 
             double tan = Math.Tan(value * Math.PI / 180);
+            double offset = -tan * Center;
 
             var matrix = new Matrix3D(
                 1,
                 Plane == Plane.XY ? tan : 0,
                 Plane == Plane.XZ ? tan : 0,
-                Plane == Plane.XY || Plane == Plane.XZ ? Center : 0,
+                0,
 
                 Plane == Plane.YX ? tan : 0,
                 1,
                 Plane == Plane.YZ ? tan : 0,
-                Plane == Plane.YX || Plane == Plane.YZ ? Center : 0,
+                0,
 
                 Plane == Plane.ZX ? tan : 0,
                 Plane == Plane.ZY ? tan : 0,
                 1,
-                Plane == Plane.ZX || Plane == Plane.ZY ? Center : 0,
+                0,
 
-                0,
-                0,
-                0,
+                Plane == Plane.YX || Plane == Plane.ZX ? offset : 0,
+                Plane == Plane.XY || Plane == Plane.ZY ? offset : 0,
+                Plane == Plane.XZ || Plane == Plane.YZ ? offset : 0,
                 1);
 
             return getVoxel(Transform(point, matrix), time);
