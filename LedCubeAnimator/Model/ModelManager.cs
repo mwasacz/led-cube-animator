@@ -196,6 +196,10 @@ namespace LedCubeAnimator.Model
             {
                 newValue = 1;
             }
+            else if (newValue is Color color)
+            {
+                newValue = color.Opaque();
+            }
 
             return newValue;
         }
@@ -221,8 +225,10 @@ namespace LedCubeAnimator.Model
         private void CorrectData(List<ObjectAction> changes)
         {
             var movedTiles = new HashSet<Tile>();
-            foreach (var change in changes)
+            int changeCount = changes.Count;
+            for (int i = 0; i < changeCount; i++)
             {
+                var change = changes[i];
                 var tile = (Tile)change.Object;
                 string prop = change.Property;
                 if (change is PropertyChangeAction)
@@ -231,9 +237,21 @@ namespace LedCubeAnimator.Model
                     {
                         movedTiles.Add(tile);
                     }
-                    else if (tile == Animation && prop == nameof(Animations.Data.Animation.ColorMode) && Animation.ColorMode != ColorMode.RGB)
+                    if (tile is Group group && (prop == nameof(Animations.Data.Group.Start) || prop == nameof(Animations.Data.Group.End)
+                        || prop == nameof(Animations.Data.Group.RepeatCount) || prop == nameof(Animations.Data.Group.Reverse)))
                     {
-                        CorrectFrameVoxels(Animation);
+                        foreach (var t in group.Children)
+                        {
+                            movedTiles.Add(t);
+                        }
+                    }
+                    if (tile is GradientEffect gradient && (prop == nameof(GradientEffect.From) || prop == nameof(GradientEffect.To)))
+                    {
+                        CorrectColors(gradient);
+                    }
+                    if (tile == Animation && (prop == nameof(Animations.Data.Animation.ColorMode) || prop == nameof(Animations.Data.Animation.MonoColor)))
+                    {
+                        CorrectColors(Animation);
                     }
                 }
                 else if (change is CollectionChangeAction<Tile> collectionChange && tile is Group group && prop == nameof(Animations.Data.Group.Children))
@@ -253,18 +271,18 @@ namespace LedCubeAnimator.Model
             }
             if (movedTiles.Count > 0)
             {
-                CorrectGroupChildren(Animation, movedTiles);
+                CorrectPosition(Animation, movedTiles);
             }
         }
 
-        private void CorrectGroupChildren(Group group, HashSet<Tile> movedTiles)
+        private void CorrectPosition(Group group, HashSet<Tile> movedTiles)
         {
             bool moved = false;
             foreach (var c in group.Children)
             {
                 if (c is Group g)
                 {
-                    CorrectGroupChildren(g, movedTiles);
+                    CorrectPosition(g, movedTiles);
                 }
                 if (movedTiles.Contains(c))
                 {
@@ -273,6 +291,23 @@ namespace LedCubeAnimator.Model
             }
             if (moved)
             {
+                int groupLength = group.End - group.Start + 1;
+                groupLength /= group.Reverse ? group.RepeatCount * 2 : group.RepeatCount;
+                foreach (var tile in group.Children)
+                {
+                    if (tile.End < tile.Start)
+                    {
+                        _undo.Group(() => _undo.Set(tile, nameof(Tile.End), tile.Start), true);
+                    }
+                    if (tile.Start >= groupLength)
+                    {
+                        _undo.Group(() => _undo.Set(tile, nameof(Tile.Start), groupLength - 1), true);
+                    }
+                    if (tile.End >= groupLength)
+                    {
+                        _undo.Group(() => _undo.Set(tile, nameof(Tile.End), groupLength - 1), true);
+                    }
+                }
                 foreach (var channel in group.Children.GroupBy(c => c.Channel))
                 {
                     int maxHierarchy = channel.Max(c => c.Hierarchy);
@@ -322,37 +357,56 @@ namespace LedCubeAnimator.Model
             }
         }
 
-        private void CorrectFrameVoxels(Group group)
+        private void CorrectColors(Tile tile)
         {
-            foreach (var t in group.Children)
+            if (Animation.ColorMode == ColorMode.RGB)
             {
-                switch (t)
+                if (tile == Animation)
                 {
-                    case Frame f:
-                        for (int x = 0; x < f.Voxels.GetLength(0); x++)
+                    _undo.Group(() => _undo.Set(Animation, nameof(Animation.MonoColor), Colors.White), true);
+                }
+            }
+            else
+            {
+                switch (tile)
+                {
+                    case Frame frame:
+                        for (int x = 0; x < frame.Voxels.GetLength(0); x++)
                         {
-                            for (int y = 0; y < f.Voxels.GetLength(1); y++)
+                            for (int y = 0; y < frame.Voxels.GetLength(1); y++)
                             {
-                                for (int z = 0; z < f.Voxels.GetLength(2); z++)
+                                for (int z = 0; z < frame.Voxels.GetLength(2); z++)
                                 {
-                                    var oldColor = f.Voxels[x, y, z];
-                                    switch (Animation.ColorMode)
-                                    {
-                                        case ColorMode.Mono:
-                                            _undo.Group(() => _undo.ChangeArray(f, nameof(Frame.Voxels), f.Voxels, oldColor.GetBrightness() > 127 ? Colors.White : Colors.Black, x, y, z), true);
-                                            break;
-                                        case ColorMode.MonoBrightness:
-                                            _undo.Group(() => _undo.ChangeArray(f, nameof(Frame.Voxels), f.Voxels, Colors.White.Multiply(oldColor.GetBrightness()).Opaque(), x, y, z), true);
-                                            break;
-                                    }
+                                    var oldColor = frame.Voxels[x, y, z];
+                                    _undo.Group(() => _undo.ChangeArray(frame, nameof(Frame.Voxels), frame.Voxels, CoerceColor(oldColor), x, y, z), true);
                                 }
                             }
                         }
                         break;
-                    case Group g:
-                        CorrectFrameVoxels(g);
+                    case GradientEffect gradient:
+                        _undo.Group(() => _undo.Set(gradient, nameof(GradientEffect.From), CoerceColor(gradient.From)), true);
+                        _undo.Group(() => _undo.Set(gradient, nameof(GradientEffect.To), CoerceColor(gradient.To)), true);
+                        break;
+                    case Group group:
+                        foreach (var t in group.Children)
+                        {
+                            CorrectColors(t);
+                        }
                         break;
                 }
+            }
+        }
+
+        private Color CoerceColor(Color oldColor)
+        {
+            switch (Animation.ColorMode)
+            {
+                case ColorMode.Mono:
+                    return oldColor.GetBrightness() > 127 ? Colors.White : Colors.Black;
+                case ColorMode.MonoBrightness:
+                    return Colors.White.Multiply(oldColor.GetBrightness()).Opaque();
+                default:
+                    return oldColor;
             }
         }
     }

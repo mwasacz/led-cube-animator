@@ -19,11 +19,19 @@ namespace LedCubeAnimator.Model.Animations
                     for (int z = 0; z < size; z++)
                     {
                         var color = tile.GetVoxel(new Point3D(x, y, z), time, (p, t) => Colors.Black);
+                        if (animation.ColorMode == ColorMode.Mono)
+                        {
+                            color = color.GetBrightness() > 127 ? Colors.White : Colors.Black;
+                        }
+                        else if (animation.ColorMode == ColorMode.MonoBrightness)
+                        {
+                            color = Colors.White.Multiply(color.GetBrightness());
+                        }
                         if (preview && animation.ColorMode != ColorMode.RGB)
                         {
                             color = color.Multiply(animation.MonoColor);
                         }
-                        voxels[x, y, z] = color;
+                        voxels[x, y, z] = color.Opaque();
                     }
                 }
             }
