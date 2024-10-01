@@ -190,38 +190,38 @@ namespace LedCubeAnimator.ViewModel.WindowViewModels
                     }
                 }
             }
-            AddTile(new Frame { Name = "Frame", Voxels = voxels });
+            AddTile(new Frame { Name = nameof(Frame), Voxels = voxels });
         }));
 
         private RelayCommand _addGroupCommand;
-        public ICommand AddGroupCommand => _addGroupCommand ?? (_addGroupCommand = new RelayCommand(() => AddTile(new Group { Name = "Group" })));
+        public ICommand AddGroupCommand => _addGroupCommand ?? (_addGroupCommand = new RelayCommand(() => AddTile(new Group { Name = nameof(Group) })));
 
         private RelayCommand _addGradientEffectCommand;
-        public ICommand AddGradientEffectCommand => _addGradientEffectCommand ?? (_addGradientEffectCommand = new RelayCommand(() => AddTile(new GradientEffect { Name = "GradientEffect" })));
+        public ICommand AddGradientEffectCommand => _addGradientEffectCommand ?? (_addGradientEffectCommand = new RelayCommand(() => AddTile(new GradientEffect { Name = nameof(GradientEffect), From = Colors.Black, To = Colors.White, ColorInterpolation = ColorInterpolation.HSV })));
 
         private RelayCommand _addMoveEffectCommand;
-        public ICommand AddMoveEffectCommand => _addMoveEffectCommand ?? (_addMoveEffectCommand = new RelayCommand(() => AddTile(new MoveEffect { Name = "MoveEffect" })));
+        public ICommand AddMoveEffectCommand => _addMoveEffectCommand ?? (_addMoveEffectCommand = new RelayCommand(() => AddTile(new MoveEffect { Name = nameof(MoveEffect), To = 1, Round = true })));
 
         private RelayCommand _addRotateEffectCommand;
-        public ICommand AddRotateEffectCommand => _addRotateEffectCommand ?? (_addRotateEffectCommand = new RelayCommand(() => AddTile(new RotateEffect { Name = "RotateEffect" })));
+        public ICommand AddRotateEffectCommand => _addRotateEffectCommand ?? (_addRotateEffectCommand = new RelayCommand(() => AddTile(new RotateEffect { Name = nameof(RotateEffect), To = 90, Round = true })));
 
         private RelayCommand _addScaleEffectCommand;
-        public ICommand AddScaleEffectCommand => _addScaleEffectCommand ?? (_addScaleEffectCommand = new RelayCommand(() => AddTile(new ScaleEffect { Name = "ScaleEffect" })));
+        public ICommand AddScaleEffectCommand => _addScaleEffectCommand ?? (_addScaleEffectCommand = new RelayCommand(() => AddTile(new ScaleEffect { Name = nameof(ScaleEffect), From = 1, To = 2, Round = true })));
 
         private RelayCommand _addShearEffectCommand;
-        public ICommand AddShearEffectCommand => _addShearEffectCommand ?? (_addShearEffectCommand = new RelayCommand(() => AddTile(new ShearEffect { Name = "ShearEffect" })));
+        public ICommand AddShearEffectCommand => _addShearEffectCommand ?? (_addShearEffectCommand = new RelayCommand(() => AddTile(new ShearEffect { Name = nameof(ShearEffect), To = 45, Round = true })));
 
         private RelayCommand _addLinearDelayCommand;
-        public ICommand AddLinearDelayCommand => _addLinearDelayCommand ?? (_addLinearDelayCommand = new RelayCommand(() => AddTile(new LinearDelay { Name = "LinearDelay" })));
+        public ICommand AddLinearDelayCommand => _addLinearDelayCommand ?? (_addLinearDelayCommand = new RelayCommand(() => AddTile(new LinearDelay { Name = nameof(LinearDelay), Value = 1 })));
 
         private RelayCommand _addRadialDelayCommand;
-        public ICommand AddRadialDelayCommand => _addRadialDelayCommand ?? (_addRadialDelayCommand = new RelayCommand(() => AddTile(new RadialDelay { Name = "RadialDelay" })));
+        public ICommand AddRadialDelayCommand => _addRadialDelayCommand ?? (_addRadialDelayCommand = new RelayCommand(() => AddTile(new RadialDelay { Name = nameof(RadialDelay), Value = 1 })));
 
         private RelayCommand _addSphericalDelayCommand;
-        public ICommand AddSphericalDelayCommand => _addSphericalDelayCommand ?? (_addSphericalDelayCommand = new RelayCommand(() => AddTile(new SphericalDelay { Name = "SphericalDelay" })));
+        public ICommand AddSphericalDelayCommand => _addSphericalDelayCommand ?? (_addSphericalDelayCommand = new RelayCommand(() => AddTile(new SphericalDelay { Name = nameof(SphericalDelay), Value = 1 })));
 
         private RelayCommand _addAngularDelayCommand;
-        public ICommand AddAngularDelayCommand => _addAngularDelayCommand ?? (_addAngularDelayCommand = new RelayCommand(() => AddTile(new AngularDelay { Name = "AngularDelay" })));
+        public ICommand AddAngularDelayCommand => _addAngularDelayCommand ?? (_addAngularDelayCommand = new RelayCommand(() => AddTile(new AngularDelay { Name = nameof(AngularDelay), Value = 0.25 })));
 
         private RelayCommand _newCommand;
         public ICommand NewCommand => _newCommand ?? (_newCommand = new RelayCommand(() =>

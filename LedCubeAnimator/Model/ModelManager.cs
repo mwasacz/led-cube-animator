@@ -27,7 +27,7 @@ namespace LedCubeAnimator.Model
 
         public void New()
         {
-            Animation = new Animation { Name = "Animation", Size = 4, MonoColor = Colors.White, FrameDuration = 1 };
+            Animation = new Animation { Name = nameof(Animation), End = 99, Size = 4, ColorMode = ColorMode.RGB, MonoColor = Colors.White, FrameDuration = 10 };
             _filePath = null;
             _undo.Reset();
             _canMergeNext = false;
