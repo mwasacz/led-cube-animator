@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Interactivity;
 using PropertyGrid = Xceed.Wpf.Toolkit.PropertyGrid.PropertyGrid;
@@ -58,18 +59,23 @@ namespace LedCubeAnimator.View.Behaviors
                     break;
                 case 1:
                     AssociatedObject.SelectedObject = objects[0];
-                    AssociatedObject.SelectedObjectTypeName = objects[0].GetType().Name;
+                    AssociatedObject.SelectedObjectTypeName = GetTypeName(objects[0].GetType());
                     AssociatedObject.SelectedObjectName = null;
                     break;
                 default:
                     var itemsBag = new ItemsBag(objects);
                     AssociatedObject.SelectedObject = new CustomItemsBagTypeDescriptor(itemsBag);
-                    AssociatedObject.SelectedObjectTypeName = itemsBag.BiggestType.Name;
+                    AssociatedObject.SelectedObjectTypeName = GetTypeName(itemsBag.BiggestType);
                     AssociatedObject.SelectedObjectName = $"{objects.Length} tiles selected";
                     break;
             }
 
             oldItemsBag?.Dispose();
+        }
+
+        private string GetTypeName(Type type)
+        {
+            return type.GetCustomAttributes<DisplayNameAttribute>(false).FirstOrDefault()?.DisplayName ?? type.Name;
         }
 
         private class CustomItemsBagTypeDescriptor : CustomTypeDescriptor

@@ -8,6 +8,7 @@ using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 
 namespace LedCubeAnimator.ViewModel.DataViewModels
 {
+    [DisplayName(nameof(LedCubeAnimator.Model.Animations.Data.Frame))]
     public class FrameViewModel : TileViewModel
     {
         public FrameViewModel(Frame frame, IModelManager model, IMessenger messenger, GroupViewModel parent) : base(frame, model, messenger, parent) { }

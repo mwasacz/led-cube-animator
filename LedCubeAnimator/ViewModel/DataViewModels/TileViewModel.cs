@@ -10,6 +10,7 @@ using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 
 namespace LedCubeAnimator.ViewModel.DataViewModels
 {
+    [DisplayName(nameof(LedCubeAnimator.Model.Animations.Data.Tile))]
     public abstract class TileViewModel : ViewModelBase
     {
         public TileViewModel(Tile tile, IModelManager model, IMessenger messenger, GroupViewModel parent) : base(messenger)

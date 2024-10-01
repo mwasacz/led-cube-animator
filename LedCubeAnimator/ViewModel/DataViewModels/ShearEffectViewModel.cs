@@ -6,6 +6,7 @@ using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 
 namespace LedCubeAnimator.ViewModel.DataViewModels
 {
+    [DisplayName(nameof(LedCubeAnimator.Model.Animations.Data.ShearEffect))]
     public class ShearEffectViewModel : TransformEffectViewModel
     {
         public ShearEffectViewModel(ShearEffect shearEffect, IModelManager model, IMessenger messenger, GroupViewModel parent) : base(shearEffect, model, messenger, parent) { }

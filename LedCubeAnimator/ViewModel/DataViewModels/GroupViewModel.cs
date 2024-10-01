@@ -8,6 +8,7 @@ using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 
 namespace LedCubeAnimator.ViewModel.DataViewModels
 {
+    [DisplayName(nameof(LedCubeAnimator.Model.Animations.Data.Group))]
     public class GroupViewModel : EffectViewModel
     {
         public GroupViewModel(Group group, IModelManager model, IMessenger messenger, GroupViewModel parent, IViewModelFactory viewModelFactory) : base(group, model, messenger, parent)

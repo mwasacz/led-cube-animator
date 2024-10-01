@@ -7,6 +7,7 @@ using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 
 namespace LedCubeAnimator.ViewModel.DataViewModels
 {
+    [DisplayName(nameof(LedCubeAnimator.Model.Animations.Data.Effect))]
     public abstract class EffectViewModel : TileViewModel
     {
         public EffectViewModel(Effect effect, IModelManager model, IMessenger messenger, GroupViewModel parent) : base(effect, model, messenger, parent) { }

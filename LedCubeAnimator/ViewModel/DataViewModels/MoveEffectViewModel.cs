@@ -6,6 +6,7 @@ using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 
 namespace LedCubeAnimator.ViewModel.DataViewModels
 {
+    [DisplayName(nameof(LedCubeAnimator.Model.Animations.Data.MoveEffect))]
     public class MoveEffectViewModel : TransformEffectViewModel
     {
         public MoveEffectViewModel(MoveEffect moveEffect, IModelManager model, IMessenger messenger, GroupViewModel parent) : base(moveEffect, model, messenger, parent) { }

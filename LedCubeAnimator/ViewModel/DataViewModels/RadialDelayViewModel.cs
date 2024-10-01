@@ -7,6 +7,7 @@ using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 
 namespace LedCubeAnimator.ViewModel.DataViewModels
 {
+    [DisplayName(nameof(LedCubeAnimator.Model.Animations.Data.RadialDelay))]
     public class RadialDelayViewModel : DelayViewModel
     {
         public RadialDelayViewModel(RadialDelay radialDelay, IModelManager model, IMessenger messenger, GroupViewModel parent) : base(radialDelay, model, messenger, parent) { }

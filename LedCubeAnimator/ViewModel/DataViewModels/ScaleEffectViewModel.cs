@@ -6,6 +6,7 @@ using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 
 namespace LedCubeAnimator.ViewModel.DataViewModels
 {
+    [DisplayName(nameof(LedCubeAnimator.Model.Animations.Data.ScaleEffect))]
     public class ScaleEffectViewModel : TransformEffectViewModel
     {
         public ScaleEffectViewModel(ScaleEffect scaleEffect, IModelManager model, IMessenger messenger, GroupViewModel parent) : base(scaleEffect, model, messenger, parent) { }

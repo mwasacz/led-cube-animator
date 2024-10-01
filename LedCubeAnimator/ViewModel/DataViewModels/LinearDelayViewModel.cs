@@ -6,6 +6,7 @@ using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 
 namespace LedCubeAnimator.ViewModel.DataViewModels
 {
+    [DisplayName(nameof(LedCubeAnimator.Model.Animations.Data.LinearDelay))]
     public class LinearDelayViewModel : DelayViewModel
     {
         public LinearDelayViewModel(LinearDelay linearDelay, IModelManager model, IMessenger messenger, GroupViewModel parent) : base(linearDelay, model, messenger, parent) { }
