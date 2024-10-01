@@ -291,8 +291,8 @@ namespace LedCubeAnimator.Model
             }
             if (moved)
             {
-                int groupLength = group.End - group.Start + 1;
-                groupLength /= group.Reverse ? group.RepeatCount * 2 : group.RepeatCount;
+                int groupDiv = group.Reverse ? group.RepeatCount * 2 : group.RepeatCount;
+                int groupLength = (group.End - group.Start + groupDiv) / groupDiv;
                 foreach (var tile in group.Children)
                 {
                     if (tile.End < tile.Start)

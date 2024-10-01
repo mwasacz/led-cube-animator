@@ -129,7 +129,8 @@ namespace LedCubeAnimator.ViewModel.DataViewModels
 
         private void UpdateColumns()
         {
-            Columns = Reverse ? Length / RepeatCount / 2 : Length / RepeatCount;
+            int div = Reverse ? RepeatCount * 2 : RepeatCount;
+            Columns = (Length + div - 1) / div;
         }
 
         private void UpdateChildren()
