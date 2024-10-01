@@ -1,5 +1,5 @@
 ﻿using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Command;
+using GalaSoft.MvvmLight.CommandWpf;
 using LedCubeAnimator.Model;
 using LedCubeAnimator.Model.Animations;
 using LedCubeAnimator.Model.Animations.Data;

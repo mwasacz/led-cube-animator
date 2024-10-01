@@ -1,5 +1,5 @@
 ﻿using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Command;
+using GalaSoft.MvvmLight.CommandWpf;
 using LedCubeAnimator.Model;
 using LedCubeAnimator.Utils;
 using LedCubeAnimator.ViewModel.DataViewModels;
@@ -32,31 +32,33 @@ namespace LedCubeAnimator.ViewModel.UserControlViewModels
         {
             Model.Group(() =>
             {
+                var anchor = (TileViewModel)e.Item;
                 foreach (var tile in Shared.SelectedTiles)
                 {
+                    int groupLength = tile.Parent?.Columns ?? int.MaxValue;
                     switch (e.DragMode)
                     {
                         case DragMode.Left:
-                            tile.Start = e.PositionX;
+                            tile.Start = Math.Max(Math.Min(e.PositionX, tile.End), 0);
                             break;
                         case DragMode.Right:
-                            tile.End = e.PositionX;
+                            tile.End = Math.Min(Math.Max(e.PositionX, tile.Start), groupLength - 1);
                             break;
                         case DragMode.Move:
-                            var start = Math.Max(e.PositionX - e.HandleOffset, 0);
-                            var length = tile.Length;
+                            int length = tile.Length;
+                            int start = Math.Max(Math.Min(e.PositionX - e.HandleOffset - anchor.Start + tile.Start, groupLength - length), 0);
                             tile.Start = start;
                             tile.End = start + length - 1;
 
                             int row = e.PositionY;
                             int channel = 0;
-                            while (channel < tile.Parent?.RowHeights.Count && row >= tile.Parent.RowHeights[channel])
+                            while (channel < anchor.Parent?.RowHeights.Count && row >= anchor.Parent.RowHeights[channel])
                             {
-                                row -= tile.Parent.RowHeights[channel];
+                                row -= anchor.Parent.RowHeights[channel];
                                 channel++;
                             }
                             tile.Channel = channel;
-                            tile.Hierarchy = row;
+                            tile.Hierarchy = row - anchor.Hierarchy + tile.Hierarchy;
                             break;
                     }
                 }
