@@ -1,0 +1,44 @@
+{
+  "$type": "LedCubeAnimator.Model.Animations.Data.Animation, LedCubeAnimator",
+  "Size": 8,
+  "ColorMode": 2,
+  "MonoColor": "#FFFFFFFF",
+  "FrameDuration": 40,
+  "Children": [
+    {
+      "$type": "LedCubeAnimator.Model.Animations.Data.GradientEffect, LedCubeAnimator",
+      "From": "#FFFF0000",
+      "To": "#FFFF0000",
+      "ColorInterpolation": 2,
+      "Reverse": false,
+      "RepeatCount": 1,
+      "TimeInterpolation": 0,
+      "Name": "GradientEffect",
+      "Start": 0,
+      "End": 79,
+      "Channel": 0,
+      "Hierarchy": 0
+    },
+    {
+      "$type": "LedCubeAnimator.Model.Animations.Data.SphericalDelay, LedCubeAnimator",
+      "Center": "0,7,0",
+      "Value": -10.0,
+      "WrapAround": true,
+      "Static": false,
+      "Name": "SphericalDelay",
+      "Start": 0,
+      "End": 79,
+      "Channel": 0,
+      "Hierarchy": 1
+    }
+  ],
+  "ColorBlendMode": 0,
+  "Reverse": false,
+  "RepeatCount": 1,
+  "TimeInterpolation": 0,
+  "Name": "Animation",
+  "Start": 0,
+  "End": 79,
+  "Channel": 0,
+  "Hierarchy": 0
+}
