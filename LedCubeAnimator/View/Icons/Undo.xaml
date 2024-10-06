@@ -1,4 +1,7 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+﻿<!-- This file is part of LED Cube Animator -->
+<!-- Copyright (C) 2019-2021, 2024 Mikolaj Wasacz -->
+<!-- SPDX-License-Identifier: GPL-3.0-only WITH GPL-3.0-linking-source-exception -->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Viewbox x:Key="UndoIcon"
              x:Shared="false"
@@ -13,6 +16,7 @@
                             <DrawingGroup.Children>
                                 <GeometryDrawing Brush="#00FFFFFF"
                                                  Geometry="M16,16L0,16 0,0 16,0z" />
+                                <!-- Icon taken from the Visual Studio Code Icons library -->
                                 <GeometryDrawing Brush="#FF424242"
                                                  Geometry="M3.5 2V5.5L4 6H7.5V5H4.979L5.92041 4.05869C7.30762 2.67157 9.55664 2.67157 10.9434 4.05869C12.3306 5.4458 12.3306 7.69476 10.9434 9.08188L5.74561 14.2799L6.46582 14.9999L11.6636 9.80194C13.4482 8.01715 13.4482 5.12341 11.6636 3.33859C9.87891 1.5538 6.98486 1.5538 5.2002 3.33859L4.5 4.03882V2H3.5Z" />
                             </DrawingGroup.Children>

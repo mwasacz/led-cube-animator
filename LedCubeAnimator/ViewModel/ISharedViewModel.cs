@@ -1,4 +1,8 @@
-﻿using LedCubeAnimator.ViewModel.DataViewModels;
+﻿// This file is part of LED Cube Animator
+// Copyright (C) 2019-2021, 2024 Mikolaj Wasacz
+// SPDX-License-Identifier: GPL-3.0-only WITH GPL-3.0-linking-source-exception
+
+using LedCubeAnimator.ViewModel.DataViewModels;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
