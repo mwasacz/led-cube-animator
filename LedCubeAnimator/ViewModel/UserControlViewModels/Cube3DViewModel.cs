@@ -79,7 +79,7 @@ namespace LedCubeAnimator.ViewModel.UserControlViewModels
 
         private void Model_PropertiesChanged(object sender, PropertiesChangedEventArgs e)
         {
-            if (e.Changes.Any(c => !(c.Key is Animation && c.Value == nameof(Animation.FrameDuration))))
+            if (e.Changes.Any(c => c.Value != nameof(Tile.Name) && !(c.Key is Animation && c.Value == nameof(Animation.FrameDuration))))
             {
                 RenderFrame();
             }
@@ -87,7 +87,7 @@ namespace LedCubeAnimator.ViewModel.UserControlViewModels
 
         private void Shared_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == nameof(ISharedViewModel.Time))
+            if (e.PropertyName == nameof(ISharedViewModel.Time) || e.PropertyName == nameof(ISharedViewModel.CurrentGroup))
             {
                 RenderFrame();
             }
